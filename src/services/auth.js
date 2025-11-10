@@ -14,3 +14,8 @@ export function forgotPasswordApi(identifier) {
 export function resetPasswordApi(token, newPassword) {
   return postJson('/api/auth/reset-password', { token, newPassword });
 }
+
+// ===== Đăng ký bệnh nhân =====
+export function registerPatient(payload) {
+  return postJson("/api/auth/register", payload);
+}

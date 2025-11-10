@@ -1,16 +1,17 @@
-// src/AppRoutes.jsx
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
+import { useSelector } from 'react-redux';
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 
 function Protected({ children }) {
-  const token = localStorage.getItem("token");
+  const token = useSelector(s => s.auth.token); 
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
+
 
 export default function AppRoutes() {
   return (

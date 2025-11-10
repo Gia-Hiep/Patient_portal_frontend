@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerPatient } from "../services/api";
+import { registerPatient } from "../services/auth";
 import "../assets/styles/auth.css";
 
 const initial = {
