@@ -93,3 +93,5 @@ label {
   justify-content: space-between;
   margin-top: 12px;
 }
+.input-error { border-color: #e63946; }
+.field-error { color: #e63946; font-size: .9rem; margin: 4px 0 10px; }

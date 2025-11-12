@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { registerPatient } from "../services/auth";
+import { registerPatient } from "../services/auth";  // giữ như bạn đang dùng
 import "../assets/styles/auth.css";
 
 const initial = {
@@ -15,11 +15,13 @@ export default function Register() {
   const [f, setF] = useState(initial);
   const [msg, setMsg] = useState(null); // {type: 'success'|'error', text: string}
   const [loading, setLoading] = useState(false);
+  const [fieldErr, setFieldErr] = useState({ emailOrPhone: "" }); // lỗi theo field
   const nav = useNavigate();
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setF((s) => ({ ...s, [name]: type === "checkbox" ? checked : value }));
+    if (fieldErr[name]) setFieldErr((s) => ({ ...s, [name]: "" })); // clear lỗi khi sửa
   };
 
   const validate = () => {
@@ -31,6 +33,12 @@ export default function Register() {
     return null;
   };
 
+  // Nhận biết lỗi trùng email từ backend
+  const isEmailExistsError = (err) => {
+    const m = (err?.message || "").toLowerCase();
+    return err?.status === 409 || m.includes("đã tồn tại") || m.includes("exists");
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const err = validate();
@@ -38,13 +46,18 @@ export default function Register() {
 
     setLoading(true);
     setMsg(null);
+    setFieldErr({ emailOrPhone: "" });
+
     try {
       const data = await registerPatient(f);
-      setMsg({ type: "success", text: data.message || "Đăng ký thành công!" });
-      // chuyển hướng nhẹ sau 900ms để user kịp thấy thông báo
+      setMsg({ type: "success", text: data?.message || "Đăng ký thành công!" });
       setTimeout(() => nav("/login"), 900);
     } catch (err2) {
-      setMsg({ type: "error", text: err2.message || "Đăng ký thất bại" });
+      if (isEmailExistsError(err2)) {
+        setFieldErr({ emailOrPhone: "Email đã tồn tại trong hệ thống." });
+      } else {
+        setMsg({ type: "error", text: err2?.message || "Đăng ký thất bại" });
+      }
     } finally {
       setLoading(false);
     }
@@ -56,21 +69,51 @@ export default function Register() {
         <h2 className="auth-title">ĐĂNG KÝ TÀI KHOẢN</h2>
         <p className="auth-muted">Tạo tài khoản để sử dụng cổng thông tin bệnh nhân</p>
 
-        <form onSubmit={onSubmit}>
+        <form onSubmit={onSubmit} noValidate>
           <label>Họ Tên</label>
-          <input className="input" name="fullName" value={f.fullName} onChange={onChange} />
+          <input
+            className="input"
+            name="fullName"
+            value={f.fullName}
+            onChange={onChange}
+          />
 
           <label>Email / Số điện thoại</label>
-          <input className="input" name="emailOrPhone" value={f.emailOrPhone} onChange={onChange} />
+          <input
+            className={`input ${fieldErr.emailOrPhone ? "input-error" : ""}`}
+            name="emailOrPhone"
+            value={f.emailOrPhone}
+            onChange={onChange}
+          />
+          {fieldErr.emailOrPhone && (
+            <div className="field-error">{fieldErr.emailOrPhone}</div>
+          )}
 
           <label>Mật khẩu</label>
-          <input className="input" type="password" name="password" value={f.password} onChange={onChange} />
+          <input
+            className="input"
+            type="password"
+            name="password"
+            value={f.password}
+            onChange={onChange}
+          />
 
           <label>Nhập lại mật khẩu</label>
-          <input className="input" type="password" name="confirmPassword" value={f.confirmPassword} onChange={onChange} />
+          <input
+            className="input"
+            type="password"
+            name="confirmPassword"
+            value={f.confirmPassword}
+            onChange={onChange}
+          />
 
           <div className="row">
-            <input type="checkbox" name="agreeTerms" checked={f.agreeTerms} onChange={onChange} />
+            <input
+              type="checkbox"
+              name="agreeTerms"
+              checked={f.agreeTerms}
+              onChange={onChange}
+            />
             <span>Tôi đồng ý với điều khoản &amp; chính sách</span>
           </div>
 
@@ -81,7 +124,8 @@ export default function Register() {
           </button>
 
           <div className="auth-footer">
-            Bạn đã có tài khoản? <a href="/login">Đăng Nhập</a> · <a href="/forgot">Quên mật khẩu?</a>
+            Bạn đã có tài khoản? <a href="/login">Đăng Nhập</a> ·{" "}
+            <a href="/forgot">Quên mật khẩu?</a>
           </div>
         </form>
       </div>
