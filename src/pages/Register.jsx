@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerPatient } from "../services/auth";  // giữ như bạn đang dùng
 import "../assets/styles/auth.css";
-
+import { loginThunk, forgotPasswordThunk } from '../store/authThunks';
+import { useDispatch, useSelector } from 'react-redux';
+import { getLockState, registerFailure, resetFailures } from '../utils/lockout';
 const initial = {
   fullName: "",
   emailOrPhone: "",
@@ -17,7 +19,7 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [fieldErr, setFieldErr] = useState({ emailOrPhone: "" }); // lỗi theo field
   const nav = useNavigate();
-
+  const dispatch = useDispatch();
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setF((s) => ({ ...s, [name]: type === "checkbox" ? checked : value }));
@@ -62,6 +64,16 @@ export default function Register() {
       setLoading(false);
     }
   };
+  const onForgot = async () => {
+      const identifier = prompt('Nhập email (hoặc username) để nhận liên kết khôi phục:');
+      if (!identifier) return;
+      try {
+        await dispatch(forgotPasswordThunk(identifier));
+        alert('Nếu tài khoản tồn tại, liên kết đã được gửi.');
+      } catch (e) {
+        alert(e?.message || 'Không thể gửi email khôi phục');
+      }
+    };
 
   return (
     <div className="auth-container">
@@ -125,7 +137,7 @@ export default function Register() {
 
           <div className="auth-footer">
             Bạn đã có tài khoản? <a href="/login">Đăng Nhập</a> ·{" "}
-            <a href="/forgot">Quên mật khẩu?</a>
+         <button type="button" className="link" onClick={onForgot}>Quên mật khẩu?</button>
           </div>
         </form>
       </div>

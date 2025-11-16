@@ -69,8 +69,8 @@ export default function Login() {
           {lock.locked ? `Bị khóa ${lock.remaining}s` : (loading ? 'Đang đăng nhập...' : 'Đăng nhập')}
         </button>
 
-        <div className="row">
-          <span className="muted">Sai 3 lần sẽ khóa 1 phút</span>
+        <div className="auth-footer">
+          <span className="muted">Sai 3 lần sẽ khóa 1 phút</span> <a href="/register">Đăng Ký</a> ·{" "}
           <button type="button" className="link" onClick={onForgot}>Quên mật khẩu?</button>
         </div>
       </form>
