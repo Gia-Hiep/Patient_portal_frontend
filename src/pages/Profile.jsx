@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getMyProfile, updateMyProfile } from "../services/api";
 import "../assets/styles/auth.css";
-
+import { useNavigate } from "react-router-dom";
 export default function Profile() {
   const [form, setForm] = useState({
     fullName: "",
@@ -19,7 +19,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [msg, setMsg] = useState(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     (async () => {
       try {
@@ -70,15 +70,22 @@ export default function Profile() {
 
   return (
     <div className="profile-wrap">
-      <div className="profile-topbar">
-        <button
-          className="icon-btn"
-          onClick={() => window.history.back()}
-          title="Quay lại"
-        >
-          ←
-        </button>
-        <div className="title">HỒ SƠ CÁ NHÂN</div>
+    <div className="profile-topbar">
+  <button className="icon-btn" onClick={() => window.history.back()} title="Quay lại">
+    ←
+  </button>
+
+  <div className="title">HỒ SƠ CÁ NHÂN</div>
+
+  {/* Nút trở về trang chủ */}
+  <button
+    className="chip-btn"
+    onClick={() => navigate("/")}
+    style={{ marginRight: "10px" }}
+  >
+    Trang chủ
+  </button>
+
         {!editing ? (
           <button
             className="chip-btn"
