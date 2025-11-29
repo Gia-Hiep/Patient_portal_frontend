@@ -22,7 +22,10 @@ async function handleJsonResponse(res) {
 
   if (!res.ok) {
     const message =
-      data?.detail || data?.message || data?.error || text ||
+      data?.detail ||
+      data?.message ||
+      data?.error ||
+      text ||
       `${res.status} ${res.statusText || "Request failed"}`;
     const err = new Error(message);
     err.status = res.status;
