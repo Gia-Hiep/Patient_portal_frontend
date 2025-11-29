@@ -47,13 +47,6 @@ export async function postJson(path, body, options = {}) {
   return handleJsonResponse(res);
 }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-/** GET JSON (hỗ trợ params đơn giản qua options.params) */
-=======
->>>>>>> 089516a (Update them quan ly profile)
->>>>>>> 19f36464b14b0f999ad2f6f209e29ad287387a59
 export async function getJson(path, options = {}) {
   let url = `${BASE}${path}`;
   if (options.params && typeof options.params === "object") {
@@ -62,24 +55,12 @@ export async function getJson(path, options = {}) {
   }
   const res = await fetch(url, {
     method: "GET",
-<<<<<<< HEAD
     headers: { ...authHeaders(), ...(options.headers || {}) },
-=======
-<<<<<<< HEAD
-    headers: {
-      ...authHeaders(),
-      ...(options.headers || {}),
-    },
-=======
-    headers: { ...authHeaders(), ...(options.headers || {}) },
->>>>>>> 089516a (Update them quan ly profile)
->>>>>>> 19f36464b14b0f999ad2f6f209e29ad287387a59
     ...options,
   });
   return handleJsonResponse(res);
 }
 
-<<<<<<< HEAD
 export async function putJson(path, body, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
     method: "PUT",
@@ -96,31 +77,3 @@ export async function putJson(path, body, options = {}) {
 
 export const getMyProfile = () => getJson("/api/profile/me");
 export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);
-=======
-<<<<<<< HEAD
-/** (tuỳ chọn) PUT/DELETE nếu cần dùng sau này */
-//
-
-/** Ví dụ API cụ thể: đăng ký bệnh nhân */
-export function registerPatient(payload) {
-  return postJson("/api/auth/register", payload);
-}
-=======
-export async function putJson(path, body, options = {}) {
-  const res = await fetch(`${BASE}${path}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-      ...(options.headers || {}),
-    },
-    body: JSON.stringify(body),
-    ...options,
-  });
-  return handleJsonResponse(res);
-}
-
-export const getMyProfile = () => getJson("/api/profile/me");
-export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);
->>>>>>> 089516a (Update them quan ly profile)
->>>>>>> 19f36464b14b0f999ad2f6f209e29ad287387a59
