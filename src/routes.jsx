@@ -1,17 +1,17 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
+import Profile from "./pages/Profile";
 
 function Protected({ children }) {
-  const token = useSelector(s => s.auth.token); 
+  const token = useSelector((s) => s.auth.token);
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
-
 
 export default function AppRoutes() {
   return (
@@ -19,6 +19,7 @@ export default function AppRoutes() {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/profile" element={<Profile />} />
       <Route
         path="/dashboard"
         element={

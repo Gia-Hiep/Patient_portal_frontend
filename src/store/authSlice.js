@@ -1,4 +1,3 @@
-// src/store/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
@@ -30,7 +29,7 @@ const authSlice = createSlice({
       state.role = null;
       state.status = 'idle';
       state.error = null;
-      // xóa storage NGAY ở đây
+
       localStorage.removeItem('token');
       localStorage.removeItem('user');
     },

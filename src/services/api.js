@@ -1,17 +1,12 @@
-// src/services/api.js
-// Ưu tiên lấy từ env; hỗ trợ CRA & Vite
-const BASE =
-  process.env.REACT_APP_API_BASE_URL ||
-  (typeof import.meta !== "undefined" ? import.meta.env?.VITE_API_BASE_URL : null) ||
-  "http://localhost:8080";
+const BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
-/** Lấy header Authorization từ localStorage (nếu đã đăng nhập) */
+/** Lấy header Authorization từ localStorage  */
 function authHeaders() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-/** Xử lý response JSON/Text chung (hỗ trợ Spring ProblemDetail: {title, detail, ...}) */
+/** Xử lý response JSON/Text chung **/
 async function handleJsonResponse(res) {
   let data = null;
   let text = "";
@@ -23,34 +18,21 @@ async function handleJsonResponse(res) {
     } else {
       text = await res.text();
     }
-  } catch (_) {
-    // body rỗng/không đọc được -> bỏ qua
-  }
+  } catch (_) {}
 
   if (!res.ok) {
     const message =
-      // Spring Boot 3 ProblemDetail
-      data?.detail ||
-      // Thông điệp tuỳ backend
-      data?.message ||
-      data?.error ||
-      // Fallback text/plain
-      text ||
-      // Cuối cùng: ghép status line
+      data?.detail || data?.message || data?.error || text ||
       `${res.status} ${res.statusText || "Request failed"}`;
-
     const err = new Error(message);
     err.status = res.status;
-    err.code = data?.code || null; // nếu backend trả mã lỗi (vd: EMAIL_EXISTS)
-    err.data = data;               // đính kèm payload để debug nếu cần
+    err.code = data?.code || null;
+    err.data = data;
     throw err;
   }
-
-  // Luôn trả về object (tránh undefined)
   return data ?? {};
 }
 
-/** POST JSON */
 export async function postJson(path, body, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
     method: "POST",
@@ -65,7 +47,6 @@ export async function postJson(path, body, options = {}) {
   return handleJsonResponse(res);
 }
 
-/** GET JSON (hỗ trợ params đơn giản qua options.params) */
 export async function getJson(path, options = {}) {
   let url = `${BASE}${path}`;
   if (options.params && typeof options.params === "object") {
@@ -74,19 +55,25 @@ export async function getJson(path, options = {}) {
   }
   const res = await fetch(url, {
     method: "GET",
-    headers: {
-      ...authHeaders(),
-      ...(options.headers || {}),
-    },
+    headers: { ...authHeaders(), ...(options.headers || {}) },
     ...options,
   });
   return handleJsonResponse(res);
 }
 
-/** (tuỳ chọn) PUT/DELETE nếu cần dùng sau này */
-//
-
-/** Ví dụ API cụ thể: đăng ký bệnh nhân */
-export function registerPatient(payload) {
-  return postJson("/api/auth/register", payload);
+export async function putJson(path, body, options = {}) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeaders(),
+      ...(options.headers || {}),
+    },
+    body: JSON.stringify(body),
+    ...options,
+  });
+  return handleJsonResponse(res);
 }
+
+export const getMyProfile = () => getJson("/api/profile/me");
+export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);

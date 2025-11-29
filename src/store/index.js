@@ -4,7 +4,7 @@ import authReducer from './authSlice';
 const persistToLocalStorage = store => next => action => {
   const result = next(action);
   const { auth } = store.getState();
-  // đồng bộ localStorage
+
   if (auth?.token) {
     localStorage.setItem('token', auth.token);
     localStorage.setItem('user', JSON.stringify(auth.user || null));
