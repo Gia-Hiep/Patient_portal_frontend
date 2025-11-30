@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import VisitHistory from "./pages/VisitHistory";
 import Notifications from "./pages/Notifications";
 
 // ⭐ THÊM IMPORT
@@ -34,7 +35,12 @@ export default function AppRoutes() {
           </Protected>
         }
       />
-
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/visits"
+        element={
+          <Protected>
+            <VisitHistory />
       <Route
         path="/profile"
         element={

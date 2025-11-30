@@ -202,100 +202,129 @@ label {
   border-color: #2f6a46;
   background: #132019;
 }
-/* ============================
-   UI: Process Status (Quy trình khám)
-   ============================ */
-
-.process-wrap {
-  padding: 24px;
-  max-width: 700px;
+.visit-history {
+  max-width: 1000px;
   margin: 0 auto;
-  color: var(--text);
+  padding: 24px;
 }
 
-.process-title {
-  margin-bottom: 8px;
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.process-desc {
+.visit-history h2 {
   margin-bottom: 16px;
-  color: var(--muted);
+}
+
+.alert.error {
+  padding: 8px 12px;
+  background: #ffe6e6;
+  border: 1px solid #ff4d4f;
+  color: #a8071a;
+  margin-bottom: 12px;
+  border-radius: 4px;
   font-size: 14px;
 }
 
-.process-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  padding: 16px;
-  border-radius: 12px;
-  margin-bottom: 14px;
+.visit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.visit-table th,
+.visit-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.visit-table th {
+  background: #121933;
+  text-align: left;
+}
+
+.visit-table button {
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Badge trạng thái */
+.badge-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.badge-status.completed {
+  background: #e6ffed;
+  color: #237804;
+}
+
+.badge-status.inprogress {
+  background: #fffbe6;
+  color: #ad8b00;
+}
+
+.badge-status.cancelled {
+  background: #fff1f0;
+  color: #a8071a;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 60px;
+  z-index: 999;
+}
+
+.modal {
+  background: #121933;
+  width: 700px;
+  max-width: 95%;
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 16px 20px 20px;
+}
+
+.modal-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  margin-bottom: 8px;
 }
 
-.process-left {
-  font-size: 16px;
-  font-weight: 600;
+.modal-header h3 {
+  margin: 0;
 }
 
-/* status chip */
-.process-status {
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
-  min-width: 110px;
-  text-align: center;
-}
-
-/* trạng thái theo đặc tả */
-.status-done {
-  background: #22c55e;  /* xanh lá */
-  color: #111;
-}
-
-.status-waiting {
-  background: #eab308; /* vàng */
-  color: #111;
-}
-
-.status-not-started {
-  background: #6b7280; /* xám */
-  color: #fff;
-}
-
-/* trạng thái khi chưa có dữ liệu */
-.process-empty {
-  padding: 20px;
-  text-align: center;
-  color: var(--muted);
-}
-/* ============================
-   ProcessStatus Navigation Buttons
-   ============================ */
-
-.process-nav {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 20px;
-}
-
-.process-btn {
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  background: #1f2a44;
-  border: 1px solid #2e3bff33;
-  color: var(--text);
+.close-btn {
+  border: none;
+  background: none;
+  font-size: 20px;
   cursor: pointer;
-  transition: 0.2s;
 }
 
-.process-btn:hover {
-  background: #2b3859;
+.modal-body {
+  font-size: 14px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.detail-row .label {
+  width: 140px;
+  font-weight: 600;
+}
+
+.detail-block {
+  margin-top: 8px;
+}
+
+.detail-block .label {
+  font-weight: 600;
 }
