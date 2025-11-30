@@ -134,6 +134,17 @@ export default function PatientDashboard() {
           Nhắn tin với bác sĩ (US8)
         </Link>
       </div>
+      <div style={{ marginTop: 18 }}>
+        <Link to="/notifications" className="link">
+          Thông báo chung từ bệnh viện (US7)
+        </Link>
+      </div>
+
+      <div style={{ marginTop: 18 }}>
+        <Link to="/chat" className="link">
+          Nhắn tin với bác sĩ (US8)
+        </Link>
+      </div>
     </div>
   );
 }
