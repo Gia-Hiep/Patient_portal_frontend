@@ -77,3 +77,5 @@ export async function putJson(path, body, options = {}) {
 
 export const getMyProfile = () => getJson("/api/profile/me");
 export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);
+export const getMyVisits = () => getJson("/api/visits");          // list
+export const getVisitDetail = (id) => getJson(`/api/visits/${id}`); // detail

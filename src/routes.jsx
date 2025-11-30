@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import VisitHistory from "./pages/VisitHistory";
 
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
@@ -29,6 +30,14 @@ export default function AppRoutes() {
         }
       />
       <Route path="/register" element={<Register />} />
+      <Route
+        path="/visits"
+        element={
+          <Protected>
+            <VisitHistory />
+          </Protected>
+        }
+      />
     </Routes>
   );
 }
