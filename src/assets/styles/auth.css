@@ -202,3 +202,129 @@ label {
   border-color: #2f6a46;
   background: #132019;
 }
+.visit-history {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.visit-history h2 {
+  margin-bottom: 16px;
+}
+
+.alert.error {
+  padding: 8px 12px;
+  background: #ffe6e6;
+  border: 1px solid #ff4d4f;
+  color: #a8071a;
+  margin-bottom: 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.visit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.visit-table th,
+.visit-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.visit-table th {
+  background: #121933;
+  text-align: left;
+}
+
+.visit-table button {
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* Badge trạng thái */
+.badge-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.badge-status.completed {
+  background: #e6ffed;
+  color: #237804;
+}
+
+.badge-status.inprogress {
+  background: #fffbe6;
+  color: #ad8b00;
+}
+
+.badge-status.cancelled {
+  background: #fff1f0;
+  color: #a8071a;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 60px;
+  z-index: 999;
+}
+
+.modal {
+  background: #121933;
+  width: 700px;
+  max-width: 95%;
+  border-radius: 6px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 16px 20px 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.modal-header h3 {
+  margin: 0;
+}
+
+.close-btn {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-body {
+  font-size: 14px;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 4px;
+}
+
+.detail-row .label {
+  width: 140px;
+  font-weight: 600;
+}
+
+.detail-block {
+  margin-top: 8px;
+}
+
+.detail-block .label {
+  font-weight: 600;
+}
