@@ -145,6 +145,12 @@ export default function PatientDashboard() {
           Nhắn tin với bác sĩ (US8)
         </Link>
       </div>
+
+      <div style={{ marginTop: 18 }}>
+        <Link to="/user-notifications" className="link">
+          Thông báo tự động (US5)
+        </Link>
+      </div>
     </div>
   );
 }

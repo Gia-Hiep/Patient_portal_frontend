@@ -2,6 +2,11 @@ import React, { useEffect, useState } from "react";
 import { getMyProfile, updateMyProfile } from "../services/api";
 import "../assets/styles/auth.css";
 import { useNavigate } from "react-router-dom";
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+} from "../services/userNotifications";
+
 export default function Profile() {
   const [form, setForm] = useState({
     fullName: "",
@@ -14,15 +19,20 @@ export default function Profile() {
     emergencyContactPhone: "",
   });
 
+  // Cài đặt: nhận thông báo tự động
+  const [autoNotifyEnabled, setAutoNotifyEnabled] = useState(true);
+
   const [viewName, setViewName] = useState("");
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [msg, setMsg] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     (async () => {
       try {
+        // 1. Lấy hồ sơ cá nhân
         const data = await getMyProfile();
         setForm({
           fullName: data.fullName || "",
@@ -35,6 +45,17 @@ export default function Profile() {
           emergencyContactPhone: data.emergencyContactPhone || "",
         });
         setViewName(data.fullName || data.email || "");
+
+        // 2. Lấy cài đặt thông báo
+        try {
+          const settings = await getNotificationSettings();
+          if (settings && typeof settings.autoNotifyEnabled === "boolean") {
+            setAutoNotifyEnabled(settings.autoNotifyEnabled);
+          }
+        } catch (e) {
+          // Nếu lỗi phần cài đặt thông báo thì bỏ qua, không chặn màn hình hồ sơ
+          console.warn("Không tải được cài đặt thông báo:", e);
+        }
       } catch (e) {
         setErr(e.message || "Không tải được hồ sơ");
       } finally {
@@ -51,9 +72,17 @@ export default function Profile() {
       return;
     }
     try {
+      // 1. Cập nhật thông tin hồ sơ
       const res = await updateMyProfile(form);
-      setMsg("Cập nhật thành công");
       setViewName(res.fullName || res.email || "");
+      // 2. Cập nhật cài đặt thông báo tự động
+      try {
+        await updateNotificationSettings({ autoNotifyEnabled });
+      } catch (e) {
+        console.warn("Không cập nhật được cài đặt thông báo:", e);
+      }
+
+      setMsg("Cập nhật thành công");
       setEditing(false);
     } catch (e) {
       setErr(e.message || "Cập nhật thất bại");
@@ -70,21 +99,25 @@ export default function Profile() {
 
   return (
     <div className="profile-wrap">
-    <div className="profile-topbar">
-  <button className="icon-btn" onClick={() => window.history.back()} title="Quay lại">
-    ←
-  </button>
+      <div className="profile-topbar">
+        <button
+          className="icon-btn"
+          onClick={() => window.history.back()}
+          title="Quay lại"
+        >
+          ←
+        </button>
 
-  <div className="title">HỒ SƠ CÁ NHÂN</div>
+        <div className="title">HỒ SƠ CÁ NHÂN</div>
 
-  {/* Nút trở về trang chủ */}
-  <button
-    className="chip-btn"
-    onClick={() => navigate("/")}
-    style={{ marginRight: "10px" }}
-  >
-    Trang chủ
-  </button>
+        {/* Nút trở về trang chủ */}
+        <button
+          className="chip-btn"
+          onClick={() => navigate("/")}
+          style={{ marginRight: "10px" }}
+        >
+          Trang chủ
+        </button>
 
         {!editing ? (
           <button
@@ -170,6 +203,32 @@ export default function Profile() {
           onChange={(v) => setForm({ ...form, insuranceNumber: v })}
           disabled={!editing}
         />
+
+        {/* ===== CÀI ĐẶT THÔNG BÁO TỰ ĐỘNG ===== */}
+        <div className="section-title">Cài đặt thông báo</div>
+
+        <div className="pf-field">
+          <label>Nhận thông báo tự động</label>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              marginTop: 4,
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={autoNotifyEnabled}
+              onChange={(e) => setAutoNotifyEnabled(e.target.checked)}
+              disabled={!editing}
+            />
+            <span style={{ fontSize: 13, opacity: 0.8 }}>
+              Khi bật, hệ thống sẽ gửi thông báo về kết quả xét nghiệm, lịch
+              khám và nhắc tái khám.
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );

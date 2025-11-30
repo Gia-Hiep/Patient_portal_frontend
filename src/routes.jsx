@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import VisitHistory from "./pages/VisitHistory";
 import Notifications from "./pages/Notifications";
+import UserNotifications from "./pages/UserNotifications";
 
 // ⭐ THÊM IMPORT
 import ProcessStatus from "./pages/ProcessStatus";
@@ -41,6 +42,9 @@ export default function AppRoutes() {
         element={
           <Protected>
             <VisitHistory />
+          </Protected>
+        }
+      ></Route>
       <Route
         path="/profile"
         element={
@@ -59,12 +63,11 @@ export default function AppRoutes() {
         }
       />
 
-      {/* ⭐ THÊM ROUTE QUY TRÌNH KHÁM */}
       <Route
-        path="/process-tracking"
+        path="/user-notifications"
         element={
           <Protected>
-            <ProcessStatus />
+            <UserNotifications />
           </Protected>
         }
       />
