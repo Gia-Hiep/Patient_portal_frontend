@@ -1,7 +1,9 @@
+// src/components/Header.jsx  (AppHeader)
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
+import NotificationBell from "./NotificationBell";
 
 export default function AppHeader() {
   const dispatch = useDispatch();
@@ -10,9 +12,11 @@ export default function AppHeader() {
   const role = useSelector((s) => s.auth.role);
 
   const title =
-    role === "ADMIN" ? "Quản trị hệ thống" :
-    role === "DOCTOR" ? "Bác sĩ" :
-    "Bệnh nhân";
+    role === "ADMIN"
+      ? "Quản trị hệ thống"
+      : role === "DOCTOR"
+      ? "Bác sĩ"
+      : "Bệnh nhân";
 
   const onLogout = () => {
     dispatch(logout());
@@ -20,24 +24,32 @@ export default function AppHeader() {
   };
 
   return (
-    <header style={{
-      width: "100%",
-      padding: "12px 24px",
-      background: "#0f1422",
-      borderBottom: "1px solid #222",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      position: "sticky",
-      top: 0,
-      zIndex: 99
-    }}>
-      <h2 style={{ margin: 0 }}>{title}</h2>
+    <header
+      style={{
+        // 🔥 Thu nhỏ header thành 1 “pill” cố định góc trên bên phải
+        position: "fixed",
+        top: 20,
+        right: 24,
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        padding: "8px 16px",
+        borderRadius: 999,
+        background: "rgba(15, 20, 34, 0.95)",
+        boxShadow: "0 6px 18px rgba(0,0,0,0.45)",
+        zIndex: 100,
+      }}
+    >
+      <span style={{ fontWeight: 600, color: "#fff" }}>{title}</span>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ color: "#bbb" }}>{user?.username}</span>
-        <button className="btn small" onClick={onLogout}>Đăng xuất</button>
-      </div>
+      {/* Chuông thông báo + badge */}
+      <NotificationBell />
+
+      <span style={{ color: "#bbb" }}>{user?.username}</span>
+
+      <button className="btn small" onClick={onLogout}>
+        Đăng xuất
+      </button>
     </header>
   );
 }

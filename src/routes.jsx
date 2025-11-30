@@ -7,6 +7,7 @@ import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
+import UserNotifications from "./pages/UserNotifications";
 
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
@@ -50,6 +51,15 @@ export default function AppRoutes() {
         element={
           <Protected>
             <Notifications />
+          </Protected>
+        }
+      />
+
+      <Route
+        path="/user-notifications"
+        element={
+          <Protected>
+            <UserNotifications />
           </Protected>
         }
       />
