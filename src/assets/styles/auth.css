@@ -328,3 +328,140 @@ label {
 .detail-block .label {
   font-weight: 600;
 }
+/* ============================
+   UI: Process Status (Quy trình khám)
+   ============================ */
+
+.process-wrap {
+  padding: 24px;
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--text);
+}
+
+.process-title {
+  margin-bottom: 8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.process-desc {
+  margin-bottom: 16px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.process-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+.process-left {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* status chip */
+.process-status {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  min-width: 110px;
+  text-align: center;
+}
+
+/* trạng thái theo đặc tả */
+.status-done {
+  background: #22c55e;  /* xanh lá */
+  color: #111;
+}
+
+.status-waiting {
+  background: #eab308; /* vàng */
+  color: #111;
+}
+
+.status-not-started {
+  background: #6b7280; /* xám */
+  color: #fff;
+}
+
+/* trạng thái khi chưa có dữ liệu */
+.process-empty {
+  padding: 20px;
+  text-align: center;
+  color: var(--muted);
+}
+/* ============================
+   MENU CÁC CHỨC NĂNG BÊN TRÁI
+   ============================ */
+
+.process-layout {
+  display: flex;
+  gap: 24px;
+}
+
+.process-menu {
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 70px;  
+}
+
+.menu-btn {
+  padding: 12px;
+  text-align: center;
+  border-radius: 10px;
+  background: #1f2a44;
+  border: 1px solid #2e3bff33;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  text-decoration: none;
+}
+
+.menu-btn:hover {
+  background: #2c3757;
+}
+
+/* Mobile responsive */
+@media (max-width: 720px) {
+  .process-layout {
+    flex-direction: column;
+  }
+
+  .process-menu {
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .menu-btn {
+    flex: 1;
+  }
+}
+.process-btn-top {
+  background: #1f2a44;
+  padding: 8px 16px;
+  border-radius: 10px;
+  color: #cfe3ff;
+  border: 1px solid #2e3bff33;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+}
+.process-btn-top:hover {
+  background: #28375c;
+}

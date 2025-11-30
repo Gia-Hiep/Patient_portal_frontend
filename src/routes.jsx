@@ -8,8 +8,6 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import VisitHistory from "./pages/VisitHistory";
 import Notifications from "./pages/Notifications";
-
-// ⭐ THÊM IMPORT
 import ProcessStatus from "./pages/ProcessStatus";
 
 function Protected({ children }) {
@@ -23,10 +21,12 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
+      {/* Public routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/register" element={<Register />} />
 
+      {/* Dashboard */}
       <Route
         path="/dashboard"
         element={
@@ -35,12 +35,18 @@ export default function AppRoutes() {
           </Protected>
         }
       />
-      <Route path="/register" element={<Register />} />
+
+      {/* Visit history */}
       <Route
         path="/visits"
         element={
           <Protected>
             <VisitHistory />
+          </Protected>
+        }
+      />
+
+      {/* Profile */}
       <Route
         path="/profile"
         element={
@@ -50,6 +56,7 @@ export default function AppRoutes() {
         }
       />
 
+      {/* Notifications */}
       <Route
         path="/notifications"
         element={
@@ -59,7 +66,7 @@ export default function AppRoutes() {
         }
       />
 
-      {/* ⭐ THÊM ROUTE QUY TRÌNH KHÁM */}
+      {/* Process Tracking */}
       <Route
         path="/process-tracking"
         element={
