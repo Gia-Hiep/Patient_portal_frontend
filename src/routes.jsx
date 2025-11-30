@@ -44,7 +44,7 @@ export default function AppRoutes() {
             <VisitHistory />
           </Protected>
         }
-      ></Route>
+      />
       <Route
         path="/profile"
         element={
