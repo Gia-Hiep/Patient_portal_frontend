@@ -6,8 +6,12 @@ import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import Profile from "./pages/Profile";
+import VisitHistory from "./pages/VisitHistory";
 import Notifications from "./pages/Notifications";
 import UserNotifications from "./pages/UserNotifications";
+
+// ⭐ THÊM IMPORT
+import ProcessStatus from "./pages/ProcessStatus";
 
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
@@ -18,15 +22,12 @@ function Protected({ children }) {
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Redirect root → dashboard */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      {/* Public routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Protected routes */}
       <Route
         path="/dashboard"
         element={
@@ -35,7 +36,15 @@ export default function AppRoutes() {
           </Protected>
         }
       />
-
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/visits"
+        element={
+          <Protected>
+            <VisitHistory />
+          </Protected>
+        }
+      ></Route>
       <Route
         path="/profile"
         element={
@@ -45,7 +54,6 @@ export default function AppRoutes() {
         }
       />
 
-      {/* 🆕 THÊM ROUTE THÔNG BÁO */}
       <Route
         path="/notifications"
         element={

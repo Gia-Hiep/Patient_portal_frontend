@@ -22,7 +22,7 @@ export default function PatientDashboard() {
         setSum((prev) => ({ ...prev, ...res }));
       } catch {
         setSum({
-          visits: 12,
+          visits: 4,
           labResultsReady: 1,
           unreadNoti: 2,
           unpaidInvoices: 0,
@@ -42,16 +42,17 @@ export default function PatientDashboard() {
     <div className="auth-card" style={{ maxWidth: 1024 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <h2 style={{ margin: 0, flex: 1 }}>Patient Dashboard</h2>
+
         <Link to="/profile" className="chip-btn">
           Hồ sơ cá nhân
-        </Link>{" "}
-        {}
+        </Link>
       </div>
 
       <p className="muted">
-        Xin chào, {user?.username}. Đây là tổng quan các chức năng của bạn.
+        Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.
       </p>
 
+      {/* Cards */}
       <div
         style={{
           display: "grid",
@@ -61,23 +62,26 @@ export default function PatientDashboard() {
         }}
       >
         <DashCard
-          title="Lần khám đã lưu"
+          title="Lịch sử khám bệnh"
           value={sum.visits}
-          sub="Tra cứu lịch sử khám (US2)"
-          to="/records"
+          sub="Xem lịch sử khám & chi tiết (US2)"
+          to="/visits"
         />
+
         <DashCard
-          title="KQ xét nghiệm mới"
+          title="Kết quả xét nghiệm mới"
           value={sum.labResultsReady}
           sub="Xem / tải PDF (US3)"
           to="/lab-results"
         />
+
         <DashCard
           title="Thông báo chưa đọc"
           value={sum.unreadNoti}
-          sub="Thông báo tự động (US5/7)"
+          sub="Thông báo tự động (US5/US7)"
           to="/notifications"
         />
+
         <DashCard
           title="Hóa đơn chưa thanh toán"
           value={sum.unpaidInvoices}
@@ -86,6 +90,7 @@ export default function PatientDashboard() {
         />
       </div>
 
+      {/* Next appointment */}
       <div
         style={{
           marginTop: 24,
@@ -96,8 +101,9 @@ export default function PatientDashboard() {
         }}
       >
         <div style={{ fontWeight: 600, marginBottom: 8 }}>
-          Lịch khám sắp tới (US1/US4)
+          Lịch khám sắp tới (US1 / US4)
         </div>
+
         {loading ? (
           <div className="muted">Đang tải…</div>
         ) : sum.nextAppointment ? (
@@ -122,6 +128,7 @@ export default function PatientDashboard() {
         )}
       </div>
 
+      {/* Chat */}
       <div style={{ marginTop: 18 }}>
         <Link to="/chat" className="link">
           Nhắn tin với bác sĩ (US8)
