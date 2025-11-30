@@ -8,6 +8,9 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 
+// ⭐ THÊM IMPORT
+import ProcessStatus from "./pages/ProcessStatus";
+
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
   if (!token) return <Navigate to="/login" replace />;
@@ -17,15 +20,12 @@ function Protected({ children }) {
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Redirect root → dashboard */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      {/* Public routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Protected routes */}
       <Route
         path="/dashboard"
         element={
@@ -44,12 +44,21 @@ export default function AppRoutes() {
         }
       />
 
-      {/* 🆕 THÊM ROUTE THÔNG BÁO */}
       <Route
         path="/notifications"
         element={
           <Protected>
             <Notifications />
+          </Protected>
+        }
+      />
+
+      {/* ⭐ THÊM ROUTE QUY TRÌNH KHÁM */}
+      <Route
+        path="/process-tracking"
+        element={
+          <Protected>
+            <ProcessStatus />
           </Protected>
         }
       />
