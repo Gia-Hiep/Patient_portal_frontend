@@ -2,36 +2,78 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import DashCard from "../../components/DashCard";
-import { fetchPatientSummary } from "../../services/dashboard";
+import { getMyVisits, getVisitDetail } from "../../services/api";
 
 export default function PatientDashboard() {
   const user = useSelector((s) => s.auth.user);
+
   const [sum, setSum] = useState({
     visits: 0,
     labResultsReady: 0,
-    unreadNoti: 0,
-    unpaidInvoices: 0,
+    imagingCount: 0,
+    unreadNoti: 0, // TODO: gắn API khi có
+    unpaidInvoices: 0, // TODO: gắn API khi có
     nextAppointment: null,
   });
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetchPatientSummary();
-        setSum((prev) => ({ ...prev, ...res }));
-      } catch {
-        setSum({
-          visits: 4,
-          labResultsReady: 1,
-          unreadNoti: 2,
-          unpaidInvoices: 0,
-          nextAppointment: {
-            time: "10:30 - 21/11",
-            clinic: "Tai–Mũi–Họng",
-            status: "Đang chờ",
-          },
+        setError("");
+        setLoading(true);
+
+        // 1) Lấy danh sách lần khám
+        const visits = await getMyVisits(); // [{ id, visitDate, ... }]
+        const visitCount = Array.isArray(visits) ? visits.length : 0;
+
+        // 2) Lấy chi tiết từng lần khám để gom tài liệu
+        //    (LAB/IMAGING có trong VisitDetailDTO.documents)
+        const details = await Promise.all(
+          (visits || []).map((v) => getVisitDetail(v.id).catch(() => null))
+        );
+
+        let lab = 0;
+        let imaging = 0;
+
+        (details || []).forEach((d) => {
+          if (!d || !Array.isArray(d.documents)) return;
+          d.documents.forEach((doc) => {
+            const t = (doc?.type || doc?.docType || "").toUpperCase();
+            if (t === "LAB") lab += 1;
+            if (t === "IMAGING") imaging += 1;
+          });
         });
+
+        // 3) Xác định lịch khám sắp tới (gần nhất trong tương lai)
+        const now = new Date();
+        const futureVisits = (visits || [])
+          .map((v) => ({ ...v, _dt: new Date(v.visitDate) }))
+          .filter((v) => !isNaN(v._dt) && v._dt > now)
+          .sort((a, b) => a._dt - b._dt);
+
+        let nextAppointment = null;
+        if (futureVisits.length > 0) {
+          const nxt = futureVisits[0];
+          nextAppointment = {
+            time: nxt.visitDate, // có thể format lại nếu muốn đẹp hơn
+            clinic: nxt.department || "Chưa cập nhật",
+            status: nxt.status || "Sắp diễn ra",
+          };
+        }
+
+        setSum((prev) => ({
+          ...prev,
+          visits: visitCount,
+          labResultsReady: lab,
+          imagingCount: imaging,
+          nextAppointment,
+          // unreadNoti, unpaidInvoices giữ nguyên 0 cho tới khi có API
+        }));
+      } catch (e) {
+        console.error(e);
+        setError(e?.message || "Không tải được tổng quan bệnh nhân.");
       } finally {
         setLoading(false);
       }
@@ -52,6 +94,12 @@ export default function PatientDashboard() {
         Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.
       </p>
 
+      {error && (
+        <div className="alert error" style={{ marginTop: 8 }}>
+          {error}
+        </div>
+      )}
+
       {/* Cards */}
       <div
         style={{
@@ -62,17 +110,10 @@ export default function PatientDashboard() {
         }}
       >
         <DashCard
-          title="Lịch sử khám bệnh"
+          title="Lịch sử khám bệnh + Xem tải PDF"
           value={sum.visits}
-          sub="Xem lịch sử khám & chi tiết (US2)"
+          sub="Xem lịch sử khám & chi tiết "
           to="/visits"
-        />
-
-        <DashCard
-          title="Kết quả xét nghiệm mới"
-          value={sum.labResultsReady}
-          sub="Xem / tải PDF (US3)"
-          to="/lab-results"
         />
 
         <DashCard
@@ -128,7 +169,7 @@ export default function PatientDashboard() {
         )}
       </div>
 
-      {/* Chat */}
+      {/* Links khác */}
       <div style={{ marginTop: 18 }}>
         <Link to="/chat" className="link">
           Nhắn tin với bác sĩ (US8)
@@ -139,13 +180,6 @@ export default function PatientDashboard() {
           Thông báo chung từ bệnh viện (US7)
         </Link>
       </div>
-
-      <div style={{ marginTop: 18 }}>
-        <Link to="/chat" className="link">
-          Nhắn tin với bác sĩ (US8)
-        </Link>
-      </div>
-
       <div style={{ marginTop: 18 }}>
         <Link to="/user-notifications" className="link">
           Thông báo tự động (US5)
