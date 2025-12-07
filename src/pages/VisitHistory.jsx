@@ -198,7 +198,9 @@ export default function VisitHistory() {
 
                 <hr />
                 <div className="detail-block">
-                  <div className="label">Chẩn đoán chi tiết / Lịch sử điều trị:</div>
+                  <div className="label">
+                    Chẩn đoán chi tiết / Lịch sử điều trị:
+                  </div>
                   <p>{detail.diagnosisDetail || "—"}</p>
                 </div>
                 <hr />
@@ -216,7 +218,9 @@ export default function VisitHistory() {
                             className="chip-btn"
                             onClick={() =>
                               viewPdf(
-                                `${process.env.REACT_APP_API_BASE_URL || "http://localhost:8080"
+                                `${
+                                  process.env.REACT_APP_API_BASE_URL ||
+                                  "http://localhost:8080"
                                 }/api/documents/${doc.id}/view`
                               )
                             }
@@ -228,7 +232,9 @@ export default function VisitHistory() {
                             className="chip-btn"
                             onClick={() =>
                               downloadPdf(
-                                `${process.env.REACT_APP_API_BASE_URL || "http://localhost:8080"
+                                `${
+                                  process.env.REACT_APP_API_BASE_URL ||
+                                  "http://localhost:8080"
                                 }/api/documents/${doc.id}/download`,
                                 `${doc.title || "document"}.pdf`
                               )
@@ -257,11 +263,7 @@ export default function VisitHistory() {
                 ×
               </button>
             </div>
-            <iframe
-              src={pdfSrc}
-              title="PDF"
-              style={{ width: "100%", height: "80vh", border: "none" }}
-            />
+            <iframe src={pdfSrc} title="PDF" className="pdf-frame" />
           </div>
         </div>
       )}

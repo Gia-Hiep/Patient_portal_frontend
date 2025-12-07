@@ -465,3 +465,70 @@ label {
 .detail-block .label {
   font-weight: 600;
 }
+/* Modal responsive chung */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #0f1422;
+  border: 1px solid #223;
+  border-radius: 16px;
+  width: min(960px, 92vw);         /* rộng tối đa, co theo màn hình */
+  max-height: 92vh;                /* cao tối đa theo viewport */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;                 /* ẩn tràn, body sẽ scroll */
+  box-shadow: 0 14px 40px rgba(0,0,0,.6);
+}
+
+.modal-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #223;
+  position: sticky; top: 0; z-index: 2;
+  background: #0f1422;             /* giữ header luôn visible khi scroll nội dung */
+}
+
+.modal-body {
+  padding: 16px;
+  overflow: auto;                   /* phần nội dung cuộn thay vì phải zoom trình duyệt */
+}
+
+/* Bảng trong modal cuộn ngang nếu hẹp */
+.table-wrap {
+  width: 100%;
+  overflow: auto;
+}
+
+/* Khung iframe xem PDF co giãn theo viewport */
+.pdf-frame {
+  width: 100%;
+  height: 72vh;                     /* vừa khung modal, để lại chỗ cho header/footer */
+  border: none;
+}
+
+/* Vùng chứa Stripe PaymentElement cũng cuộn được nếu cao */
+.payment-container {
+  max-height: 65vh;
+  overflow: auto;
+  padding: 8px;
+  border: 1px dashed #244;
+  border-radius: 12px;
+}
+
+/* Backdrop chiếm full màn hình và scroll nếu nội dung vượt */
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6vh 2vw;                 /* tạo đệm để modal không chạm mép */
+  overflow: auto;                   /* nếu modal cao hơn -> backdrop cuộn */
+}
+
+/* Mobile tối ưu hơn */
+@media (max-width: 640px) {
+  .modal { width: 94vw; max-height: 94vh; border-radius: 12px; }
+  .pdf-frame { height: 68vh; }
+}

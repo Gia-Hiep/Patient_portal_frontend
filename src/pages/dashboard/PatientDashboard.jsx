@@ -3,6 +3,9 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import DashCard from "../../components/DashCard";
 import { getMyVisits, getVisitDetail } from "../../services/api";
+import { listInvoices } from "../../services/billing";
+
+const vnd = (n) => Number(n || 0).toLocaleString("vi-VN") + " ₫";
 
 export default function PatientDashboard() {
   const user = useSelector((s) => s.auth.user);
@@ -11,8 +14,11 @@ export default function PatientDashboard() {
     visits: 0,
     labResultsReady: 0,
     imagingCount: 0,
-    unreadNoti: 0, // TODO: gắn API khi có
-    unpaidInvoices: 0, // TODO: gắn API khi có
+    unreadNoti: 0,
+    // billing
+    invoicesTotal: 0,
+    invoicesUnpaid: 0,
+    unpaidAmount: 0,
     nextAppointment: null,
   });
   const [loading, setLoading] = useState(true);
@@ -24,29 +30,25 @@ export default function PatientDashboard() {
         setError("");
         setLoading(true);
 
-        // 1) Lấy danh sách lần khám
+        // ===== Visits & documents =====
         const visits = await getMyVisits(); // [{ id, visitDate, ... }]
         const visitCount = Array.isArray(visits) ? visits.length : 0;
 
-        // 2) Lấy chi tiết từng lần khám để gom tài liệu
-        //    (LAB/IMAGING có trong VisitDetailDTO.documents)
         const details = await Promise.all(
           (visits || []).map((v) => getVisitDetail(v.id).catch(() => null))
         );
 
-        let lab = 0;
-        let imaging = 0;
-
+        let lab = 0,
+          imaging = 0;
         (details || []).forEach((d) => {
-          if (!d || !Array.isArray(d.documents)) return;
-          d.documents.forEach((doc) => {
+          (d?.documents || []).forEach((doc) => {
             const t = (doc?.type || doc?.docType || "").toUpperCase();
             if (t === "LAB") lab += 1;
             if (t === "IMAGING") imaging += 1;
           });
         });
 
-        // 3) Xác định lịch khám sắp tới (gần nhất trong tương lai)
+        // ===== Next appointment =====
         const now = new Date();
         const futureVisits = (visits || [])
           .map((v) => ({ ...v, _dt: new Date(v.visitDate) }))
@@ -57,11 +59,24 @@ export default function PatientDashboard() {
         if (futureVisits.length > 0) {
           const nxt = futureVisits[0];
           nextAppointment = {
-            time: nxt.visitDate, // có thể format lại nếu muốn đẹp hơn
+            time: nxt.visitDate,
             clinic: nxt.department || "Chưa cập nhật",
             status: nxt.status || "Sắp diễn ra",
           };
         }
+
+        // ===== Billing (tổng hóa đơn & tổng tiền chưa thanh toán) =====
+        const invoices = await listInvoices(); // [{id, invoiceNo, totalAmount, status}, ...]
+        const invoicesTotal = Array.isArray(invoices) ? invoices.length : 0;
+
+        let invoicesUnpaid = 0;
+        let unpaidAmount = 0;
+        (invoices || []).forEach((iv) => {
+          if (String(iv.status).toUpperCase() === "UNPAID") {
+            invoicesUnpaid += 1;
+            unpaidAmount += Number(iv.totalAmount || 0);
+          }
+        });
 
         setSum((prev) => ({
           ...prev,
@@ -69,7 +84,9 @@ export default function PatientDashboard() {
           labResultsReady: lab,
           imagingCount: imaging,
           nextAppointment,
-          // unreadNoti, unpaidInvoices giữ nguyên 0 cho tới khi có API
+          invoicesTotal,
+          invoicesUnpaid,
+          unpaidAmount,
         }));
       } catch (e) {
         console.error(e);
@@ -84,7 +101,6 @@ export default function PatientDashboard() {
     <div className="auth-card" style={{ maxWidth: 1024 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <h2 style={{ margin: 0, flex: 1 }}>Patient Dashboard</h2>
-
         <Link to="/profile" className="chip-btn">
           Hồ sơ cá nhân
         </Link>
@@ -100,7 +116,6 @@ export default function PatientDashboard() {
         </div>
       )}
 
-      {/* Cards */}
       <div
         style={{
           display: "grid",
@@ -110,10 +125,20 @@ export default function PatientDashboard() {
         }}
       >
         <DashCard
-          title="Lịch sử khám bệnh + Xem tải PDF"
+          title="Lịch sử khám bệnh + Xem/Tải PDF"
           value={sum.visits}
-          sub="Xem lịch sử khám & chi tiết "
+          sub="Xem lịch sử khám & chi tiết"
           to="/visits"
+        />
+
+        {/* Tổng hóa đơn */}
+        <DashCard
+          title="Hóa đơn viện phí"
+          value={sum.invoicesTotal}
+          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(
+            sum.unpaidAmount
+          )}`}
+          to="/billing"
         />
 
         <DashCard
@@ -121,13 +146,6 @@ export default function PatientDashboard() {
           value={sum.unreadNoti}
           sub="Thông báo tự động (US5/US7)"
           to="/notifications"
-        />
-
-        <DashCard
-          title="Hóa đơn chưa thanh toán"
-          value={sum.unpaidInvoices}
-          sub="Thanh toán online (US6)"
-          to="/billing"
         />
       </div>
 
