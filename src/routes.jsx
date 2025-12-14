@@ -9,7 +9,7 @@ import Profile from "./pages/Profile";
 import VisitHistory from "./pages/VisitHistory";
 import Notifications from "./pages/Notifications";
 import UserNotifications from "./pages/UserNotifications";
-
+import Billing from "./pages/Billing";
 // ⭐ THÊM IMPORT
 import ProcessStatus from "./pages/ProcessStatus";
 
@@ -71,7 +71,14 @@ export default function AppRoutes() {
           </Protected>
         }
       />
-      
+      <Route
+        path="/billing"
+        element={
+          <Protected>
+            <Billing />
+          </Protected>
+        }
+      />
     </Routes>
   );
 }
