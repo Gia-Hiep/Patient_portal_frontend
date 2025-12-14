@@ -302,31 +302,33 @@ export default function Billing() {
                   flexWrap: "wrap",
                 }}
               >
-                {detail.documentId ? (
-                  <>
-                    <button
-                      className="chip-btn"
-                      onClick={() => viewPdf(detail.documentId)}
-                    >
-                      Xem hóa đơn PDF
-                    </button>
-                    <button
-                      className="chip-btn"
-                      onClick={() =>
-                        downloadPdf(
-                          detail.documentId,
-                          `${detail.invoiceNo || "invoice"}.pdf`
-                        )
-                      }
-                    >
-                      Tải hóa đơn
-                    </button>
-                  </>
-                ) : (
-                  <span className="muted">
-                    Chưa có file PDF cho hóa đơn này.
-                  </span>
-                )}
+                {detail.status === "PAID" ? (
+                  detail.documentId ? (
+                    <>
+                      <button
+                        className="chip-btn"
+                        onClick={() => viewPdf(detail.documentId)}
+                      >
+                        Xem hóa đơn PDF
+                      </button>
+                      <button
+                        className="chip-btn"
+                        onClick={() =>
+                          downloadPdf(
+                            detail.documentId,
+                            `${detail.invoiceNo || "invoice"}.pdf`
+                          )
+                        }
+                      >
+                        Tải hóa đơn
+                      </button>
+                    </>
+                  ) : (
+                    <span className="muted">
+                      Chưa có file PDF cho hóa đơn này.
+                    </span>
+                  )
+                ) : null}
 
                 {detail.status !== "PAID" && !clientSecret && (
                   <button
