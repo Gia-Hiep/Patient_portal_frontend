@@ -42,18 +42,6 @@ public class KiemThuPatientPortal extends Init {
 		    System.out.println("TEST FAILED: Không tìm thấy thông báo.");
 		}
 
-		/*
-		WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-
-		WebElement message = wait.until(ExpectedConditions
-				.visibilityOfElementLocated(By.xpath("//p[contains(text(),'Bạn chưa có lịch sử khám bệnh nào.')]")));
-
-		String actualText = message.getText();
-
-		assert actualText.equals("Bạn chưa có lịch sử khám bệnh nào.");
-		System.out.println("TEST PASSED: Có xuất hiện thông báo không có lịch sử khám bệnh.");
-		*/
-		
 		Thread.sleep(2000);
 		driver.findElement(By.xpath("//button[contains(text(),'Trang chủ')]")).click();
 		
