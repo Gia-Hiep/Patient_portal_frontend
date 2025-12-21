@@ -10,7 +10,9 @@ import VisitHistory from "./pages/VisitHistory";
 import Notifications from "./pages/Notifications";
 import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
-// ⭐ THÊM IMPORT
+import ChatPatient from "./pages/ChatPatient";
+import ChatDoctor from "./pages/ChatDoctor";
+
 import ProcessStatus from "./pages/ProcessStatus";
 
 function Protected({ children }) {
@@ -76,6 +78,22 @@ export default function AppRoutes() {
         element={
           <Protected>
             <Billing />
+          </Protected>
+        }
+      />
+      <Route
+        path="/chat"
+        element={
+          <Protected>
+            <ChatPatient />
+          </Protected>
+        }
+      />
+      <Route
+        path="/doctor-chat"
+        element={
+          <Protected>
+            <ChatDoctor />
           </Protected>
         }
       />
