@@ -107,7 +107,7 @@ export default function PatientDashboard() {
       </div>
 
       <p className="muted">
-        Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.
+        Xin chào, {user?.username}. Đây là thông tin tổng quan sức khỏe của bạn.
       </p>
 
       {error && (
