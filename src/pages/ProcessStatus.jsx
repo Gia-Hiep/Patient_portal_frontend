@@ -58,7 +58,7 @@ export default function ProcessStatus() {
           <div className="process-menu">
             <Link to="/records" className="menu-btn">Lịch khám</Link>
             <Link to="/lab-results" className="menu-btn">Kết quả</Link>
-            <Link to="/notifications" className="menu-btn">Thông báo</Link>
+            <Link to="/autonotifications" className="menu-btn">Thông báo</Link>
             <Link to="/chat" className="menu-btn">Tin nhắn</Link>
             <Link to="/billing" className="menu-btn">Viện phí</Link>
 
@@ -88,7 +88,7 @@ export default function ProcessStatus() {
       <div className="process-menu">
         <Link to="/records" className="menu-btn">Lịch khám</Link>
         <Link to="/lab-results" className="menu-btn">Kết quả</Link>
-        <Link to="/notifications" className="menu-btn">Thông báo</Link>
+        <Link to="/autonotifications" className="menu-btn">Thông báo</Link>
         <Link to="/chat" className="menu-btn">Tin nhắn</Link>
         <Link to="/billing" className="menu-btn">Viện phí</Link>
 

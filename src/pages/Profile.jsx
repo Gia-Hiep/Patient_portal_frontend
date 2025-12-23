@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { getMyProfile, updateMyProfile } from "../services/api";
+import {
+  getAutoNotificationSetting,
+  updateAutoNotificationSetting,
+} from "../services/notificationSetting";
 import "../assets/styles/auth.css";
 import { useNavigate } from "react-router-dom";
+
 export default function Profile() {
   const [form, setForm] = useState({
     fullName: "",
@@ -19,22 +24,37 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [msg, setMsg] = useState(null);
+
+  // 🔔 AUTO NOTIFICATION SETTING
+  const [autoNotifyEnabled, setAutoNotifyEnabled] = useState(true);
+  const [savingNotify, setSavingNotify] = useState(false);
+
   const navigate = useNavigate();
+
+  // =========================
+  // LOAD PROFILE + SETTING
+  // =========================
   useEffect(() => {
     (async () => {
       try {
-        const data = await getMyProfile();
+        const [profile, notifySetting] = await Promise.all([
+          getMyProfile(),
+          getAutoNotificationSetting(),
+        ]);
+
         setForm({
-          fullName: data.fullName || "",
-          dateOfBirth: data.dateOfBirth || "",
-          address: data.address || "",
-          phone: data.phone || "",
-          email: data.email || "",
-          insuranceNumber: data.insuranceNumber || "",
-          emergencyContactName: data.emergencyContactName || "",
-          emergencyContactPhone: data.emergencyContactPhone || "",
+          fullName: profile.fullName || "",
+          dateOfBirth: profile.dateOfBirth || "",
+          address: profile.address || "",
+          phone: profile.phone || "",
+          email: profile.email || "",
+          insuranceNumber: profile.insuranceNumber || "",
+          emergencyContactName: profile.emergencyContactName || "",
+          emergencyContactPhone: profile.emergencyContactPhone || "",
         });
-        setViewName(data.fullName || data.email || "");
+
+        setViewName(profile.fullName || profile.email || "");
+        setAutoNotifyEnabled(!!notifySetting?.enabled);
       } catch (e) {
         setErr(e.message || "Không tải được hồ sơ");
       } finally {
@@ -43,13 +63,18 @@ export default function Profile() {
     })();
   }, []);
 
+  // =========================
+  // SAVE PROFILE
+  // =========================
   const save = async () => {
     setErr(null);
     setMsg(null);
+
     if (!form.fullName) {
       setErr("Vui lòng nhập Họ tên");
       return;
     }
+
     try {
       const res = await updateMyProfile(form);
       setMsg("Cập nhật thành công");
@@ -57,6 +82,24 @@ export default function Profile() {
       setEditing(false);
     } catch (e) {
       setErr(e.message || "Cập nhật thất bại");
+    }
+  };
+
+  // =========================
+  // TOGGLE AUTO NOTIFICATION
+  // =========================
+  const toggleAutoNotify = async (checked) => {
+    setAutoNotifyEnabled(checked);
+
+    try {
+      setSavingNotify(true);
+      await updateAutoNotificationSetting(checked);
+    } catch (e) {
+      // revert nếu lỗi
+      setAutoNotifyEnabled(!checked);
+      alert("Lưu cài đặt thông báo thất bại");
+    } finally {
+      setSavingNotify(false);
     }
   };
 
@@ -70,21 +113,25 @@ export default function Profile() {
 
   return (
     <div className="profile-wrap">
-    <div className="profile-topbar">
-  <button className="icon-btn" onClick={() => window.history.back()} title="Quay lại">
-    ←
-  </button>
+      {/* TOP BAR */}
+      <div className="profile-topbar">
+        <button
+          className="icon-btn"
+          onClick={() => window.history.back()}
+          title="Quay lại"
+        >
+          ←
+        </button>
 
-  <div className="title">HỒ SƠ CÁ NHÂN</div>
+        <div className="title">HỒ SƠ CÁ NHÂN</div>
 
-  {/* Nút trở về trang chủ */}
-  <button
-    className="chip-btn"
-    onClick={() => navigate("/")}
-    style={{ marginRight: "10px" }}
-  >
-    Trang chủ
-  </button>
+        <button
+          className="chip-btn"
+          onClick={() => navigate("/")}
+          style={{ marginRight: "10px" }}
+        >
+          Trang chủ
+        </button>
 
         {!editing ? (
           <button
@@ -104,6 +151,7 @@ export default function Profile() {
         )}
       </div>
 
+      {/* BODY */}
       <div className="profile-body">
         <div className="avatar"></div>
         <div className="name-line">{viewName}</div>
@@ -111,6 +159,36 @@ export default function Profile() {
         {err && <div className="alert">{err}</div>}
         {msg && <div className="alert success">{msg}</div>}
 
+        {/* ===================== */}
+        {/* CÀI ĐẶT THÔNG BÁO */}
+        {/* ===================== */}
+        <div className="section-title">Cài đặt thông báo</div>
+
+        <div
+          className="pf-field"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <label>Thông báo tự động</label>
+          <input
+            type="checkbox"
+            checked={autoNotifyEnabled}
+            disabled={savingNotify}
+            onChange={(e) => toggleAutoNotify(e.target.checked)}
+            style={{ width: 18, height: 18 }}
+          />
+        </div>
+
+        <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 16 }}>
+          Khi bật, hệ thống sẽ hiển thị popup khi có thông báo mới.
+        </div>
+
+        {/* ===================== */}
+        {/* THÔNG TIN CÁ NHÂN */}
+        {/* ===================== */}
         <ProfileField
           label="Họ Tên"
           value={form.fullName}
@@ -153,13 +231,17 @@ export default function Profile() {
           <ProfileField
             label="Họ tên"
             value={form.emergencyContactName}
-            onChange={(v) => setForm({ ...form, emergencyContactName: v })}
+            onChange={(v) =>
+              setForm({ ...form, emergencyContactName: v })
+            }
             disabled={!editing}
           />
           <ProfileField
             label="SĐT"
             value={form.emergencyContactPhone}
-            onChange={(v) => setForm({ ...form, emergencyContactPhone: v })}
+            onChange={(v) =>
+              setForm({ ...form, emergencyContactPhone: v })
+            }
             disabled={!editing}
           />
         </div>
@@ -167,7 +249,9 @@ export default function Profile() {
         <ProfileField
           label="Mã BHYT"
           value={form.insuranceNumber}
-          onChange={(v) => setForm({ ...form, insuranceNumber: v })}
+          onChange={(v) =>
+            setForm({ ...form, insuranceNumber: v })
+          }
           disabled={!editing}
         />
       </div>

@@ -465,3 +465,23 @@ label {
 .process-btn-top:hover {
   background: #28375c;
 }
+.notify-btn {
+  position: relative;
+  font-size: 20px;
+  margin-left: 20px;
+}
+
+.badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #ff3b3b;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
