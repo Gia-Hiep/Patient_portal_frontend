@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import ExaminationProgress from "./pages/ExaminationProgress";
 
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
@@ -164,6 +165,14 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+        <Route
+            path="/doctor/examination-progress"
+            element={
+              <Protected>
+                <ExaminationProgress />
+              </Protected>
+        }
+/>
 
         {/* CHỈ AutoNotifications ĐƯỢC QUYỀN UPDATE unread */}
         <Route
