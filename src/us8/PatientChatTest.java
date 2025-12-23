@@ -58,25 +58,25 @@ public class PatientChatTest {
         driver.findElement(By.cssSelector("button[type='submit']")).click();
 
         wait.until(ExpectedConditions.urlContains("/dashboard"));
-        System.out.println("✅ Login OK. Current URL: " + driver.getCurrentUrl());
+        System.out.println("✅ Đăng nhập thành công. URL hiện tại: " + driver.getCurrentUrl());
     }
 
     static void openChat() {
         driver.get(BASE_URL + "/chat");
         wait.until(ExpectedConditions.urlContains("/chat"));
-        System.out.println("✅ Navigated to /chat");
+        System.out.println("✅ Đã điều hướng đến /chat");
     }
 
     static void selectDoctorAndWaitChatReady() {
         WebElement selectEl = wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("select")));
         new Select(selectEl).selectByVisibleText(DOCTOR_NAME);
-        System.out.println("✅ Selected doctor: " + DOCTOR_NAME);
+        System.out.println("✅ Đã chọn bác sĩ: " + DOCTOR_NAME);
 
         wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space()='Gửi']")));
 
         wait.until(d -> findMessageInput() != null);
 
-        System.out.println("✅ Chat UI ready (send box visible)");
+        System.out.println("✅ Giao diện trò chuyện đã sẵn sàng (hộp gửi tin nhắn hiển thị)");
     }
 
     static void sendMessageAndVerify() {
@@ -104,7 +104,7 @@ public class PatientChatTest {
         wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.xpath("//*[contains(normalize-space(), '" + sentMessage + "')]")));
 
-        System.out.println("✅ PASS: Sent & displayed message: " + sentMessage);
+        System.out.println("✅ PASS: Đã gửi & hiển thị tin nhắn: " + sentMessage);
     }
 
     static void reloadAndVerify() {
@@ -121,7 +121,7 @@ public class PatientChatTest {
         wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.xpath("//*[contains(normalize-space(), '" + sentMessage + "')]")));
 
-        System.out.println("✅ PASS: Reload still has message");
+        System.out.println("✅ PASS: Reload lại và có tin nhắn");
     }
 
     static WebElement findMessageInput() {
