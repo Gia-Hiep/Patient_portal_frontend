@@ -4,6 +4,9 @@ import {
   getNotifications,
   markNotificationRead,
 } from "../services/notification";
+import {
+  getAutoNotificationSetting,
+} from "../services/notificationSetting";
 
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -15,33 +18,38 @@ dayjs.locale("vi");
 export default function AutoNotifications({ onReadChange }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [disabled, setDisabled] = useState(false); // ⬅ user tắt auto notify
+  const [disabled, setDisabled] = useState(false);
 
   const navigate = useNavigate();
 
   // =============================
-  // LOAD DATA
+  // LOAD DATA (ĐÚNG LOGIC)
   // =============================
   const load = useCallback(async () => {
     try {
       setLoading(true);
 
-      const list = await getNotifications();
+      // 🔔 1. LẤY SETTING TRƯỚC
+      const setting = await getAutoNotificationSetting();
+      const enabled = !!setting?.enabled;
 
-      // ⛔ Backend trả [] khi user tắt auto notification
-      if (Array.isArray(list) && list.length === 0) {
+      setDisabled(!enabled);
+
+      // ⛔ user tắt auto notification
+      if (!enabled) {
         setItems([]);
-        setDisabled(true);
-
         if (onReadChange) onReadChange(0);
         return;
       }
 
-      setDisabled(false);
-      setItems(list);
+      // 🔔 2. LẤY DANH SÁCH THÔNG BÁO
+      const list = await getNotifications();
+      const safeList = Array.isArray(list) ? list : [];
+
+      setItems(safeList);
 
       if (onReadChange) {
-        const unreadCount = list.filter(
+        const unreadCount = safeList.filter(
           (n) => n.status === "UNREAD"
         ).length;
         onReadChange(unreadCount);
@@ -62,7 +70,7 @@ export default function AutoNotifications({ onReadChange }) {
   // MARK AS READ
   // =============================
   const markAsRead = async (n) => {
-    if (n.status === "READ") return; // ⛔ không gọi API thừa
+    if (n.status === "READ") return;
 
     try {
       await markNotificationRead(n.id);

@@ -18,7 +18,7 @@ import NotificationBell from "./components/NotificationBell";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import LabResultNotify from "./pages/LabResultNotify";
 // ===============================
 // PROTECTED ROUTE
 // ===============================
@@ -172,6 +172,14 @@ export default function AppRoutes() {
                 <ExaminationProgress />
               </Protected>
         }
+/>
+<Route
+  path="/doctor/lab-notify"
+  element={
+    <Protected>
+      <LabResultNotify />
+    </Protected>
+  }
 />
 
         {/* CHỈ AutoNotifications ĐƯỢC QUYỀN UPDATE unread */}
