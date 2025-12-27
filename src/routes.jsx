@@ -1,7 +1,8 @@
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Login from "./pages/Login";
 import { useSelector } from "react-redux";
+
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
@@ -12,12 +13,12 @@ import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
-import { Routes, Route } from "react-router-dom";
-import AnnouncementsPage from "../pages/AnnouncementsPage";
+import AnnouncementsPage from "./pages/AnnouncementsPage";
 import ProcessStatus from "./pages/ProcessStatus";
 
+/** Route bảo vệ bằng JWT */
 function Protected({ children }) {
-  const token = useSelector((s) => s.auth.token);
+  const token = useSelector((state) => state.auth.token);
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
@@ -25,12 +26,15 @@ function Protected({ children }) {
 export default function AppRoutes() {
   return (
     <Routes>
+      {/* Redirect root */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
+      {/* Public routes */}
       <Route path="/login" element={<Login />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
+      {/* Protected routes */}
       <Route
         path="/dashboard"
         element={
@@ -39,20 +43,21 @@ export default function AppRoutes() {
           </Protected>
         }
       />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/visits"
-        element={
-          <Protected>
-            <VisitHistory />
-          </Protected>
-        }
-      />
+
       <Route
         path="/profile"
         element={
           <Protected>
             <Profile />
+          </Protected>
+        }
+      />
+
+      <Route
+        path="/visits"
+        element={
+          <Protected>
+            <VisitHistory />
           </Protected>
         }
       />
@@ -74,6 +79,7 @@ export default function AppRoutes() {
           </Protected>
         }
       />
+
       <Route
         path="/billing"
         element={
@@ -82,6 +88,7 @@ export default function AppRoutes() {
           </Protected>
         }
       />
+
       <Route
         path="/chat"
         element={
@@ -90,6 +97,7 @@ export default function AppRoutes() {
           </Protected>
         }
       />
+
       <Route
         path="/doctor-chat"
         element={
@@ -98,9 +106,26 @@ export default function AppRoutes() {
           </Protected>
         }
       />
-      <Routes>
-        <Route path="/announcements" element={<AnnouncementsPage />} />
-      </Routes>
+
+      {/* ✅ US15 – Thông báo bệnh viện */}
+      <Route
+        path="/announcements"
+        element={
+          <Protected>
+            <AnnouncementsPage />
+          </Protected>
+        }
+      />
+
+      {/* Optional */}
+      <Route
+        path="/process-status"
+        element={
+          <Protected>
+            <ProcessStatus />
+          </Protected>
+        }
+      />
     </Routes>
   );
 }
