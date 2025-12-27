@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { resetPasswordApi } from '../services/auth';
-import '../assets/styles/auth.css';
+import React, { useMemo, useState } from "react";
+import { resetPasswordApi } from "../services/auth";
+import "../assets/styles/auth.css";
 
 export default function ResetPassword() {
-  const [pw, setPw] = useState('');
-  const [cpw, setCpw] = useState('');
+  const [pw, setPw] = useState("");
+  const [cpw, setCpw] = useState("");
   const [msg, setMsg] = useState(null);
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -12,26 +12,46 @@ export default function ResetPassword() {
   // Lấy token từ query ?token=...
   const token = useMemo(() => {
     const p = new URLSearchParams(window.location.search);
-    return p.get('token') || '';
+    return p.get("token") || "";
   }, []);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setErr(null); setMsg(null);
+    setErr(null);
+    setMsg(null);
 
-    if (!token) { setErr('Thiếu token khôi phục. Hãy mở link từ email.'); return; }
-    if (!pw || !cpw) { setErr('Vui lòng nhập đầy đủ mật khẩu.'); return; }
-    if (pw.length < 8) { setErr('Mật khẩu tối thiểu 8 ký tự.'); return; }
-    if (pw !== cpw) { setErr('Mật khẩu nhập lại không khớp.'); return; }
+    if (!token) {
+      setErr("Thiếu token khôi phục. Hãy mở link từ email.");
+      return;
+    }
+    if (!pw || !cpw) {
+      setErr("Vui lòng nhập đầy đủ mật khẩu.");
+      return;
+    }
+    if (pw.length < 8) {
+      setErr("Mật khẩu tối thiểu 8 ký tự.");
+      return;
+    }
+    if (pw !== cpw) {
+      setErr("Mật khẩu nhập lại không khớp.");
+      return;
+    }
 
     try {
       setLoading(true);
       await resetPasswordApi(token, pw);
-      setMsg('Đặt lại mật khẩu thành công! Bạn có thể đăng nhập bằng mật khẩu mới.');
+      setMsg(
+        "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập bằng mật khẩu mới."
+      );
       // Tự động về trang đăng nhập sau 2 giây
-      setTimeout(() => { window.location.href = '/login'; }, 2000);
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 2000);
     } catch (e2) {
-      setErr(e2?.message || 'Không thể đặt lại mật khẩu. Token có thể đã hết hạn hoặc đã dùng.');
+      setErr(
+        e2?.message ||
+          "Không thể đặt lại mật khẩu. Token có thể đã hết hạn hoặc đã dùng."
+      );
     } finally {
       setLoading(false);
     }
@@ -45,7 +65,14 @@ export default function ResetPassword() {
 
         {err && <div className="alert">{err}</div>}
         {msg && (
-          <div className="alert" style={{ color: '#b7ffc3', borderColor: '#3a6a4b', background: '#1c2a23' }}>
+          <div
+            className="alert"
+            style={{
+              color: "#b7ffc3",
+              borderColor: "#3a6a4b",
+              background: "#1c2a23",
+            }}
+          >
             {msg}
           </div>
         )}
@@ -71,7 +98,7 @@ export default function ResetPassword() {
         />
 
         <button className="btn" type="submit" disabled={loading}>
-          {loading ? 'Đang cập nhật...' : 'Đặt lại mật khẩu'}
+          {loading ? "Đang cập nhật..." : "Đặt lại mật khẩu"}
         </button>
       </form>
     </div>
