@@ -209,6 +209,11 @@ export default function PatientDashboard() {
           Thông báo tự động (US5)
         </Link>
       </div>
+      <div style={{ marginTop: 18 }}>
+        <Link to="/announcements" className="link">
+          Thông báo từ bệnh viện (US15)
+        </Link>
+      </div>
     </div>
   );
 }

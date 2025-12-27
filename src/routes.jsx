@@ -13,10 +13,8 @@ import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
-import ProcessStatus from "./pages/ProcessStatus";
-
-// ✅ nếu AnnouncementsPage nằm trong src/pages thì import như dưới
 import AnnouncementsPage from "./pages/AnnouncementsPage";
+import ProcessStatus from "./pages/ProcessStatus";
 
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
@@ -105,7 +103,6 @@ export default function AppRoutes() {
         }
       />
 
-      {/* ✅ US15 */}
       <Route
         path="/announcements"
         element={
@@ -116,7 +113,7 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/process-status"
+        path="/process-tracking"
         element={
           <Protected>
             <ProcessStatus />
