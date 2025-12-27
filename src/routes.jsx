@@ -12,8 +12,9 @@ import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import UserCreatePage from "./pages/admin/UserCreatePage";
 
-import ProcessStatus from "./pages/ProcessStatus";
 
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
@@ -97,6 +98,24 @@ export default function AppRoutes() {
           </Protected>
         }
       />
+
+      <Route
+        path="/admin/users"
+        element={
+          <Protected>
+            <AdminUsersPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/admin/users/create"
+        element={
+          <Protected>
+            <UserCreatePage />
+          </Protected>
+        }
+      />
+
     </Routes>
   );
 }

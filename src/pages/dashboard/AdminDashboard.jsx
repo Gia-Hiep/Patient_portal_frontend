@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DashCard from "../../components/DashCard";
 import { fetchAdminSummary } from "../../services/dashboard";
+import { getJson } from "../../services/api";
 
 export default function AdminDashboard() {
   const user = useSelector((s) => s.auth.user);
@@ -13,6 +14,22 @@ export default function AdminDashboard() {
     backups: 0,
     lastBackup: null,
   });
+
+  const [usersCount, setUsersCount] = useState(0);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const users = await getJson("/api/admin/users");
+
+        setUsersCount(Array.isArray(users) ? users.length : 0);
+      } catch (e) {
+        console.error("Load users failed", e);
+        setUsersCount(0);
+      }
+    })();
+  }, []);
+
 
   useEffect(() => {
     (async () => {
@@ -38,7 +55,13 @@ export default function AdminDashboard() {
           marginTop: 16,
         }}
       >
-        <DashCard title="Người dùng" value={sum.users} sub="Tài khoản & phân quyền (US13)" to="/admin/users" />
+        <DashCard
+          title="Người dùng"
+          value={usersCount}
+          sub="Tài khoản & phân quyền (US13)"
+          to="/admin/users"
+        />
+
         <DashCard title="Bác sĩ" value={sum.doctors} sub="Danh sách bác sĩ (US14)" to="/admin/doctors" />
         <DashCard title="Dịch vụ" value={sum.services} sub="Danh mục dịch vụ (US14)" to="/admin/services" />
         <DashCard title="Thông báo / Tin tức" value={sum.news} sub="CRUD thông báo (US15)" to="/admin/news" />
