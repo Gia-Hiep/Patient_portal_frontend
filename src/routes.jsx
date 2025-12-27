@@ -3,9 +3,9 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
+import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import VisitHistory from "./pages/VisitHistory";
 import Notifications from "./pages/Notifications";
@@ -13,12 +13,13 @@ import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
-import AnnouncementsPage from "./pages/AnnouncementsPage";
 import ProcessStatus from "./pages/ProcessStatus";
 
-/** Route bảo vệ bằng JWT */
+// ✅ nếu AnnouncementsPage nằm trong src/pages thì import như dưới
+import AnnouncementsPage from "./pages/AnnouncementsPage";
+
 function Protected({ children }) {
-  const token = useSelector((state) => state.auth.token);
+  const token = useSelector((s) => s.auth.token);
   if (!token) return <Navigate to="/login" replace />;
   return children;
 }
@@ -26,15 +27,12 @@ function Protected({ children }) {
 export default function AppRoutes() {
   return (
     <Routes>
-      {/* Redirect root */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-      {/* Public routes */}
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/register" element={<Register />} />
 
-      {/* Protected routes */}
       <Route
         path="/dashboard"
         element={
@@ -45,19 +43,19 @@ export default function AppRoutes() {
       />
 
       <Route
-        path="/profile"
+        path="/visits"
         element={
           <Protected>
-            <Profile />
+            <VisitHistory />
           </Protected>
         }
       />
 
       <Route
-        path="/visits"
+        path="/profile"
         element={
           <Protected>
-            <VisitHistory />
+            <Profile />
           </Protected>
         }
       />
@@ -107,7 +105,7 @@ export default function AppRoutes() {
         }
       />
 
-      {/* ✅ US15 – Thông báo bệnh viện */}
+      {/* ✅ US15 */}
       <Route
         path="/announcements"
         element={
@@ -117,7 +115,6 @@ export default function AppRoutes() {
         }
       />
 
-      {/* Optional */}
       <Route
         path="/process-status"
         element={
@@ -126,6 +123,8 @@ export default function AppRoutes() {
           </Protected>
         }
       />
+
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

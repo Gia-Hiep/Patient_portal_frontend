@@ -104,6 +104,12 @@ export default function PatientDashboard() {
         <Link to="/profile" className="chip-btn">
           Hồ sơ cá nhân
         </Link>
+        <DashCard
+          title="Thông báo từ bệnh viện (US15)"
+          value={" "}
+          sub="Xem các thông báo/khẩn từ bệnh viện"
+          to="/announcements"
+        />
       </div>
 
       <p className="muted">
