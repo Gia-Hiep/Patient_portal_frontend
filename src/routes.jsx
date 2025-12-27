@@ -12,7 +12,8 @@ import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
-
+import { Routes, Route } from "react-router-dom";
+import AnnouncementsPage from "../pages/AnnouncementsPage";
 import ProcessStatus from "./pages/ProcessStatus";
 
 function Protected({ children }) {
@@ -97,6 +98,9 @@ export default function AppRoutes() {
           </Protected>
         }
       />
+      <Routes>
+        <Route path="/announcements" element={<AnnouncementsPage />} />
+      </Routes>
     </Routes>
   );
 }
