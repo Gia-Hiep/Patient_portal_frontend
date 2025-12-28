@@ -63,6 +63,25 @@ export async function getJson(path, options = {}) {
   });
   return handleJsonResponse(res);
 }
+export async function delJson(url) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(url, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Delete failed");
+  }
+
+  // DELETE thường không trả body
+  return res.text();
+}
 
 export async function putJson(path, body, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -80,5 +99,5 @@ export async function putJson(path, body, options = {}) {
 
 export const getMyProfile = () => getJson("/api/profile/me");
 export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);
-export const getMyVisits = () => getJson("/api/visits");          // list
+export const getMyVisits = () => getJson("/api/visits"); // list
 export const getVisitDetail = (id) => getJson(`/api/visits/${id}`); // detail

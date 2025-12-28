@@ -11,7 +11,7 @@ export default function AnnouncementsPage() {
 
   const loadData = async () => {
     const res = await getAnnouncements();
-    setAnnouncements(res.data);
+    setAnnouncements(res || []);
   };
 
   const handleRead = async (id) => {
