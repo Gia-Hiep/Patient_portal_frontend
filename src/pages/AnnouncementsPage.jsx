@@ -10,8 +10,8 @@ export default function AnnouncementsPage() {
   }, []);
 
   const loadData = async () => {
-    const res = await getAnnouncements();
-    setAnnouncements(res || []);
+    const data = await getAnnouncements();
+    setAnnouncements(Array.isArray(data) ? data : []);
   };
 
   const handleRead = async (id) => {

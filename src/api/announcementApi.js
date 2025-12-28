@@ -1,24 +1,34 @@
-// src/api/announcementApi.js
+// API cho US15/US7 (Thông báo bệnh viện)
+// Dùng chung cho:
+// - Patient/Doctor xem danh sách thông báo
+// - Mark as read
+// - Admin CRUD (tạo/sửa/xóa)
+
 import { getJson, postJson, putJson, delJson } from "../services/api";
 
-// ======================
-// PATIENT: xem thông báo
-// ======================
-export const getAnnouncements = () => getJson("/api/announcements");
+// ===== List =====
+export function getAnnouncements() {
+  return getJson("/api/announcements");
+}
 
-// đánh dấu đã đọc (nếu backend bạn có endpoint này)
-export const markAsRead = (id) => postJson(`/api/announcements/${id}/read`, {});
+// Nếu backend của bạn chưa có endpoint read riêng, bạn sẽ đổi path ở đây
+export function markAsRead(id) {
+  return postJson(`/api/announcements/${id}/read`, {});
+}
 
-// ======================
-// ADMIN: CRUD thông báo
-// ======================
-export const fetchAnnouncements = () => getJson("/api/admin/announcements");
+// ===== Admin CRUD =====
+export function fetchAnnouncements() {
+  return getAnnouncements();
+}
 
-export const createAnnouncement = (payload) =>
-  postJson("/api/admin/announcements", payload);
+export function createAnnouncement(payload) {
+  return postJson("/api/announcements", payload);
+}
 
-export const updateAnnouncement = (id, payload) =>
-  putJson(`/api/admin/announcements/${id}`, payload);
+export function updateAnnouncement(id, payload) {
+  return putJson(`/api/announcements/${id}`, payload);
+}
 
-export const deleteAnnouncement = (id) =>
-  delJson(`/api/admin/announcements/${id}`);
+export function deleteAnnouncement(id) {
+  return delJson(`/api/announcements/${id}`);
+}

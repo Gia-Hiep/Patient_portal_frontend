@@ -63,25 +63,6 @@ export async function getJson(path, options = {}) {
   });
   return handleJsonResponse(res);
 }
-export async function delJson(url) {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(url, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || "Delete failed");
-  }
-
-  // DELETE thường không trả body
-  return res.text();
-}
 
 export async function putJson(path, body, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -93,6 +74,15 @@ export async function putJson(path, body, options = {}) {
     },
     body: JSON.stringify(body),
     ...options,
+  });
+  return handleJsonResponse(res);
+}
+
+// DELETE helper (dùng cho Admin CRUD)
+export async function delJson(path) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "DELETE",
+    credentials: "include",
   });
   return handleJsonResponse(res);
 }
