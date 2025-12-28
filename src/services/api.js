@@ -1,90 +1,71 @@
-const BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
+const BASE = "http://localhost:8080";
 
-/** Lấy header Authorization từ localStorage  */
-function authHeaders() {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
+function getToken() {
+  // tuỳ bạn đang lưu token ở đâu, thường là localStorage
+  return localStorage.getItem("token");
 }
 
-/** Xử lý response JSON/Text chung **/
-async function handleJsonResponse(res) {
-  let data = null;
-  let text = "";
+function buildHeaders(extra = {}) {
+  const token = getToken();
+  return {
+    "Content-Type": "application/json",
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...extra,
+  };
+}
 
+async function handle(res) {
+  const text = await res.text();
+  let data = null;
   try {
-    const ct = res.headers.get("content-type") || "";
-    if (ct.includes("application/json")) {
-      data = await res.json();
-    } else {
-      text = await res.text();
-    }
-  } catch (_) {}
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
+  }
 
   if (!res.ok) {
-    const message =
-      data?.detail ||
+    const msg =
       data?.message ||
       data?.error ||
-      text ||
-      `${res.status} ${res.statusText || "Request failed"}`;
-    const err = new Error(message);
-    err.status = res.status;
-    err.code = data?.code || null;
-    err.data = data;
-    throw err;
+      (typeof data === "string" ? data : "") ||
+      `HTTP ${res.status}`;
+    throw new Error(msg);
   }
-  return data ?? {};
+  return data;
 }
 
-export async function postJson(path, body, options = {}) {
+export async function getJson(path) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "GET",
+    headers: buildHeaders(),
+  });
+  return handle(res);
+}
+
+export async function postJson(path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-      ...(options.headers || {}),
-    },
+    headers: buildHeaders(),
     body: JSON.stringify(body),
-    ...options,
   });
-  return handleJsonResponse(res);
+  return handle(res);
 }
 
-export async function getJson(path, options = {}) {
-  let url = `${BASE}${path}`;
-  if (options.params && typeof options.params === "object") {
-    const qs = new URLSearchParams(options.params).toString();
-    if (qs) url += (url.includes("?") ? "&" : "?") + qs;
-  }
-  const res = await fetch(url, {
-    method: "GET",
-    headers: { ...authHeaders(), ...(options.headers || {}) },
-    ...options,
-  });
-  return handleJsonResponse(res);
-}
-
-export async function putJson(path, body, options = {}) {
+export async function putJson(path, body) {
   const res = await fetch(`${BASE}${path}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-      ...(options.headers || {}),
-    },
+    headers: buildHeaders(),
     body: JSON.stringify(body),
-    ...options,
   });
-  return handleJsonResponse(res);
+  return handle(res);
 }
 
-// DELETE helper (dùng cho Admin CRUD)
 export async function delJson(path) {
   const res = await fetch(`${BASE}${path}`, {
     method: "DELETE",
-    credentials: "include",
+    headers: buildHeaders(),
   });
-  return handleJsonResponse(res);
+  return handle(res);
 }
 
 export const getMyProfile = () => getJson("/api/profile/me");

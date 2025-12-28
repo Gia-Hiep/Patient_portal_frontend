@@ -1,34 +1,29 @@
-// API cho US15/US7 (Thông báo bệnh viện)
-// Dùng chung cho:
-// - Patient/Doctor xem danh sách thông báo
-// - Mark as read
-// - Admin CRUD (tạo/sửa/xóa)
+import axios from "axios";
 
-import { getJson, postJson, putJson, delJson } from "../services/api";
+const API = axios.create({
+  baseURL: "http://localhost:8080/api",
+});
 
-// ===== List =====
-export function getAnnouncements() {
-  return getJson("/api/announcements");
+// lấy token từ localStorage (đa số dự án lưu token ở đây)
+function authHeaders() {
+  const token = localStorage.getItem("token"); // kiểm tra đúng key bạn đang lưu
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-// Nếu backend của bạn chưa có endpoint read riêng, bạn sẽ đổi path ở đây
-export function markAsRead(id) {
-  return postJson(`/api/announcements/${id}/read`, {});
-}
+// ====== PUBLIC / PATIENT ======
+export const getAnnouncements = () =>
+  API.get("/announcements", { headers: authHeaders() });
 
-// ===== Admin CRUD =====
-export function fetchAnnouncements() {
-  return getAnnouncements();
-}
+export const markAsRead = (id) =>
+  API.put(`/announcements/${id}/read`, {}, { headers: authHeaders() });
 
-export function createAnnouncement(payload) {
-  return postJson("/api/announcements", payload);
-}
+// ====== ADMIN CRUD ======
+// ⚠️ sửa đúng endpoint admin theo backend bạn đang có
+export const createAnnouncement = (payload) =>
+  API.post("/admin/announcements", payload, { headers: authHeaders() });
 
-export function updateAnnouncement(id, payload) {
-  return putJson(`/api/announcements/${id}`, payload);
-}
+export const updateAnnouncement = (id, payload) =>
+  API.put(`/admin/announcements/${id}`, payload, { headers: authHeaders() });
 
-export function deleteAnnouncement(id) {
-  return delJson(`/api/announcements/${id}`);
-}
+export const deleteAnnouncement = (id) =>
+  API.delete(`/admin/announcements/${id}`, { headers: authHeaders() });

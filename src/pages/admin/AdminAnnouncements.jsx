@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  fetchAnnouncements,
+  getAnnouncements,
   createAnnouncement,
   updateAnnouncement,
   deleteAnnouncement,
@@ -9,7 +9,7 @@ import {
 const emptyForm = {
   title: "",
   message: "",
-  type: "NEWS", // NEWS | EMERGENCY (tùy bạn)
+  type: "NEWS",
 };
 
 export default function AdminAnnouncements() {
@@ -25,11 +25,18 @@ export default function AdminAnnouncements() {
     try {
       setErr("");
       setLoading(true);
-      const data = await fetchAnnouncements();
+
+      const res = await getAnnouncements();
+      const data = res?.data || [];
+
       setItems(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error(e);
-      setErr(e?.message || "Không tải được danh sách thông báo.");
+      setErr(
+        e?.response?.data?.message ||
+          e?.message ||
+          "Không tải được danh sách thông báo."
+      );
     } finally {
       setLoading(false);
     }
@@ -50,33 +57,63 @@ export default function AdminAnnouncements() {
   }
 
   function startEdit(a) {
+    // ✅ lấy nội dung theo mọi field có thể có
+    const msg = a?.message ?? a?.content ?? a?.description ?? "";
     setEditingId(a.id);
     setForm({
-      title: a.title || "",
-      message: a.message || a.content || a.description || "",
-      type: a.type || "NEWS",
+      title: a?.title || "",
+      message: msg,
+      type: a?.type || "NEWS",
     });
+  }
+
+  function buildPayload() {
+    // ✅ chuẩn hoá payload: gửi cả 3 key để backend nhận cái nó cần
+    const title = (form.title || "").trim();
+    const message = (form.message || "").trim();
+    const type = form.type || "NEWS";
+
+    return {
+      title,
+      type,
+
+      // backend có thể nhận 1 trong các field dưới
+      message,
+      content: message,
+      description: message,
+    };
   }
 
   async function onSubmit(e) {
     e.preventDefault();
-    if (!form.title.trim() || !form.message.trim()) {
+
+    const title = (form.title || "").trim();
+    const message = (form.message || "").trim();
+    if (!title || !message) {
       setErr("Vui lòng nhập đầy đủ Title và Nội dung.");
       return;
     }
 
     try {
       setErr("");
+
+      const payload = buildPayload();
+
       if (isEditing) {
-        await updateAnnouncement(editingId, form);
+        await updateAnnouncement(editingId, payload);
       } else {
-        await createAnnouncement(form);
+        await createAnnouncement(payload);
       }
+
       startCreate();
       await load();
     } catch (e2) {
       console.error(e2);
-      setErr(e2?.response?.data?.message || e2?.message || "Lưu thất bại.");
+      setErr(
+        e2?.response?.data?.message ||
+          e2?.message ||
+          "Lưu thất bại (có thể thiếu token/không đủ quyền)."
+      );
     }
   }
 
@@ -95,7 +132,7 @@ export default function AdminAnnouncements() {
   }
 
   return (
-    <div className="auth-card" style={{ maxWidth: 1100 }}>
+    <div className="auth-card admin-full">
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <h2 style={{ margin: 0, flex: 1 }}>Quản lý thông báo (Admin)</h2>
 
@@ -114,7 +151,6 @@ export default function AdminAnnouncements() {
         </div>
       )}
 
-      {/* FORM */}
       <div
         style={{
           marginTop: 14,
@@ -180,7 +216,6 @@ export default function AdminAnnouncements() {
         </form>
       </div>
 
-      {/* LIST */}
       <div style={{ marginTop: 18 }}>
         <div style={{ fontWeight: 700, marginBottom: 10 }}>
           Danh sách thông báo
