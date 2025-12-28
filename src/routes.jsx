@@ -13,12 +13,23 @@ import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
+
 import AnnouncementsPage from "./pages/AnnouncementsPage";
 import ProcessStatus from "./pages/ProcessStatus";
 
+import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
+
+// ---- guards ----
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
   if (!token) return <Navigate to="/login" replace />;
+  return children;
+}
+
+function AdminOnly({ children }) {
+  const { token, role } = useSelector((s) => s.auth);
+  if (!token) return <Navigate to="/login" replace />;
+  if (role !== "ADMIN") return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -103,6 +114,7 @@ export default function AppRoutes() {
         }
       />
 
+      {/* US7 - bệnh nhân xem thông báo */}
       <Route
         path="/announcements"
         element={
@@ -118,6 +130,16 @@ export default function AppRoutes() {
           <Protected>
             <ProcessStatus />
           </Protected>
+        }
+      />
+
+      {/* Admin CRUD thông báo */}
+      <Route
+        path="/admin/announcements"
+        element={
+          <AdminOnly>
+            <AdminAnnouncements />
+          </AdminOnly>
         }
       />
 
