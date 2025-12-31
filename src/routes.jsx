@@ -18,6 +18,7 @@ import AnnouncementsPage from "./pages/AnnouncementsPage";
 import ProcessStatus from "./pages/ProcessStatus";
 
 import AdminAnnouncements from "./pages/admin/AdminAnnouncements";
+import AdminBackups from "./pages/admin/AdminBackups";
 
 // ---- guards ----
 function Protected({ children }) {
@@ -139,6 +140,15 @@ export default function AppRoutes() {
         element={
           <AdminOnly>
             <AdminAnnouncements />
+          </AdminOnly>
+        }
+      />
+      {/* Admin Backup dữ liệu (US16) */}
+      <Route
+        path="/admin/backups"
+        element={
+          <AdminOnly>
+            <AdminBackups />
           </AdminOnly>
         }
       />
