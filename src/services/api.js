@@ -1,7 +1,8 @@
 const BASE = "http://localhost:8080";
 
 function getToken() {
-  // tuỳ bạn đang lưu token ở đâu, thường là localStorage
+  // Nếu bạn đang lưu khác key thì đổi lại đúng key
+  // Ví dụ: localStorage.setItem("token", token)
   return localStorage.getItem("token");
 }
 
@@ -17,6 +18,7 @@ function buildHeaders(extra = {}) {
 async function handle(res) {
   const text = await res.text();
   let data = null;
+
   try {
     data = text ? JSON.parse(text) : null;
   } catch {
@@ -31,9 +33,11 @@ async function handle(res) {
       `HTTP ${res.status}`;
     throw new Error(msg);
   }
+
   return data;
 }
 
+// ===== Core helpers =====
 export async function getJson(path) {
   const res = await fetch(`${BASE}${path}`, {
     method: "GET",
@@ -68,7 +72,9 @@ export async function delJson(path) {
   return handle(res);
 }
 
+// ===== Backward-compatible exports (để các page khác không lỗi) =====
 export const getMyProfile = () => getJson("/api/profile/me");
 export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);
-export const getMyVisits = () => getJson("/api/visits"); // list
-export const getVisitDetail = (id) => getJson(`/api/visits/${id}`); // detail
+
+export const getMyVisits = () => getJson("/api/visits");
+export const getVisitDetail = (id) => getJson(`/api/visits/${id}`);

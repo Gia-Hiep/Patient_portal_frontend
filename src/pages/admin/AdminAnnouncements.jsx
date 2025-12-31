@@ -87,33 +87,38 @@ export default function AdminAnnouncements() {
   async function onSubmit(e) {
     e.preventDefault();
 
-    const title = (form.title || "").trim();
-    const message = (form.message || "").trim();
-    if (!title || !message) {
-      setErr("Vui lòng nhập đầy đủ Title và Nội dung.");
-      return;
+    if (isEditing) {
+      await updateAnnouncement(editingId, form);
+    } else {
+      await createAnnouncement(form);
     }
+    await load(); // load lại từ DB
+
+    const payload = {
+      title: form.title,
+      // DB dùng content
+      content: form.message,
+
+      // DB dùng level, bạn đang chọn NEWS/EMERGENCY
+      level: form.type,
+
+      // GỬI THÊM field dự phòng (nếu backend đang map type/message)
+      type: form.type,
+      message: form.message,
+    };
 
     try {
       setErr("");
-
-      const payload = buildPayload();
-
       if (isEditing) {
         await updateAnnouncement(editingId, payload);
       } else {
         await createAnnouncement(payload);
       }
-
       startCreate();
       await load();
-    } catch (e2) {
-      console.error(e2);
-      setErr(
-        e2?.response?.data?.message ||
-          e2?.message ||
-          "Lưu thất bại (có thể thiếu token/không đủ quyền)."
-      );
+    } catch (e) {
+      console.error(e);
+      setErr(e?.response?.data?.message || e?.message || "Lưu thất bại");
     }
   }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAnnouncements, markAsRead } from "../api/announcementApi";
+import { getAnnouncements } from "../api/announcementApi";
 import AnnouncementItem from "../components/AnnouncementItem";
 
 export default function AnnouncementsPage() {
@@ -11,12 +11,8 @@ export default function AnnouncementsPage() {
 
   const loadData = async () => {
     const data = await getAnnouncements();
+    // vì getJson trả thẳng data, không còn res.data như axios
     setAnnouncements(Array.isArray(data) ? data : []);
-  };
-
-  const handleRead = async (id) => {
-    await markAsRead(id);
-    loadData();
   };
 
   return (
@@ -26,11 +22,7 @@ export default function AnnouncementsPage() {
       {announcements.length === 0 && <p>Không có thông báo.</p>}
 
       {announcements.map((item) => (
-        <AnnouncementItem
-          key={item.id}
-          data={item}
-          onRead={() => handleRead(item.id)}
-        />
+        <AnnouncementItem key={item.id} data={item} />
       ))}
     </div>
   );
