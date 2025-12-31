@@ -30,7 +30,13 @@ function Protected({ children }) {
 function AdminOnly({ children }) {
   const { token, role } = useSelector((s) => s.auth);
   if (!token) return <Navigate to="/login" replace />;
-  if (role !== "ADMIN") return <Navigate to="/dashboard" replace />;
+  if (role !== "ADMIN")
+    return (
+      <div style={{ padding: 20, fontWeight: 700 }}>
+        Bạn không có quyền truy cập chức năng này.
+      </div>
+    );
+
   return children;
 }
 
