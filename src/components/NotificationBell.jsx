@@ -1,53 +1,86 @@
-// src/components/NotificationBell.jsx
-import React from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { fetchUnreadCount } from "../services/userNotifications";
 
-export default function NotificationBell({ count }) {
-  const navigate = useNavigate();
+export default function NotificationBell() {
+  const [count, setCount] = useState(0);
+  const [prevCount, setPrevCount] = useState(0);
+  const [toast, setToast] = useState("");
+
+  useEffect(() => {
+    let timer;
+    let isMounted = true;
+
+    const load = async () => {
+      try {
+        const c = await fetchUnreadCount();
+        if (!isMounted) return;
+        setPrevCount((old) => {
+          if (c > old) {
+            setToast("Bạn có thông báo mới, vào mục Thông báo tự động để xem.");
+            setTimeout(() => setToast(""), 4000);
+          }
+          return c;
+        });
+        setCount(c);
+      } catch (e) {
+        // ignore quietly
+      }
+    };
+
+    load();
+    timer = setInterval(load, 30000); // 30s
+
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
-    <div
-      onClick={() => navigate("/autonotifications")}
-      style={{
-        position: "fixed",
-        top: 18,
-        right: 120,
-        cursor: "pointer",
-        color: "white",
-        fontSize: 22,
-        display: "flex",
-        alignItems: "center",
-        gap: 6,
-        zIndex: 2000,
-      }}
-    >
-      🔔
+    <>
+      <div
+        style={{ position: "relative", cursor: "default" }}
+        title="Thông báo"
+      >
+        <span style={{ fontSize: 20 }}>🔔</span>
+        {count > 0 && (
+          <span
+            style={{
+              position: "absolute",
+              top: -4,
+              right: -4,
+              background: "#ef4444",
+              color: "#fff",
+              borderRadius: "999px",
+              padding: "0 6px",
+              fontSize: 11,
+              fontWeight: "bold",
+            }}
+          >
+            {count}
+          </span>
+        )}
+      </div>
 
-      {count > 0 && (
-        <span
+      {toast && (
+        <div
           style={{
-            background: "#ff3b3b",
-            color: "white",
-            borderRadius: "50%",
-            padding: "2px 7px",
-            fontSize: 12,
-            fontWeight: 700,
-            animation: "pulse 1.3s infinite",
+            position: "fixed",
+            right: 16,
+            bottom: 16,
+            background: "#111827",
+            color: "#f9fafb",
+            padding: "10px 14px",
+            borderRadius: 8,
+            boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+            zIndex: 9999,
+            maxWidth: 260,
+            fontSize: 14,
           }}
         >
-          {count}
-        </span>
+          {toast}
+        </div>
       )}
-
-      <style>
-        {`
-        @keyframes pulse {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.25); }
-          100% { transform: scale(1); }
-        }
-        `}
-      </style>
-    </div>
+    </>
   );
 }

@@ -10,6 +10,8 @@ export default function VisitHistory() {
   const [detail, setDetail] = useState(null);
   const [showDetail, setShowDetail] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [pdfSrc, setPdfSrc] = useState("");
+  const [showPdf, setShowPdf] = useState(false);
 
   const navigate = useNavigate();
 
@@ -41,7 +43,7 @@ export default function VisitHistory() {
     try {
       setDetailLoading(true);
       setShowDetail(true);
-      const data = await getVisitDetail(visitId); // VisitDetailDTO
+      const data = await getVisitDetail(visitId);
       setDetail(data);
     } catch (err) {
       console.error(err);
@@ -64,6 +66,43 @@ export default function VisitHistory() {
     else if (s === "IN_PROGRESS") cls += " inprogress";
     else if (s === "CANCELLED") cls += " cancelled";
     return <span className={cls}>{s || "N/A"}</span>;
+  };
+
+  // 🔹 xem PDF (gửi Authorization header)
+  const viewPdf = async (url) => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Không xem được PDF");
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      setPdfSrc(objectUrl);
+      setShowPdf(true);
+    } catch (e) {
+      alert(e.message);
+    }
+  };
+
+  // 🔹 tải PDF (gửi Authorization header)
+  const downloadPdf = async (url, filename = "document.pdf") => {
+    const token = localStorage.getItem("token");
+    try {
+      const res = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error("Không tải được PDF");
+      const blob = await res.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = objectUrl;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(objectUrl);
+    } catch (e) {
+      alert(e.message);
+    }
   };
 
   return (
@@ -158,14 +197,12 @@ export default function VisitHistory() {
                 </div>
 
                 <hr />
-
                 <div className="detail-block">
                   <div className="label">
                     Chẩn đoán chi tiết / Lịch sử điều trị:
                   </div>
                   <p>{detail.diagnosisDetail || "—"}</p>
                 </div>
-
                 <hr />
 
                 <div className="detail-block">
@@ -176,26 +213,35 @@ export default function VisitHistory() {
                     <ul>
                       {detail.documents.map((doc) => (
                         <li key={doc.id}>
-                          {doc.title} ({doc.docType}){" "}
-                          <a
-                            href={`${
-                              process.env.REACT_APP_API_BASE_URL ||
-                              "http://localhost:8080"
-                            }/api/documents/${doc.id}/view`}
-                            target="_blank"
-                            rel="noreferrer"
+                          {doc.title} ({doc.type}){" "}
+                          <button
+                            className="chip-btn"
+                            onClick={() =>
+                              viewPdf(
+                                `${
+                                  process.env.REACT_APP_API_BASE_URL ||
+                                  "http://localhost:8080"
+                                }/api/documents/${doc.id}/view`
+                              )
+                            }
                           >
                             Xem PDF
-                          </a>
-                          {" | "}
-                          <a
-                            href={`${
-                              process.env.REACT_APP_API_BASE_URL ||
-                              "http://localhost:8080"
-                            }/api/documents/${doc.id}/download`}
+                          </button>{" "}
+                          |{" "}
+                          <button
+                            className="chip-btn"
+                            onClick={() =>
+                              downloadPdf(
+                                `${
+                                  process.env.REACT_APP_API_BASE_URL ||
+                                  "http://localhost:8080"
+                                }/api/documents/${doc.id}/download`,
+                                `${doc.title || "document"}.pdf`
+                              )
+                            }
                           >
                             Tải PDF
-                          </a>
+                          </button>
                         </li>
                       ))}
                     </ul>
@@ -203,6 +249,21 @@ export default function VisitHistory() {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Modal xem PDF */}
+      {showPdf && (
+        <div className="modal-backdrop" onClick={() => setShowPdf(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Xem tài liệu PDF</h3>
+              <button className="close-btn" onClick={() => setShowPdf(false)}>
+                ×
+              </button>
+            </div>
+            <iframe src={pdfSrc} title="PDF" className="pdf-frame" />
           </div>
         </div>
       )}

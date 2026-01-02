@@ -8,7 +8,12 @@ import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import VisitHistory from "./pages/VisitHistory";
-import Profile from "./pages/Profile";
+import Notifications from "./pages/Notifications";
+import UserNotifications from "./pages/UserNotifications";
+import Billing from "./pages/Billing";
+import ChatPatient from "./pages/ChatPatient";
+import ChatDoctor from "./pages/ChatDoctor";
+
 import ProcessStatus from "./pages/ProcessStatus";
 import AutoNotifications from "./pages/AutoNotifications";
 
@@ -130,68 +135,73 @@ export default function AppRoutes() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<Register />} />
 
-        <Route
-          path="/dashboard"
-          element={
-            <Protected>
-              <Dashboard unread={unread} />
-            </Protected>
-          }
-        />
-
-        <Route
-          path="/visits"
-          element={
-            <Protected>
-              <VisitHistory />
-            </Protected>
-          }
-        />
-
-        <Route
-          path="/profile"
-          element={
-            <Protected>
-              <Profile />
-            </Protected>
-          }
-        />
-
-        <Route
-          path="/process-tracking"
-          element={
-            <Protected>
-              <ProcessStatus />
-            </Protected>
-          }
-        />
-        <Route
-            path="/doctor/examination-progress"
-            element={
-              <Protected>
-                <ExaminationProgress />
-              </Protected>
+      <Route
+        path="/dashboard"
+        element={
+          <Protected>
+            <Dashboard />
+          </Protected>
         }
-/>
-<Route
-  path="/doctor/lab-notify"
-  element={
-    <Protected>
-      <LabResultNotify />
-    </Protected>
-  }
-/>
+      />
+      <Route path="/register" element={<Register />} />
+      <Route
+        path="/visits"
+        element={
+          <Protected>
+            <VisitHistory />
+          </Protected>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <Protected>
+            <Profile />
+          </Protected>
+        }
+      />
 
-        {/* CHỈ AutoNotifications ĐƯỢC QUYỀN UPDATE unread */}
-        <Route
-          path="/autonotifications"
-          element={
-            <Protected>
-              <AutoNotifications onReadChange={setUnread} />
-            </Protected>
-          }
-        />
-      </Routes>
-    </>
+      <Route
+        path="/notifications"
+        element={
+          <Protected>
+            <Notifications />
+          </Protected>
+        }
+      />
+
+      <Route
+        path="/user-notifications"
+        element={
+          <Protected>
+            <UserNotifications />
+          </Protected>
+        }
+      />
+      <Route
+        path="/billing"
+        element={
+          <Protected>
+            <Billing />
+          </Protected>
+        }
+      />
+      <Route
+        path="/chat"
+        element={
+          <Protected>
+            <ChatPatient />
+          </Protected>
+        }
+      />
+      <Route
+        path="/doctor-chat"
+        element={
+          <Protected>
+            <ChatDoctor />
+          </Protected>
+        }
+      />
+    </Routes>
   );
 }

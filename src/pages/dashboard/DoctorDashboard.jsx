@@ -44,7 +44,7 @@ export default function DoctorDashboard() {
         <DashCard title="Đang chờ" value={sum.waiting} sub="Danh sách chờ (US9)" to="/doctor/queue?status=waiting" />
         <DashCard title="Đang khám" value={sum.inProgress} sub="Tiếp tục khám" to="/doctor/queue?status=in_progress" />
         <DashCard title="Đã khám" value={sum.done} sub="Lịch sử trong ngày" to="/doctor/queue?status=done" />
-        <DashCard title="Tin nhắn" value={sum.chats} sub="Trả lời bệnh nhân (US11)" to="/doctor/chats" />
+        <DashCard title="Tin nhắn" value={sum.chats} sub="Trả lời bệnh nhân (US11)" to="/doctor-chat" />
         <DashCard title="KQ cần thông báo" value={sum.labToNotify} sub="Đẩy thông báo (US12)" to="/doctor/lab-notify" />
       </div>
 

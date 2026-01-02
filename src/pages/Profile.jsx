@@ -6,6 +6,10 @@ import {
 } from "../services/notificationSetting";
 import "../assets/styles/auth.css";
 import { useNavigate } from "react-router-dom";
+import {
+  getNotificationSettings,
+  updateNotificationSettings,
+} from "../services/userNotifications";
 
 export default function Profile() {
   const [form, setForm] = useState({
@@ -19,6 +23,9 @@ export default function Profile() {
     emergencyContactPhone: "",
   });
 
+  // Cài đặt: nhận thông báo tự động
+  const [autoNotifyEnabled, setAutoNotifyEnabled] = useState(true);
+
   const [viewName, setViewName] = useState("");
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -31,17 +38,11 @@ export default function Profile() {
 
   const navigate = useNavigate();
 
-  // =========================
-  // LOAD PROFILE + SETTING
-  // =========================
   useEffect(() => {
     (async () => {
       try {
-        const [profile, notifySetting] = await Promise.all([
-          getMyProfile(),
-          getAutoNotificationSetting(),
-        ]);
-
+        // 1. Lấy hồ sơ cá nhân
+        const data = await getMyProfile();
         setForm({
           fullName: profile.fullName || "",
           dateOfBirth: profile.dateOfBirth || "",
@@ -52,9 +53,18 @@ export default function Profile() {
           emergencyContactName: profile.emergencyContactName || "",
           emergencyContactPhone: profile.emergencyContactPhone || "",
         });
+        setViewName(data.fullName || data.email || "");
 
-        setViewName(profile.fullName || profile.email || "");
-        setAutoNotifyEnabled(!!notifySetting?.enabled);
+        // 2. Lấy cài đặt thông báo
+        try {
+          const settings = await getNotificationSettings();
+          if (settings && typeof settings.autoNotifyEnabled === "boolean") {
+            setAutoNotifyEnabled(settings.autoNotifyEnabled);
+          }
+        } catch (e) {
+          // Nếu lỗi phần cài đặt thông báo thì bỏ qua, không chặn màn hình hồ sơ
+          console.warn("Không tải được cài đặt thông báo:", e);
+        }
       } catch (e) {
         setErr(e.message || "Không tải được hồ sơ");
       } finally {
@@ -76,9 +86,17 @@ export default function Profile() {
     }
 
     try {
+      // 1. Cập nhật thông tin hồ sơ
       const res = await updateMyProfile(form);
-      setMsg("Cập nhật thành công");
       setViewName(res.fullName || res.email || "");
+      // 2. Cập nhật cài đặt thông báo tự động
+      try {
+        await updateNotificationSettings({ autoNotifyEnabled });
+      } catch (e) {
+        console.warn("Không cập nhật được cài đặt thông báo:", e);
+      }
+
+      setMsg("Cập nhật thành công");
       setEditing(false);
     } catch (e) {
       setErr(e.message || "Cập nhật thất bại");
@@ -113,7 +131,6 @@ export default function Profile() {
 
   return (
     <div className="profile-wrap">
-      {/* TOP BAR */}
       <div className="profile-topbar">
         <button
           className="icon-btn"
@@ -125,6 +142,7 @@ export default function Profile() {
 
         <div className="title">HỒ SƠ CÁ NHÂN</div>
 
+        {/* Nút trở về trang chủ */}
         <button
           className="chip-btn"
           onClick={() => navigate("/")}
@@ -254,6 +272,32 @@ export default function Profile() {
           }
           disabled={!editing}
         />
+
+        {/* ===== CÀI ĐẶT THÔNG BÁO TỰ ĐỘNG ===== */}
+        <div className="section-title">Cài đặt thông báo</div>
+
+        <div className="pf-field">
+          <label>Nhận thông báo tự động</label>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              marginTop: 4,
+            }}
+          >
+            <input
+              type="checkbox"
+              checked={autoNotifyEnabled}
+              onChange={(e) => setAutoNotifyEnabled(e.target.checked)}
+              disabled={!editing}
+            />
+            <span style={{ fontSize: 13, opacity: 0.8 }}>
+              Khi bật, hệ thống sẽ gửi thông báo về kết quả xét nghiệm, lịch
+              khám và nhắc tái khám.
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
