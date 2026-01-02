@@ -6,6 +6,7 @@ import { logout } from "../store/authSlice";
 import PatientDashboard from "./dashboard/PatientDashboard";
 import DoctorDashboard from "./dashboard/DoctorDashboard";
 import AdminDashboard from "./dashboard/AdminDashboard";
+import AppHeader from "../components/Header"; // ✅ thêm dòng này
 
 export default function Dashboard({ unread }) {
   const dispatch = useDispatch();
@@ -36,12 +37,10 @@ export default function Dashboard({ unread }) {
 
   return (
     <div className="auth-container">
-      <div style={{ position: "fixed", top: 16, right: 16 }}>
-        <button className="btn" onClick={handleLogout}>
-          Đăng xuất
-        </button>
-      </div>
+      {/* ✅ dùng header chung (có chuông, user, nút đăng xuất) */}
+      <AppHeader />
 
+      {/* phần nội dung dashboard */}
       {dashboardComponent}
     </div>
   );

@@ -1,3 +1,4 @@
+// src/components/Header.jsx  (AppHeader)
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
@@ -12,6 +13,11 @@ export default function AppHeader() {
   const role = useSelector((s) => s.auth.role);
 
   const title =
+    role === "ADMIN"
+      ? "Quản trị hệ thống"
+      : role === "DOCTOR"
+      ? "Bác sĩ"
+      : "Bệnh nhân";
     role === "ADMIN"
       ? "Quản trị hệ thống"
       : role === "DOCTOR"
