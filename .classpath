@@ -43,5 +43,6 @@
 	<classpathentry kind="lib" path="C:/Users/zb/Downloads/Bung ra/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar"/>
 	<classpathentry kind="lib" path="C:/Users/zb/Downloads/Bung ra/opentelemetry-api-1.55.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/zb/Downloads/Bung ra/auto-service-annotations-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/zb/.p2/pool/plugins/org.testng_7.11.0.r202503091654.jar" sourcepath="C:/Users/zb/.p2/pool/plugins/org.testng.source_7.11.0.r202503091654.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
