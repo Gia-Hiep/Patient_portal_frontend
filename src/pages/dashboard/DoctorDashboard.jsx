@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DashCard from "../../components/DashCard";
 import { fetchDoctorSummary } from "../../services/dashboard";
+import { Link } from "react-router-dom";
 
 export default function DoctorDashboard() {
   const user = useSelector((s) => s.auth.user);
@@ -53,7 +54,9 @@ export default function DoctorDashboard() {
           Chọn bệnh nhân và cập nhật 🟢/🟡/🔵. Thay đổi hiển thị tức thì cho bệnh nhân.
         </div>
         <div style={{ marginTop: 10 }}>
-          <a href="/doctor/update-status" className="link">Đi đến trang cập nhật</a>
+         <Link to="/doctor/examination-progress" className="link">
+                 Đi đến trang cập nhật
+      </Link>
         </div>
       </div>
     </div>

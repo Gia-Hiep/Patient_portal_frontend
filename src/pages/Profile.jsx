@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getMyProfile, updateMyProfile } from "../services/api";
+import {
+  getAutoNotificationSetting,
+  updateAutoNotificationSetting,
+} from "../services/notificationSetting";
 import "../assets/styles/auth.css";
 import { useNavigate } from "react-router-dom";
 import {
@@ -27,6 +31,11 @@ export default function Profile() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState(null);
   const [msg, setMsg] = useState(null);
+
+  // 🔔 AUTO NOTIFICATION SETTING
+  const [autoNotifyEnabled, setAutoNotifyEnabled] = useState(true);
+  const [savingNotify, setSavingNotify] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,14 +44,14 @@ export default function Profile() {
         // 1. Lấy hồ sơ cá nhân
         const data = await getMyProfile();
         setForm({
-          fullName: data.fullName || "",
-          dateOfBirth: data.dateOfBirth || "",
-          address: data.address || "",
-          phone: data.phone || "",
-          email: data.email || "",
-          insuranceNumber: data.insuranceNumber || "",
-          emergencyContactName: data.emergencyContactName || "",
-          emergencyContactPhone: data.emergencyContactPhone || "",
+          fullName: profile.fullName || "",
+          dateOfBirth: profile.dateOfBirth || "",
+          address: profile.address || "",
+          phone: profile.phone || "",
+          email: profile.email || "",
+          insuranceNumber: profile.insuranceNumber || "",
+          emergencyContactName: profile.emergencyContactName || "",
+          emergencyContactPhone: profile.emergencyContactPhone || "",
         });
         setViewName(data.fullName || data.email || "");
 
@@ -64,13 +73,18 @@ export default function Profile() {
     })();
   }, []);
 
+  // =========================
+  // SAVE PROFILE
+  // =========================
   const save = async () => {
     setErr(null);
     setMsg(null);
+
     if (!form.fullName) {
       setErr("Vui lòng nhập Họ tên");
       return;
     }
+
     try {
       // 1. Cập nhật thông tin hồ sơ
       const res = await updateMyProfile(form);
@@ -86,6 +100,24 @@ export default function Profile() {
       setEditing(false);
     } catch (e) {
       setErr(e.message || "Cập nhật thất bại");
+    }
+  };
+
+  // =========================
+  // TOGGLE AUTO NOTIFICATION
+  // =========================
+  const toggleAutoNotify = async (checked) => {
+    setAutoNotifyEnabled(checked);
+
+    try {
+      setSavingNotify(true);
+      await updateAutoNotificationSetting(checked);
+    } catch (e) {
+      // revert nếu lỗi
+      setAutoNotifyEnabled(!checked);
+      alert("Lưu cài đặt thông báo thất bại");
+    } finally {
+      setSavingNotify(false);
     }
   };
 
@@ -137,6 +169,7 @@ export default function Profile() {
         )}
       </div>
 
+      {/* BODY */}
       <div className="profile-body">
         <div className="avatar"></div>
         <div className="name-line">{viewName}</div>
@@ -144,6 +177,36 @@ export default function Profile() {
         {err && <div className="alert">{err}</div>}
         {msg && <div className="alert success">{msg}</div>}
 
+        {/* ===================== */}
+        {/* CÀI ĐẶT THÔNG BÁO */}
+        {/* ===================== */}
+        <div className="section-title">Cài đặt thông báo</div>
+
+        <div
+          className="pf-field"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <label>Thông báo tự động</label>
+          <input
+            type="checkbox"
+            checked={autoNotifyEnabled}
+            disabled={savingNotify}
+            onChange={(e) => toggleAutoNotify(e.target.checked)}
+            style={{ width: 18, height: 18 }}
+          />
+        </div>
+
+        <div style={{ fontSize: 13, opacity: 0.75, marginBottom: 16 }}>
+          Khi bật, hệ thống sẽ hiển thị popup khi có thông báo mới.
+        </div>
+
+        {/* ===================== */}
+        {/* THÔNG TIN CÁ NHÂN */}
+        {/* ===================== */}
         <ProfileField
           label="Họ Tên"
           value={form.fullName}
@@ -186,13 +249,17 @@ export default function Profile() {
           <ProfileField
             label="Họ tên"
             value={form.emergencyContactName}
-            onChange={(v) => setForm({ ...form, emergencyContactName: v })}
+            onChange={(v) =>
+              setForm({ ...form, emergencyContactName: v })
+            }
             disabled={!editing}
           />
           <ProfileField
             label="SĐT"
             value={form.emergencyContactPhone}
-            onChange={(v) => setForm({ ...form, emergencyContactPhone: v })}
+            onChange={(v) =>
+              setForm({ ...form, emergencyContactPhone: v })
+            }
             disabled={!editing}
           />
         </div>
@@ -200,7 +267,9 @@ export default function Profile() {
         <ProfileField
           label="Mã BHYT"
           value={form.insuranceNumber}
-          onChange={(v) => setForm({ ...form, insuranceNumber: v })}
+          onChange={(v) =>
+            setForm({ ...form, insuranceNumber: v })
+          }
           disabled={!editing}
         />
 

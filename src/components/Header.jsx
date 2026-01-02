@@ -2,16 +2,22 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
-import { useNavigate } from "react-router-dom";
-import NotificationBell from "./NotificationBell";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function AppHeader() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
   const user = useSelector((s) => s.auth.user);
   const role = useSelector((s) => s.auth.role);
 
   const title =
+    role === "ADMIN"
+      ? "Quản trị hệ thống"
+      : role === "DOCTOR"
+      ? "Bác sĩ"
+      : "Bệnh nhân";
     role === "ADMIN"
       ? "Quản trị hệ thống"
       : role === "DOCTOR"
@@ -23,33 +29,56 @@ export default function AppHeader() {
     navigate("/login", { replace: true });
   };
 
+  const go = (path) => {
+    if (location.pathname !== path) {
+      navigate(path);
+    }
+  };
+
   return (
     <header
       style={{
-        // 🔥 Thu nhỏ header thành 1 “pill” cố định góc trên bên phải
-        position: "fixed",
-        top: 20,
-        right: 24,
+        width: "100%",
+        padding: "12px 24px",
+        background: "#0f1422",
+        borderBottom: "1px solid #222",
         display: "flex",
         alignItems: "center",
-        gap: 12,
-        padding: "8px 16px",
-        borderRadius: 999,
-        background: "rgba(15, 20, 34, 0.95)",
-        boxShadow: "0 6px 18px rgba(0,0,0,0.45)",
-        zIndex: 100,
+        justifyContent: "space-between",
+        position: "sticky",
+        top: 0,
+        zIndex: 99,
       }}
     >
-      <span style={{ fontWeight: 600, color: "#fff" }}>{title}</span>
+      {/* LEFT */}
+      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+        <h2 style={{ margin: 0 }}>{title}</h2>
 
-      {/* Chuông thông báo + badge */}
-      <NotificationBell />
+        {/* MENU RIÊNG CHO BÁC SĨ */}
+        {role === "DOCTOR" && (
+          <button
+            onClick={() => go("/doctor/examination-progress")}
+            style={{
+              background: "transparent",
+              border: "1px solid #2d3a57",
+              color: "#9bb0d0",
+              padding: "6px 12px",
+              borderRadius: 8,
+              cursor: "pointer",
+            }}
+          >
+            Tiến trình khám
+          </button>
+        )}
+      </div>
 
-      <span style={{ color: "#bbb" }}>{user?.username}</span>
-
-      <button className="btn small" onClick={onLogout}>
-        Đăng xuất
-      </button>
+      {/* RIGHT */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <span style={{ color: "#bbb" }}>{user?.username}</span>
+        <button className="btn small" onClick={onLogout}>
+          Đăng xuất
+        </button>
+      </div>
     </header>
   );
 }

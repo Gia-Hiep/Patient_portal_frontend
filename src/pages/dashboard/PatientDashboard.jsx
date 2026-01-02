@@ -1,3 +1,4 @@
+// src/pages/dashboard/PatientDashboard.jsx
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
@@ -7,24 +8,58 @@ import { listInvoices } from "../../services/billing";
 
 const vnd = (n) => Number(n || 0).toLocaleString("vi-VN") + " ₫";
 
-export default function PatientDashboard() {
+export default function PatientDashboard({ unread }) {
   const user = useSelector((s) => s.auth.user);
 
   const [sum, setSum] = useState({
     visits: 0,
     labResultsReady: 0,
+<<<<<<< HEAD
+    unreadNoti: unread,  // ← DÙNG PROP
+    unpaidInvoices: 0,
+=======
     imagingCount: 0,
     unreadNoti: 0,
     // billing
     invoicesTotal: 0,
     invoicesUnpaid: 0,
     unpaidAmount: 0,
+>>>>>>> origin/main
     nextAppointment: null,
   });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Load data khác như bình thường (trừ unreadNoti)
   useEffect(() => {
+<<<<<<< HEAD
+  (async () => {
+    try {
+      const res = await fetchPatientSummary();
+      setSum((prev) => ({ ...prev, ...res }));
+    } catch {
+      setSum({
+        visits: 4,
+        labResultsReady: 1,
+        unpaidInvoices: 0,
+        nextAppointment: {
+          time: "10:30 - 21/11",
+          clinic: "Tai–Mũi–Họng",
+          status: "Đang chờ",
+        },
+      });
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, []);
+
+// Cập nhật unread từ props
+useEffect(() => {
+  setSum((prev) => ({ ...prev, unreadNoti: unread }));
+}, [unread]);
+=======
     (async () => {
       try {
         setError("");
@@ -96,6 +131,7 @@ export default function PatientDashboard() {
       }
     })();
   }, []);
+>>>>>>> origin/main
 
   return (
     <div className="auth-card" style={{ maxWidth: 1024 }}>
@@ -145,7 +181,7 @@ export default function PatientDashboard() {
           title="Thông báo chưa đọc"
           value={sum.unreadNoti}
           sub="Thông báo tự động (US5/US7)"
-          to="/notifications"
+          to="/autonotifications"
         />
       </div>
 
@@ -167,15 +203,10 @@ export default function PatientDashboard() {
           <div className="muted">Đang tải…</div>
         ) : sum.nextAppointment ? (
           <div>
-            <div>
-              <b>Thời gian:</b> {sum.nextAppointment.time}
-            </div>
-            <div>
-              <b>Phòng:</b> {sum.nextAppointment.clinic}
-            </div>
-            <div>
-              <b>Trạng thái:</b> {sum.nextAppointment.status}
-            </div>
+            <div><b>Thời gian:</b> {sum.nextAppointment.time}</div>
+            <div><b>Phòng:</b> {sum.nextAppointment.clinic}</div>
+            <div><b>Trạng thái:</b> {sum.nextAppointment.status}</div>
+
             <div style={{ marginTop: 10 }}>
               <Link to="/process-tracking" className="link">
                 Xem trạng thái quy trình khám
@@ -187,21 +218,24 @@ export default function PatientDashboard() {
         )}
       </div>
 
+<<<<<<< HEAD
+=======
       {/* Links khác */}
+>>>>>>> origin/main
       <div style={{ marginTop: 18 }}>
-        <Link to="/chat" className="link">
-          Nhắn tin với bác sĩ (US8)
-        </Link>
+        <Link to="/chat" className="link">Nhắn tin với bác sĩ (US8)</Link>
       </div>
       <div style={{ marginTop: 18 }}>
-        <Link to="/notifications" className="link">
-          Thông báo chung từ bệnh viện (US7)
-        </Link>
+        <Link to="/notifications" className="link">Thông báo chung từ bệnh viện (US7)</Link>
       </div>
       <div style={{ marginTop: 18 }}>
+<<<<<<< HEAD
+        <Link to="/chat" className="link">Nhắn tin với bác sĩ (US8)</Link>
+=======
         <Link to="/user-notifications" className="link">
           Thông báo tự động (US5)
         </Link>
+>>>>>>> origin/main
       </div>
     </div>
   );

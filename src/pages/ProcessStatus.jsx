@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { getProcess } from "../services/process";
 import { Link } from "react-router-dom";
 
 export default function ProcessStatus() {
   const [stages, setStages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const pollingRef = useRef(null);
+
 
   const load = async () => {
     try {
       const r = await getProcess();
-      const list = r.stages || r.data?.stages || [];
+      const list = r?.stages || r?.data?.stages || [];
       setStages(list);
+
+      // ✅ nếu tất cả DONE → dừng polling
+      if (list.length && list.every(s => s.status === "DONE")) {
+        stopPolling();
+      }
     } catch (err) {
       console.error("Lỗi load process:", err);
       setStages([]);
@@ -19,83 +26,130 @@ export default function ProcessStatus() {
     }
   };
 
+  const startPolling = () => {
+    stopPolling();
+    pollingRef.current = setInterval(load, 5000);
+  };
+
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+
   useEffect(() => {
     load();
-    const t = setInterval(load, 5000);
-    return () => clearInterval(t);
+    startPolling();
+    return () => stopPolling();
   }, []);
-
-  if (loading) return <p className="process-empty">Đang tải…</p>;
-
-  if (!stages.length)
-    return (
-      <div className="process-wrap">
-        {/* Nút điều hướng */}
-        <div className="process-nav">
-          <Link to="/dashboard" className="process-btn">
-            ⬅ Về trang chủ
-          </Link>
-          <Link to="/profile" className="process-btn">
-            Hồ sơ cá nhân
-          </Link>
-        </div>
-
-        <p className="process-empty">
-          Hiện chưa có lịch khám hoặc trạng thái đang được cập nhật.
-        </p>
-      </div>
-    );
 
   const getStatusClass = (status) => {
     switch (status) {
       case "DONE":
         return "status-done";
-      case "WAITING":
+      case "IN_PROGRESS":
         return "status-waiting";
       default:
         return "status-not-started";
     }
   };
 
-  const getStatusLabel = (s) => {
-    switch (s) {
-      case "DONE":
-        return "Hoàn thành";
-      case "WAITING":
-        return "Đang chờ";
-      default:
-        return "Chưa khám";
+  const getStatusLabel = (stage, index) => {
+    const isLastStage = index === stages.length - 1;
+
+    if (stage.status === "DONE") return "Hoàn thành";
+
+    if (stage.status === "IN_PROGRESS") {
+      // 🔥 stage cuối đang IN_PROGRESS → HIỂN THỊ HOÀN TẤT
+      if (isLastStage) return "Hoàn tất";
+      return "Đang xử lý";
     }
+
+    return "Chưa khám";
   };
+
+
+  if (loading) {
+    return (
+      <p className="process-empty">
+        Đang tải trạng thái quy trình khám…
+      </p>
+    );
+  }
+
+  if (!stages.length) {
+    return (
+      <div className="process-wrap">
+        <div className="process-layout">
+          <div className="process-menu">
+            <Link to="/records" className="menu-btn">Lịch khám</Link>
+            <Link to="/lab-results" className="menu-btn">Kết quả</Link>
+            <Link to="/autonotifications" className="menu-btn">Thông báo</Link>
+            <Link to="/chat" className="menu-btn">Tin nhắn</Link>
+            <Link to="/billing" className="menu-btn">Viện phí</Link>
+
+            <hr style={{ opacity: 0.2 }} />
+
+            <Link to="/dashboard" className="menu-btn">⬅ Trang chủ</Link>
+            <Link to="/profile" className="menu-btn">Hồ sơ cá nhân</Link>
+          </div>
+
+          <div style={{ flex: 1 }}>
+            <p className="process-empty">
+              Hiện chưa có lịch khám hoặc trạng thái đang được cập nhật.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   return (
     <div className="process-wrap">
-      {/* === 2 NÚT ĐIỀU HƯỚNG === */}
-      <div className="process-nav">
-        <Link to="/dashboard" className="process-btn">
-          ⬅ Về trang chủ
-        </Link>
-        <Link to="/profile" className="process-btn">
-          Hồ sơ cá nhân
-        </Link>
-      </div>
+      <div className="process-layout">
 
-      <div className="process-title">Trạng thái quy trình khám</div>
-      <div className="process-desc">
-        Danh sách các phòng khám theo trình tự lịch khám của bạn.
-      </div>
-
-      {stages.map((s) => (
-        <div key={s.stageOrder} className="process-card">
-          <div className="process-left">
-            {s.stageOrder}. {s.stageName}
-          </div>
-
-          <div className={`process-status ${getStatusClass(s.status)}`}>
-            {getStatusLabel(s.status)}
-          </div>
+        {/* MENU */}
+        <div className="process-menu">
+          <Link to="/records" className="menu-btn">Lịch khám</Link>
+          <Link to="/lab-results" className="menu-btn">Kết quả</Link>
+          <Link to="/autonotifications" className="menu-btn">Thông báo</Link>
+          <Link to="/chat" className="menu-btn">Tin nhắn</Link>
+          <Link to="/billing" className="menu-btn">Viện phí</Link>
         </div>
-      ))}
+
+        {/* CONTENT */}
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+            <Link to="/dashboard" className="process-btn-top">
+              ⬅ Trang chủ
+            </Link>
+            <Link to="/profile" className="process-btn-top">
+              Hồ sơ cá nhân
+            </Link>
+          </div>
+
+          <div className="process-title">
+            Trạng thái quy trình khám
+          </div>
+
+          {stages.map((s, idx) => (
+            <div key={s.stageOrder} className="process-card">
+              <div className="process-left">
+                {s.stageOrder}. {s.stageName}
+              </div>
+
+              <div
+                className={`process-status ${getStatusClass(s.status)}`}
+              >
+                {getStatusLabel(s, idx)}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
