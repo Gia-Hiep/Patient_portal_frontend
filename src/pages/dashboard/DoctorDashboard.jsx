@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DashCard from "../../components/DashCard";
 import { fetchDoctorSummary } from "../../services/dashboard";
+import { Link } from "react-router-dom";
 
 export default function DoctorDashboard() {
   const user = useSelector((s) => s.auth.user);
@@ -43,7 +44,7 @@ export default function DoctorDashboard() {
         <DashCard title="Đang chờ" value={sum.waiting} sub="Danh sách chờ (US9)" to="/doctor/queue?status=waiting" />
         <DashCard title="Đang khám" value={sum.inProgress} sub="Tiếp tục khám" to="/doctor/queue?status=in_progress" />
         <DashCard title="Đã khám" value={sum.done} sub="Lịch sử trong ngày" to="/doctor/queue?status=done" />
-        <DashCard title="Tin nhắn" value={sum.chats} sub="Trả lời bệnh nhân (US11)" to="/doctor/chats" />
+        <DashCard title="Tin nhắn" value={sum.chats} sub="Trả lời bệnh nhân (US11)" to="/doctor-chat" />
         <DashCard title="KQ cần thông báo" value={sum.labToNotify} sub="Đẩy thông báo (US12)" to="/doctor/lab-notify" />
       </div>
 
@@ -53,7 +54,9 @@ export default function DoctorDashboard() {
           Chọn bệnh nhân và cập nhật 🟢/🟡/🔵. Thay đổi hiển thị tức thì cho bệnh nhân.
         </div>
         <div style={{ marginTop: 10 }}>
-          <a href="/doctor/update-status" className="link">Đi đến trang cập nhật</a>
+         <Link to="/doctor/examination-progress" className="link">
+                 Đi đến trang cập nhật
+      </Link>
         </div>
       </div>
     </div>

@@ -7,24 +7,34 @@ import { listInvoices } from "../../services/billing";
 
 const vnd = (n) => Number(n || 0).toLocaleString("vi-VN") + " ₫";
 
-export default function PatientDashboard() {
+export default function PatientDashboard({ unread = 0 }) {
   const user = useSelector((s) => s.auth.user);
 
   const [sum, setSum] = useState({
     visits: 0,
     labResultsReady: 0,
+    unreadNoti: unread, // lấy từ props
+    unpaidInvoices: 0,
     imagingCount: 0,
-    unreadNoti: 0,
     // billing
     invoicesTotal: 0,
     invoicesUnpaid: 0,
     unpaidAmount: 0,
     nextAppointment: null,
   });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Update unread từ props
   useEffect(() => {
+    setSum((prev) => ({ ...prev, unreadNoti: unread || 0 }));
+  }, [unread]);
+
+  // Load dashboard data
+  useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       try {
         setError("");
@@ -38,11 +48,11 @@ export default function PatientDashboard() {
           (visits || []).map((v) => getVisitDetail(v.id).catch(() => null))
         );
 
-        let lab = 0,
-          imaging = 0;
+        let lab = 0;
+        let imaging = 0;
         (details || []).forEach((d) => {
           (d?.documents || []).forEach((doc) => {
-            const t = (doc?.type || doc?.docType || "").toUpperCase();
+            const t = String(doc?.type || doc?.docType || "").toUpperCase();
             if (t === "LAB") lab += 1;
             if (t === "IMAGING") imaging += 1;
           });
@@ -65,7 +75,7 @@ export default function PatientDashboard() {
           };
         }
 
-        // ===== Billing (tổng hóa đơn & tổng tiền chưa thanh toán) =====
+        // ===== Billing =====
         const invoices = await listInvoices(); // [{id, invoiceNo, totalAmount, status}, ...]
         const invoicesTotal = Array.isArray(invoices) ? invoices.length : 0;
 
@@ -77,6 +87,8 @@ export default function PatientDashboard() {
             unpaidAmount += Number(iv.totalAmount || 0);
           }
         });
+
+        if (cancelled) return;
 
         setSum((prev) => ({
           ...prev,
@@ -90,11 +102,15 @@ export default function PatientDashboard() {
         }));
       } catch (e) {
         console.error(e);
-        setError(e?.message || "Không tải được tổng quan bệnh nhân.");
+        if (!cancelled) setError(e?.message || "Không tải được tổng quan bệnh nhân.");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -106,9 +122,7 @@ export default function PatientDashboard() {
         </Link>
       </div>
 
-      <p className="muted">
-        Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.
-      </p>
+      <p className="muted">Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.</p>
 
       {error && (
         <div className="alert error" style={{ marginTop: 8 }}>
@@ -131,13 +145,10 @@ export default function PatientDashboard() {
           to="/visits"
         />
 
-        {/* Tổng hóa đơn */}
         <DashCard
           title="Hóa đơn viện phí"
           value={sum.invoicesTotal}
-          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(
-            sum.unpaidAmount
-          )}`}
+          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(sum.unpaidAmount)}`}
           to="/billing"
         />
 
@@ -145,11 +156,10 @@ export default function PatientDashboard() {
           title="Thông báo chưa đọc"
           value={sum.unreadNoti}
           sub="Thông báo tự động (US5/US7)"
-          to="/notifications"
+          to="/user-notifications"
         />
       </div>
 
-      {/* Next appointment */}
       <div
         style={{
           marginTop: 24,
@@ -159,9 +169,7 @@ export default function PatientDashboard() {
           padding: 16,
         }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>
-          Lịch khám sắp tới (US1 / US4)
-        </div>
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>Lịch khám sắp tới (US1 / US4)</div>
 
         {loading ? (
           <div className="muted">Đang tải…</div>
@@ -176,6 +184,7 @@ export default function PatientDashboard() {
             <div>
               <b>Trạng thái:</b> {sum.nextAppointment.status}
             </div>
+
             <div style={{ marginTop: 10 }}>
               <Link to="/process-tracking" className="link">
                 Xem trạng thái quy trình khám
@@ -187,17 +196,12 @@ export default function PatientDashboard() {
         )}
       </div>
 
-      {/* Links khác */}
       <div style={{ marginTop: 18 }}>
         <Link to="/chat" className="link">
           Nhắn tin với bác sĩ (US8)
         </Link>
       </div>
-      <div style={{ marginTop: 18 }}>
-        <Link to="/notifications" className="link">
-          Thông báo chung từ bệnh viện (US7)
-        </Link>
-      </div>
+
       <div style={{ marginTop: 18 }}>
         <Link to="/user-notifications" className="link">
           Thông báo tự động (US5)
