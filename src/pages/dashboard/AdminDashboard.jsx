@@ -6,9 +6,7 @@ import { getJson } from "../../services/api";
 function fmtTime(v) {
   if (!v) return "-";
   const d = new Date(v);
-  if (!isNaN(d.getTime())) {
-    return d.toLocaleString("vi-VN");
-  }
+  if (!isNaN(d.getTime())) return d.toLocaleString("vi-VN");
   return String(v);
 }
 
@@ -19,52 +17,77 @@ export default function AdminDashboard() {
     users: 0,
     backups: 0,
     lastBackup: null,
-    doctors: 0,
-    services: 0,
-    news: 0,
+    announcements: 0, // ✅ thêm
   });
 
   const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
 
   useEffect(() => {
+    let mounted = true;
+
     (async () => {
       try {
+        setErr("");
         setLoading(true);
 
-        // ====== Users count ======
-        let usersCount = 0;
-        try {
-          const users = await getJson("/api/admin/users");
-          usersCount = Array.isArray(users) ? users.length : 0;
-        } catch (e) {
-          console.error("Load users failed", e);
-        }
+        const [usersRes, historyRes, annRes] = await Promise.allSettled([
+          getJson("/api/admin/users"),
+          getJson("/api/admin/backups/history"),
+          // dùng public list để đếm (không cần role)
+          getJson("/api/public/announcements"),
+        ]);
 
-        // ====== Backup history ======
-        let backups = 0;
-        let lastBackup = null;
-        try {
-          const history = await getJson("/api/admin/backups/history");
-          const rows = Array.isArray(history) ? history : [];
-          backups = rows.length;
+        // users
+        const users =
+          usersRes.status === "fulfilled" && Array.isArray(usersRes.value)
+            ? usersRes.value
+            : [];
+        const usersCount = users.length;
 
-          // tùy entity: backupTime / backup_time / createdAt...
-          const first = rows[0];
-          lastBackup = first?.backupTime || first?.backup_time || first?.time || null;
-        } catch (e) {
-          console.error("Load backup history failed", e);
-        }
+        // backups history
+        const history =
+          historyRes.status === "fulfilled" && Array.isArray(historyRes.value)
+            ? historyRes.value
+            : [];
+        const backups = history.length;
 
-        setSum((prev) => ({
-          ...prev,
+        const first = history[0] || null;
+        const lastBackup =
+          first?.backupTime || first?.backup_time || first?.time || null;
+
+        // announcements
+        const anns =
+          annRes.status === "fulfilled" && Array.isArray(annRes.value)
+            ? annRes.value
+            : [];
+        const announcements = anns.length;
+
+        if (!mounted) return;
+
+        setSum({
           users: usersCount,
           backups,
           lastBackup,
-        }));
+          announcements,
+        });
+
+        const errs = [];
+        if (usersRes.status === "rejected") errs.push("users");
+        if (historyRes.status === "rejected") errs.push("backup history");
+        if (annRes.status === "rejected") errs.push("announcements");
+        if (errs.length) setErr(`Không tải được: ${errs.join(", ")}.`);
+      } catch (e) {
+        console.error(e);
+        if (mounted) setErr(e?.message || "Không tải được dashboard admin.");
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     })();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -74,7 +97,16 @@ export default function AdminDashboard() {
         Xin chào, {user?.username}. Quản trị người dùng & hệ thống.
       </p>
 
-      {loading && <div className="muted" style={{ marginTop: 6 }}>Đang tải…</div>}
+      {err && (
+        <div className="alert error" style={{ marginTop: 8 }}>
+          {err}
+        </div>
+      )}
+      {loading && (
+        <div className="muted" style={{ marginTop: 6 }}>
+          Đang tải…
+        </div>
+      )}
 
       <div
         style={{
@@ -91,7 +123,13 @@ export default function AdminDashboard() {
           to="/admin/users"
         />
 
-        {/* Nếu chưa có API doctors/services/news thì cứ để 0 hoặc bỏ card */}
+        <DashCard
+          title="Thông báo / Tin tức"
+          value={sum.announcements}
+          sub="Tạo/Sửa/Xóa thông báo"
+          to="/admin/announcements"
+        />
+
         <DashCard
           title="Số bản backup"
           value={sum.backups}

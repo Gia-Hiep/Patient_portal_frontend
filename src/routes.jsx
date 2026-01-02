@@ -15,6 +15,8 @@ import ChatDoctor from "./pages/ChatDoctor";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import UserCreatePage from "./pages/admin/UserCreatePage";
 import AdminBackupsPage from "./pages/admin/AdminBackupsPage";
+import AnnouncementsPage from "./pages/patient/AnnouncementsPage";
+import AdminAnnouncementsPage from "./pages/admin/AdminAnnouncementsPage";
 
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
@@ -123,7 +125,22 @@ export default function AppRoutes() {
           </Protected>
         }
       />
-      
+      <Route
+        path="/announcements"
+        element={
+          <Protected>
+            <AnnouncementsPage />
+          </Protected>}
+      />
+
+      <Route
+        path="/admin/announcements"
+        element={
+          <Protected>
+            <AdminAnnouncementsPage />
+          </Protected>}
+      />
+
     </Routes>
   );
 }

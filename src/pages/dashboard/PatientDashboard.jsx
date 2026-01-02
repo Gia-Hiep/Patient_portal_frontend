@@ -15,32 +15,47 @@ export default function PatientDashboard() {
     labResultsReady: 0,
     imagingCount: 0,
     unreadNoti: 0,
-    // billing
+
+    // billing (mới)
     invoicesTotal: 0,
     invoicesUnpaid: 0,
     unpaidAmount: 0,
+
     nextAppointment: null,
   });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    let mounted = true;
+
     (async () => {
       try {
         setError("");
         setLoading(true);
 
-        // ===== Visits & documents =====
-        const visits = await getMyVisits(); // [{ id, visitDate, ... }]
-        const visitCount = Array.isArray(visits) ? visits.length : 0;
+        // chạy song song 2 API lớn
+        const [visitsRes, invoicesRes] = await Promise.allSettled([
+          getMyVisits(),
+          listInvoices(),
+        ]);
+
+        // ===== Visits (cũ) =====
+        const visits =
+          visitsRes.status === "fulfilled" && Array.isArray(visitsRes.value)
+            ? visitsRes.value
+            : [];
+
+        const visitCount = visits.length;
 
         const details = await Promise.all(
-          (visits || []).map((v) => getVisitDetail(v.id).catch(() => null))
+          visits.map((v) => getVisitDetail(v.id).catch(() => null))
         );
 
         let lab = 0,
           imaging = 0;
-        (details || []).forEach((d) => {
+        details.forEach((d) => {
           (d?.documents || []).forEach((doc) => {
             const t = (doc?.type || doc?.docType || "").toUpperCase();
             if (t === "LAB") lab += 1;
@@ -48,9 +63,9 @@ export default function PatientDashboard() {
           });
         });
 
-        // ===== Next appointment =====
+        // next appointment
         const now = new Date();
-        const futureVisits = (visits || [])
+        const futureVisits = visits
           .map((v) => ({ ...v, _dt: new Date(v.visitDate) }))
           .filter((v) => !isNaN(v._dt) && v._dt > now)
           .sort((a, b) => a._dt - b._dt);
@@ -65,18 +80,24 @@ export default function PatientDashboard() {
           };
         }
 
-        // ===== Billing (tổng hóa đơn & tổng tiền chưa thanh toán) =====
-        const invoices = await listInvoices(); // [{id, invoiceNo, totalAmount, status}, ...]
-        const invoicesTotal = Array.isArray(invoices) ? invoices.length : 0;
+        // ===== Billing (mới) =====
+        const invoices =
+          invoicesRes.status === "fulfilled" && Array.isArray(invoicesRes.value)
+            ? invoicesRes.value
+            : [];
+
+        const invoicesTotal = invoices.length;
 
         let invoicesUnpaid = 0;
         let unpaidAmount = 0;
-        (invoices || []).forEach((iv) => {
-          if (String(iv.status).toUpperCase() === "UNPAID") {
+        invoices.forEach((iv) => {
+          if (String(iv?.status || "").toUpperCase() === "UNPAID") {
             invoicesUnpaid += 1;
-            unpaidAmount += Number(iv.totalAmount || 0);
+            unpaidAmount += Number(iv?.totalAmount || 0);
           }
         });
+
+        if (!mounted) return;
 
         setSum((prev) => ({
           ...prev,
@@ -88,13 +109,25 @@ export default function PatientDashboard() {
           invoicesUnpaid,
           unpaidAmount,
         }));
+
+        // nếu 1 trong 2 API fail thì báo nhẹ
+        const errs = [];
+        if (visitsRes.status === "rejected") errs.push("lịch sử khám");
+        if (invoicesRes.status === "rejected") errs.push("hóa đơn");
+        if (errs.length) {
+          setError(`Không tải được: ${errs.join(", ")}.`);
+        }
       } catch (e) {
         console.error(e);
-        setError(e?.message || "Không tải được tổng quan bệnh nhân.");
+        if (mounted) setError(e?.message || "Không tải được tổng quan bệnh nhân.");
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     })();
+
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
@@ -131,13 +164,11 @@ export default function PatientDashboard() {
           to="/visits"
         />
 
-        {/* Tổng hóa đơn */}
+        {/* ✅ Card Hóa đơn (mới) */}
         <DashCard
           title="Hóa đơn viện phí"
           value={sum.invoicesTotal}
-          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(
-            sum.unpaidAmount
-          )}`}
+          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(sum.unpaidAmount)}`}
           to="/billing"
         />
 
@@ -149,7 +180,6 @@ export default function PatientDashboard() {
         />
       </div>
 
-      {/* Next appointment */}
       <div
         style={{
           marginTop: 24,
@@ -187,7 +217,6 @@ export default function PatientDashboard() {
         )}
       </div>
 
-      {/* Links khác */}
       <div style={{ marginTop: 18 }}>
         <Link to="/chat" className="link">
           Nhắn tin với bác sĩ (US8)
