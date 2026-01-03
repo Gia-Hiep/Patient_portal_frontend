@@ -13,6 +13,10 @@ import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
+
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import UserCreatePage from "./pages/admin/UserCreatePage";
+
 import Profile from "./pages/Profile";
 
 import ProcessStatus from "./pages/ProcessStatus";
@@ -21,6 +25,7 @@ import AutoNotifications from "./pages/AutoNotifications";
 import { getNotifications } from "./services/notification";
 import { getAutoNotificationSetting } from "./services/notificationSetting";
 import NotificationBell from "./components/NotificationBell";
+
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -70,6 +75,26 @@ export default function AppRoutes() {
         if (Array.isArray(list)) {
           lastIdsRef.current = list.map((n) => n.id);
         }
+      />
+
+      <Route
+        path="/admin/users"
+        element={
+          <Protected>
+            <AdminUsersPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/admin/users/create"
+        element={
+          <Protected>
+            <UserCreatePage />
+          </Protected>
+        }
+      />
+
+    </Routes>
       } catch (err) {
         console.error("Load notification setting failed:", err);
       }
