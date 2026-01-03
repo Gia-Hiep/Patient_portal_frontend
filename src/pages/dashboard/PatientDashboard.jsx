@@ -122,7 +122,9 @@ export default function PatientDashboard({ unread = 0 }) {
         </Link>
       </div>
 
-      <p className="muted">Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.</p>
+      <p className="muted">
+        Xin chào, {user?.username}. Đây là thông tin tổng quan sức khỏe của bạn.
+      </p>
 
       {error && (
         <div className="alert error" style={{ marginTop: 8 }}>
