@@ -6,6 +6,7 @@ import {
   fetchDoctorSummary,
   fetchDoctorAppointments,
 } from "../../services/dashboard";
+import { Link } from "react-router-dom";
 
 export default function DoctorDashboard() {
   const user = useSelector((s) => s.auth.user);
