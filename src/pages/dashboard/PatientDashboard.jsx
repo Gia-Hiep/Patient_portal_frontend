@@ -7,42 +7,56 @@ import { listInvoices } from "../../services/billing";
 
 const vnd = (n) => Number(n || 0).toLocaleString("vi-VN") + " ₫";
 
-export default function PatientDashboard() {
+export default function PatientDashboard({ unread = 0 }) {
   const user = useSelector((s) => s.auth.user);
 
   const [sum, setSum] = useState({
     visits: 0,
     labResultsReady: 0,
     imagingCount: 0,
-    unreadNoti: 0,
+
+    unreadNoti: unread, // lấy từ props
+
     // billing
     invoicesTotal: 0,
     invoicesUnpaid: 0,
     unpaidAmount: 0,
+
     nextAppointment: null,
   });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // ===== Update unread từ props =====
   useEffect(() => {
+    setSum((prev) => ({ ...prev, unreadNoti: unread || 0 }));
+  }, [unread]);
+
+  // ===== Load dashboard data (real) =====
+  useEffect(() => {
+    let cancelled = false;
+
     (async () => {
       try {
         setError("");
         setLoading(true);
 
         // ===== Visits & documents =====
-        const visits = await getMyVisits(); // [{ id, visitDate, ... }]
-        const visitCount = Array.isArray(visits) ? visits.length : 0;
+        const visits = await getMyVisits(); // [{ id, visitDate, department, status, ... }]
+        const visitList = Array.isArray(visits) ? visits : [];
+        const visitCount = visitList.length;
 
         const details = await Promise.all(
-          (visits || []).map((v) => getVisitDetail(v.id).catch(() => null))
+          visitList.map((v) => getVisitDetail(v.id).catch(() => null))
         );
 
-        let lab = 0,
-          imaging = 0;
+        let lab = 0;
+        let imaging = 0;
+
         (details || []).forEach((d) => {
           (d?.documents || []).forEach((doc) => {
-            const t = (doc?.type || doc?.docType || "").toUpperCase();
+            const t = String(doc?.type || doc?.docType || "").toUpperCase();
             if (t === "LAB") lab += 1;
             if (t === "IMAGING") imaging += 1;
           });
@@ -50,7 +64,7 @@ export default function PatientDashboard() {
 
         // ===== Next appointment =====
         const now = new Date();
-        const futureVisits = (visits || [])
+        const futureVisits = visitList
           .map((v) => ({ ...v, _dt: new Date(v.visitDate) }))
           .filter((v) => !isNaN(v._dt) && v._dt > now)
           .sort((a, b) => a._dt - b._dt);
@@ -65,18 +79,21 @@ export default function PatientDashboard() {
           };
         }
 
-        // ===== Billing (tổng hóa đơn & tổng tiền chưa thanh toán) =====
-        const invoices = await listInvoices(); // [{id, invoiceNo, totalAmount, status}, ...]
-        const invoicesTotal = Array.isArray(invoices) ? invoices.length : 0;
+        // ===== Billing =====
+        const invoices = await listInvoices(); // [{ id, invoiceNo, totalAmount, status }, ...]
+        const invoiceList = Array.isArray(invoices) ? invoices : [];
+        const invoicesTotal = invoiceList.length;
 
         let invoicesUnpaid = 0;
         let unpaidAmount = 0;
-        (invoices || []).forEach((iv) => {
-          if (String(iv.status).toUpperCase() === "UNPAID") {
+        invoiceList.forEach((iv) => {
+          if (String(iv?.status || "").toUpperCase() === "UNPAID") {
             invoicesUnpaid += 1;
-            unpaidAmount += Number(iv.totalAmount || 0);
+            unpaidAmount += Number(iv?.totalAmount || 0);
           }
         });
+
+        if (cancelled) return;
 
         setSum((prev) => ({
           ...prev,
@@ -90,25 +107,28 @@ export default function PatientDashboard() {
         }));
       } catch (e) {
         console.error(e);
-        setError(e?.message || "Không tải được tổng quan bệnh nhân.");
+        if (!cancelled) setError(e?.message || "Không tải được tổng quan bệnh nhân.");
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
     <div className="auth-card" style={{ maxWidth: 1024 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <h2 style={{ margin: 0, flex: 1 }}>Patient Dashboard</h2>
+
         <Link to="/profile" className="chip-btn">
           Hồ sơ cá nhân
         </Link>
       </div>
 
-      <p className="muted">
-        Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.
-      </p>
+      <p className="muted">Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.</p>
 
       {error && (
         <div className="alert error" style={{ marginTop: 8 }}>
@@ -116,6 +136,7 @@ export default function PatientDashboard() {
         </div>
       )}
 
+      {/* ===== Cards ===== */}
       <div
         style={{
           display: "grid",
@@ -125,31 +146,28 @@ export default function PatientDashboard() {
         }}
       >
         <DashCard
-          title="Lịch sử khám bệnh + Xem/Tải PDF"
+          title="Lịch sử khám bệnh"
           value={sum.visits}
           sub="Xem lịch sử khám & chi tiết"
           to="/visits"
         />
 
-        {/* Tổng hóa đơn */}
-        <DashCard
-          title="Hóa đơn viện phí"
-          value={sum.invoicesTotal}
-          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(
-            sum.unpaidAmount
-          )}`}
-          to="/billing"
-        />
-
         <DashCard
           title="Thông báo chưa đọc"
           value={sum.unreadNoti}
-          sub="Thông báo tự động (US5/US7)"
-          to="/notifications"
+          sub="Thông báo tự động (US5)"
+          to="/user-notifications"
+        />
+
+        <DashCard
+          title="Hóa đơn viện phí"
+          value={sum.invoicesTotal}
+          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(sum.unpaidAmount)}`}
+          to="/billing"
         />
       </div>
 
-      {/* Next appointment */}
+      {/* ===== Next appointment ===== */}
       <div
         style={{
           marginTop: 24,
@@ -159,49 +177,28 @@ export default function PatientDashboard() {
           padding: 16,
         }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>
-          Lịch khám sắp tới (US1 / US4)
+        {/* ===== Quick links ===== */}
+        <div style={{ marginTop: 18 }}>
+          <Link to="/chat" className="link">
+            Nhắn tin với bác sĩ (US8)
+          </Link>
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <Link to="/process-tracking" className="link">
+            Xem trạng thái quy trình khám
+          </Link>
+        </div>
+        <div style={{ marginTop: 18 }}>
+          <Link to="/user-notifications" className="link">
+            Thông báo tự động (US5)
+          </Link>
         </div>
 
-        {loading ? (
-          <div className="muted">Đang tải…</div>
-        ) : sum.nextAppointment ? (
-          <div>
-            <div>
-              <b>Thời gian:</b> {sum.nextAppointment.time}
-            </div>
-            <div>
-              <b>Phòng:</b> {sum.nextAppointment.clinic}
-            </div>
-            <div>
-              <b>Trạng thái:</b> {sum.nextAppointment.status}
-            </div>
-            <div style={{ marginTop: 10 }}>
-              <Link to="/process-tracking" className="link">
-                Xem trạng thái quy trình khám
-              </Link>
-            </div>
-          </div>
-        ) : (
-          <div className="muted">Chưa có lịch khám.</div>
-        )}
-      </div>
-
-      {/* Links khác */}
-      <div style={{ marginTop: 18 }}>
-        <Link to="/chat" className="link">
-          Nhắn tin với bác sĩ (US8)
-        </Link>
-      </div>
-      <div style={{ marginTop: 18 }}>
-        <Link to="/notifications" className="link">
-          Thông báo chung từ bệnh viện (US7)
-        </Link>
-      </div>
-      <div style={{ marginTop: 18 }}>
-        <Link to="/user-notifications" className="link">
-          Thông báo tự động (US5)
-        </Link>
+        <div style={{ marginTop: 18 }}>
+          <Link to="/notifications" className="link">
+            Thông báo chung từ bệnh viện (US7)
+          </Link>
+        </div>
       </div>
     </div>
   );

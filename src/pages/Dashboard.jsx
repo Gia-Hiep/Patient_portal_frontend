@@ -2,15 +2,16 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../store/authSlice";
+
 import PatientDashboard from "./dashboard/PatientDashboard";
 import DoctorDashboard from "./dashboard/DoctorDashboard";
 import AdminDashboard from "./dashboard/AdminDashboard";
 import AppHeader from "../components/Header"; // ✅ thêm dòng này
 
-export default function Dashboard() {
+export default function Dashboard({ unread }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { user, role, token } = useSelector((s) => s.auth);
+  const { role, token } = useSelector((s) => s.auth);
 
   useEffect(() => {
     if (!token) navigate("/login", { replace: true });
@@ -21,13 +22,17 @@ export default function Dashboard() {
     navigate("/login", { replace: true });
   };
 
-  let dashboardComponent = null;
-  if (role === "ADMIN") {
-    dashboardComponent = <AdminDashboard />;
-  } else if (role === "DOCTOR") {
-    dashboardComponent = <DoctorDashboard />;
-  } else {
-    dashboardComponent = <PatientDashboard />;
+  // Truyền unread xuống từng loại Dashboard
+  let dashboardComponent;
+  switch (role) {
+    case "ADMIN":
+      dashboardComponent = <AdminDashboard unread={unread} />;
+      break;
+    case "DOCTOR":
+      dashboardComponent = <DoctorDashboard unread={unread} />;
+      break;
+    default:
+      dashboardComponent = <PatientDashboard unread={unread} />;
   }
 
   return (
