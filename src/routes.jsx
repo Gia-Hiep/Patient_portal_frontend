@@ -232,7 +232,7 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/lab-result-notify"
+          path="/lab-result-notifications"
           element={
             <Protected>
               <LabResultNotify />

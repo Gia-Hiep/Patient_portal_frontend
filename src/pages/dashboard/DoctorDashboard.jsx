@@ -1,60 +1,83 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import DashCard from "../../components/DashCard";
 import DoctorAppointmentTable from "../../components/DoctorAppointmentTable";
-import {
-  fetchDoctorSummary,
-  fetchDoctorAppointments,
-} from "../../services/dashboard";
-import { Link } from "react-router-dom";
+import { fetchDoctorSummary, fetchDoctorAppointments } from "../../services/dashboard";
+import { listDoctorPatients } from "../../services/chat"; 
 
 export default function DoctorDashboard() {
   const user = useSelector((s) => s.auth.user);
 
-  // ===== Summary (US khác) =====
+  // ===== Summary (lab/today) =====
   const [sum, setSum] = useState({
-    chats: 0,
     labToNotify: 0,
-    today: "hôm nay",
+    today: "Hôm nay",
   });
 
-  // ===== Appointments =====
-  const [allAppointments, setAllAppointments] = useState([]); // FULL LIST (for cards)
-  const [appointments, setAppointments] = useState([]);       // FILTERED (for table)
+  // ===== Chat peers count (REAL) =====
+  const [chatCount, setChatCount] = useState(0);
+  const [loadingChats, setLoadingChats] = useState(false);
+
+  // ===== Appointments for CARDS (ALL) =====
+  const [allAppointments, setAllAppointments] = useState([]);
+  const [loadingAll, setLoadingAll] = useState(false);
+
+  // ===== Appointments for TABLE (filtered) =====
+  const [appointments, setAppointments] = useState([]);
   const [status, setStatus] = useState(""); // "" | WAITING | DONE | CANCELLED
   const [loadingAppt, setLoadingAppt] = useState(false);
 
-  // ===== Load summary =====
+  // ===== Load summary (real) =====
   useEffect(() => {
     (async () => {
       try {
         const res = await fetchDoctorSummary();
         setSum({
-          chats: res?.chats ?? 0,
           labToNotify: res?.labToNotify ?? 0,
-          today: res?.today ?? "hôm nay",
+          today: res?.today ?? "Hôm nay",
         });
       } catch (e) {
         console.error("fetchDoctorSummary failed:", e);
+        setSum({ labToNotify: 0, today: "Hôm nay" });
       }
     })();
   }, []);
 
-  // ===== Load ALL appointments once (for cards) =====
+
   useEffect(() => {
     (async () => {
+      setLoadingChats(true);
+      try {
+        const res = await listDoctorPatients(""); // q="" => lấy full list
+        const list = Array.isArray(res) ? res : res?.data ?? [];
+        setChatCount(Array.isArray(list) ? list.length : 0);
+      } catch (e) {
+        console.error("listDoctorPatients failed:", e);
+        setChatCount(0);
+      } finally {
+        setLoadingChats(false);
+      }
+    })();
+  }, []);
+
+
+  useEffect(() => {
+    (async () => {
+      setLoadingAll(true);
       try {
         const res = await fetchDoctorAppointments("");
         const list = Array.isArray(res) ? res : res?.data ?? [];
-        setAllAppointments(list);
+        setAllAppointments(Array.isArray(list) ? list : []);
       } catch (e) {
         console.error("fetchDoctorAppointments (all) failed:", e);
         setAllAppointments([]);
+      } finally {
+        setLoadingAll(false);
       }
     })();
   }, []);
 
-  // ===== Load appointments for TABLE (depends on filter) =====
   useEffect(() => {
     (async () => {
       setLoadingAppt(true);
@@ -62,9 +85,9 @@ export default function DoctorDashboard() {
       try {
         const res = await fetchDoctorAppointments(status);
         const list = Array.isArray(res) ? res : res?.data ?? [];
-        setAppointments(list);
+        setAppointments(Array.isArray(list) ? list : []);
       } catch (e) {
-        console.error("fetchDoctorAppointments failed:", e);
+        console.error("fetchDoctorAppointments (filtered) failed:", e);
         setAppointments([]);
       } finally {
         setLoadingAppt(false);
@@ -72,24 +95,32 @@ export default function DoctorDashboard() {
     })();
   }, [status]);
 
-  // ===== CARD COUNTS (LUÔN TÍNH TỪ ALL) =====
-  const waitingCount = allAppointments.filter(
-    (a) => a.status === "REQUESTED" || a.status === "CONFIRMED"
-  ).length;
+  const cardCounts = useMemo(() => {
+    const waiting = allAppointments.filter(
+      (a) => a.status === "REQUESTED" || a.status === "CONFIRMED"
+    ).length;
 
-  const doneCount = allAppointments.filter(
-    (a) => a.status === "COMPLETED"
-  ).length;
+    const inProgress = allAppointments.filter(
+      (a) =>
+        a.status === "IN_PROGRESS" ||
+        a.status === "IN_EXAMINATION" ||
+        a.status === "EXAMINING"
+    ).length;
 
-  const cancelledCount = allAppointments.filter(
-    (a) => a.status === "CANCELLED" || a.status === "NO_SHOW"
-  ).length;
+    const done = allAppointments.filter((a) => a.status === "COMPLETED").length;
+
+    const cancelled = allAppointments.filter(
+      (a) => a.status === "CANCELLED" || a.status === "NO_SHOW"
+    ).length;
+
+    return { waiting, inProgress, done, cancelled };
+  }, [allAppointments]);
 
   return (
     <div className="auth-card" style={{ maxWidth: 1080 }}>
       <h2>Doctor Dashboard</h2>
       <p className="muted">
-        Xin chào, {user?.username}. Tổng quan {sum.today} — quản lý và xem danh sách bệnh nhân.
+        Xin chào, {user?.username}. Tổng quan {sum.today || "Hôm nay"} — quản lý hàng đợi & trao đổi bệnh nhân.
       </p>
 
       {/* ===== DASH CARDS ===== */}
@@ -101,14 +132,41 @@ export default function DoctorDashboard() {
           marginTop: 16,
         }}
       >
-        <DashCard title="Đang chờ" value={waitingCount} sub="Danh sách chờ (US9)" />
-        <DashCard title="Đã khám" value={doneCount} sub="Lịch sử trong ngày" />
-        <DashCard title="Đã huỷ" value={cancelledCount} sub="Lịch huỷ / không đến" />
-        <DashCard title="Tin nhắn" value={sum.chats} sub="Trả lời bệnh nhân (US11)" />
-        <DashCard title="KQ cần thông báo" value={sum.labToNotify} sub="Đẩy thông báo (US12)" />
+        <DashCard
+          title="Đang chờ"
+          value={loadingAll ? "…" : cardCounts.waiting}
+          sub="Danh sách chờ (US9)"
+          to="/doctor/queue?status=waiting"
+        />
+        <DashCard
+          title="Đang khám"
+          value={loadingAll ? "…" : cardCounts.inProgress}
+          sub="Tiếp tục khám"
+          to="/doctor/queue?status=in_progress"
+        />
+        <DashCard
+          title="Đã khám"
+          value={loadingAll ? "…" : cardCounts.done}
+          sub="Lịch sử trong ngày"
+          to="/doctor/queue?status=done"
+        />
+
+        <DashCard
+          title="Tin nhắn"
+          value={loadingChats ? "…" : chatCount}
+          sub="Bệnh nhân đang trò chuyện (US11)"
+          to="/doctor-chat"
+        />
+
+        <DashCard
+          title="KQ cần thông báo"
+          value={sum.labToNotify}
+          sub="Đẩy thông báo (US12)"
+          to="/doctor/lab-notify"
+        />
       </div>
 
-      {/* ===== APPOINTMENT TABLE ===== */}
+      {/* ===== US9: APPOINTMENT TABLE ===== */}
       <div
         style={{
           marginTop: 24,
@@ -140,7 +198,7 @@ export default function DoctorDashboard() {
         </div>
       </div>
 
-      {/* ===== US10 ===== */}
+      {/* ===== US12: QUICK SECTION ===== */}
       <div
         style={{
           marginTop: 24,
@@ -150,16 +208,35 @@ export default function DoctorDashboard() {
           padding: 16,
         }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>
-          Cập nhật trạng thái quy trình (US10)
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>Kết quả cần thông báo (US12)</div>
+        <div className="muted">
+          Xem danh sách bệnh nhân có kết quả xét nghiệm và gửi thông báo: “Kết quả xét nghiệm của bạn đã sẵn sàng.”
         </div>
+        <div style={{ marginTop: 10 }}>
+          <Link to="/doctor/lab-notify" className="link">
+            Đi đến trang thông báo kết quả
+          </Link>
+        </div>
+      </div>
+
+      {/* ===== US10: EXAMINATION PROGRESS ===== */}
+      <div
+        style={{
+          marginTop: 16,
+          background: "#0f1422",
+          border: "1px solid #223",
+          borderRadius: 16,
+          padding: 16,
+        }}
+      >
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>Cập nhật trạng thái quy trình (US10)</div>
         <div className="muted">
           Chọn bệnh nhân và cập nhật 🟢/🟡/🔵. Thay đổi hiển thị tức thì cho bệnh nhân.
         </div>
         <div style={{ marginTop: 10 }}>
-          <a href="/doctor/update-status" className="link">
+          <Link to="/doctor/examination-progress" className="link">
             Đi đến trang cập nhật
-          </a>
+          </Link>
         </div>
       </div>
     </div>
