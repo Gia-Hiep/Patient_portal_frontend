@@ -1,13 +1,14 @@
 const BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
 
-/** Lấy header Authorization từ localStorage  */
+/** Lấy header Authorization từ localStorage */
+
 function authHeaders() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-/** Xử lý response JSON/Text chung **/
+/** Xử lý response JSON/Text chung */
 async function handleJsonResponse(res) {
   let data = null;
   let text = "";
@@ -36,6 +37,8 @@ async function handleJsonResponse(res) {
   }
   return data ?? {};
 }
+
+/* ================== HTTP HELPERS ================== */
 
 export async function postJson(path, body, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -79,7 +82,30 @@ export async function putJson(path, body, options = {}) {
   return handleJsonResponse(res);
 }
 
+/**
+ * 🔥 THÊM MỚI – DELETE JSON
+ * Dùng cho:
+ * - US14.2: DELETE /api/admin/doctors/{id}
+ * - Các API delete khác sau này
+ */
+export async function deleteJson(path, options = {}) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "DELETE",
+    headers: {
+      ...authHeaders(),
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
+  return handleJsonResponse(res);
+}
+
+/* ================== DOMAIN APIs ================== */
+
 export const getMyProfile = () => getJson("/api/profile/me");
-export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);
-export const getMyVisits = () => getJson("/api/visits");          // list
-export const getVisitDetail = (id) => getJson(`/api/visits/${id}`); // detail
+export const updateMyProfile = (payload) =>
+  putJson("/api/profile/me", payload);
+
+export const getMyVisits = () => getJson("/api/visits");            // list
+export const getVisitDetail = (id) =>
+  getJson(`/api/visits/${id}`);                                     // detail
