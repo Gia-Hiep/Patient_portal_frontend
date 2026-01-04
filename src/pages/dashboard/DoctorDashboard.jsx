@@ -178,13 +178,6 @@ export default function DoctorDashboard() {
       >
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ fontWeight: 600 }}>Danh sách bệnh nhân hôm nay (US9)</div>
-
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">Tất cả</option>
-            <option value="WAITING">Đang chờ</option>
-            <option value="DONE">Đã khám</option>
-            <option value="CANCELLED">Đã huỷ</option>
-          </select>
         </div>
 
         <div style={{ marginTop: 12 }}>
