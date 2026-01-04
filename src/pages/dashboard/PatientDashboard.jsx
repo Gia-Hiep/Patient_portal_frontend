@@ -108,7 +108,6 @@ export default function PatientDashboard({ unread = 0 }) {
           }
         });
 
-        if (!mounted) return;
         if (cancelled) return;
 
         setSum((prev) => ({
@@ -130,18 +129,12 @@ export default function PatientDashboard({ unread = 0 }) {
           setError(`Không tải được: ${errs.join(", ")}.`);
         }
       } catch (e) {
+          setError(e?.message || "Không tải được tổng quan bệnh nhân.");
         console.error(e);
-        if (mounted) setError(e?.message || "Không tải được tổng quan bệnh nhân.");
-      } finally {
-        if (mounted) setLoading(false);
-        if (!cancelled) setError(e?.message || "Không tải được tổng quan bệnh nhân.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
+      } 
     })();
 
     return () => {
-      mounted = false;
       cancelled = true;
     };
   }, []);
@@ -186,6 +179,8 @@ export default function PatientDashboard({ unread = 0 }) {
           value={sum.invoicesTotal}
           sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(sum.unpaidAmount)}`}
           to="/billing"
+        />
+
         <DashCard
           title="Thông báo chưa đọc"
           value={sum.unreadNoti}
