@@ -1,548 +1,556 @@
-:root {
-  --bg: #0b1020;
-  --card: #121933;
-  --border: #265644;
-  --text: #e8ecf8;
-  --muted: #9fb1d6;
-}
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: Inter, system-ui, Arial;
-  background: var(--bg);
-  color: var(--text);
-}
-a,
-.link {
-  color: #7fb0ff;
-  text-decoration: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-.auth-container {
+/* ====== Page shell ====== */
+.auth-page {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  background: #f6f7fb;
+  color: #111827;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
 }
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+
+/* ====== Top bar (matches reference layout) ====== */
+.auth-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #ffffff;
+  border-bottom: 1px solid #eef0f4;
 }
-.auth-card h2 {
-  margin: 0 0 8px;
-  font-weight: 700;
-}
-.muted {
-  color: var(--muted);
-  font-size: 14px;
-  margin: 0 0 8px;
-}
-label {
-  display: block;
-  font-size: 14px;
-  color: #c7d4f3;
-  margin: 12px 0 6px;
-}
-.input {
-  width: 100%;
-  background: #0e1430;
-  color: #e8ecf8;
-  border: 1px solid #263156;
-  outline: none;
-  border-radius: 10px;
-  padding: 12px 14px;
-}
-.btn {
-  width: 100%;
-  background: #4666ff;
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 12px 14px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-top: 16px;
-}
-.btn:disabled {
-  background: #2a355c;
-  cursor: not-allowed;
-}
-.alert {
-  width: 100%;
-  background: #2b2133;
-  border: 1px solid #5b4366;
-  color: #ffb2c3;
-  padding: 10px 12px;
-  border-radius: 10px;
-  margin: 8px 0;
-}
-.row {
+
+.auth-topbar-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 12px;
-}
-.input-error {
-  border-color: #e63946;
-}
-.field-error {
-  color: #e63946;
-  font-size: 0.9rem;
-  margin: 4px 0 10px;
 }
 
-/* khung tổng */
-.profile-wrap {
-  max-width: 560px;
-  margin: 24px auto;
-  padding: 0 12px;
+.auth-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  user-select: none;
 }
 
-/* top bar */
-.profile-topbar {
+.auth-brand-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f6ff;
+  color: #2563eb;
+  border: 1px solid #e8edff;
+}
+
+.auth-brand-text {
+  font-size: 18px;
+}
+
+.auth-topbar-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.profile-topbar .title {
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  margin-left: 8px;
-  flex: 1;
-}
-.icon-btn {
-  border: none;
-  background: transparent;
-  font-size: 20px;
-  cursor: pointer;
-  padding: 4px 8px;
-}
-.chip-btn {
-  border: 1px solid #2e3bff33;
-  background: #1f2a44;
-  padding: 6px 12px;
-  border-radius: 16px;
-  cursor: pointer;
+  gap: 10px;
 }
 
-/* profile body */
-.profile-body {
-  background: #0e1422;
-  border: 1px solid #24314a;
-  border-radius: 16px;
-  padding: 20px;
-}
-
-.avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  border: 2px solid #32405f;
-  margin-bottom: 8px;
-  background: linear-gradient(145deg, #1a2440, #0e1422);
-}
-.name-line {
-  height: 18px;
-  margin-bottom: 12px;
-  color: #cfe3ff;
-}
-
-.pf-field {
-  margin: 10px 0;
-}
-.pf-field label {
-  font-size: 13px;
-  opacity: 0.85;
-}
-.input {
-  width: 100%;
-  background: #0c1120;
-  border: 1px solid #24314a;
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-top: 6px;
-  color: #e7f0ff;
-}
-.section-title {
-  margin-top: 14px;
+.auth-topbar-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #e6e8ee;
+  background: #f8fafc;
+  color: #111827;
+  text-decoration: none;
   font-weight: 600;
-  opacity: 0.9;
+  font-size: 14px;
 }
-.row-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+
+.auth-topbar-link:hover {
+  background: #eef2f7;
 }
-@media (max-width: 600px) {
-  .row-2 {
-    grid-template-columns: 1fr;
+
+/* ====== Centered auth container/card ====== */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px 40px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border: 1px solid #eef0f4;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+  padding: 28px 28px 22px;
+}
+
+@media (max-width: 520px) {
+  .auth-card {
+    padding: 22px 18px 18px;
+    border-radius: 16px;
   }
 }
 
-.alert {
-  margin: 10px 0;
-  border: 1px solid #5a2a2a;
-  background: #1a1212;
-  padding: 10px;
-  border-radius: 8px;
-}
-.alert.success {
-  border-color: #2f6a46;
-  background: #132019;
+.auth-head {
+  text-align: center;
+  padding: 6px 6px 18px;
 }
 
-/* =============== US7 - THÔNG BÁO CHUNG =============== */
-
-.notifications-page {
-  align-items: flex-start;
-  padding-top: 40px;
+.auth-title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 750;
 }
 
-/* Layout chính: sidebar trái (1/3) + nội dung phải (2/3) */
-.notif-layout {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 40px;
-  display: flex;
-  align-items: flex-start;
-  gap: 32px;
-}
-.auth-card.admin-full {
-  max-width: none !important;
-  width: 100% !important;
-  margin: 0 !important;
-}
-
-/* Sidebar trái: ~1/3 */
-.notif-side-nav {
-  flex: 0 0 36%; /* 🔹 rộng hơn xíu: ~1/3 màn hình */
-  background: #020617;
-  border-radius: 16px;
-  padding: 24px 18px;
-  border: 1px solid #111827;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-height: 320px; /* 🔹 cao hơn cho cân với cột phải */
-  margin-top: 52px; /* 🔹 hạ menu xuống thấp, ngang với chữ "Thông báo" */
-}
-
-.notif-side-title {
+.auth-muted {
+  margin: 10px 0 0;
+  color: #64748b;
   font-size: 14px;
-  font-weight: 600;
-  color: #9ca3af;
-  margin-bottom: 4px;
 }
 
-.notif-side-btn {
+/* ====== Form ====== */
+.auth-form {
+  margin-top: 2px;
+}
+
+.auth-field {
+  margin-top: 14px;
+}
+
+.auth-label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.auth-required {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+/* Inputs */
+.input {
   width: 100%;
+  height: 46px;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid #374151;
-  background: #020617;
-  color: #e5e7eb;
+  border: 1px solid #dbe2ea;
+  background: #ffffff;
+  outline: none;
   font-size: 14px;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.18s ease;
+  color: #0f172a;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.notif-side-btn:hover:not(:disabled) {
-  background: #111827;
-  border-color: #22c55e;
+.input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.18);
 }
 
-.notif-side-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
+.input::placeholder {
+  color: #9aa4b2;
 }
 
-.notif-side-btn-active {
-  background: #111827;
-  border-color: #22c55e;
+.input-error {
+  border-color: #fca5a5;
 }
 
-/* Cột phải: ~2/3 */
-.notif-main {
-  flex: 1;
+.input-error:focus {
+  border-color: #f87171;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
 }
 
-/* Nút Trang chủ / Hồ sơ nằm trong cột phải, phía trên tiêu đề */
-.notif-top-nav {
+/* Password icon wrapper (visual only) */
+.auth-input-wrap {
+  position: relative;
+}
+
+.auth-input-hasIcon {
+  padding-right: 44px;
+}
+
+.auth-input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* Checkbox row */
+.auth-row {
+  margin-top: 14px;
+}
+
+.auth-check {
   display: flex;
-  justify-content: space-between; /* 🔹 tách 2 nút ra 2 phía */
-  gap: 16px;
-  margin-bottom: 16px;
-  max-width: 360px;
-}
-
-.notif-top-btn {
-  flex: 1; /* 2 nút rộng đều nhau */
-  min-width: 0;
-  padding: 10px 20px;
-  border-radius: 999px;
-  border: 1px solid #4b5563;
-  background: #020617;
-  color: #e5e7eb;
+  gap: 10px;
+  align-items: center;
   font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.18s ease;
+  color: #0f172a;
+  user-select: none;
 }
 
-.notif-top-btn:hover {
-  background: #0f172a;
-  border-color: #22c55e;
+.auth-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
 }
 
-.notif-title {
-  font-size: 26px;
-  margin: 0 0 16px 0;
-}
-
-/* Danh sách thẻ thông báo */
-.notif-card-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+/* Field errors */
+.field-error {
   margin-top: 8px;
+  font-size: 13px;
+  color: #dc2626;
 }
 
-.notif-card {
-  background: #111827;
-  border-radius: 14px;
-  padding: 16px 20px;
-  border: 1px solid #1f2937;
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-
-.notif-card:hover {
-  border-color: #22c55e;
-  transform: translateY(-1px);
-}
-
-.notif-card-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 6px;
-}
-
-.notif-card-sub {
+/* Alerts */
+.alert {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
   font-size: 14px;
-  color: #9ca3af;
-}
-.visit-history {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 24px;
+  border: 1px solid transparent;
 }
 
-.visit-history h2 {
-  margin-bottom: 16px;
+.alert.success {
+  background: #ecfdf5;
+  color: #065f46;
+  border-color: #a7f3d0;
 }
 
 .alert.error {
-  padding: 8px 12px;
-  background: #ffe6e6;
-  border: 1px solid #ff4d4f;
-  color: #a8071a;
-  margin-bottom: 12px;
-  border-radius: 4px;
-  font-size: 14px;
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
 }
 
-.visit-table {
+/* Primary button */
+.btn {
   width: 100%;
-  border-collapse: collapse;
+  margin-top: 16px;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: transform 0.06s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(0.98);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* Footer links */
+.auth-footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #eef0f4;
+  text-align: center;
+  color: #64748b;
   font-size: 14px;
 }
 
-.visit-table th,
-.visit-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-}
-
-.visit-table th {
-  background: #121933;
-  text-align: left;
-}
-
-.visit-table button {
-  padding: 4px 10px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-/* Badge trạng thái */
-.badge-status {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 12px;
-}
-
-.badge-status.completed {
-  background: #e6ffed;
-  color: #237804;
-}
-
-.badge-status.inprogress {
-  background: #fffbe6;
-  color: #ad8b00;
-}
-
-.badge-status.cancelled {
-  background: #fff1f0;
-  color: #a8071a;
-}
-
-/* Modal */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding-top: 60px;
-  z-index: 999;
-}
-
-.modal {
-  background: #121933;
-  width: 700px;
-  max-width: 95%;
-  border-radius: 6px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  padding: 16px 20px 20px;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.auth-footer-line {
   margin-bottom: 8px;
 }
 
-.modal-header h3 {
-  margin: 0;
+.auth-footer a {
+  color: #2563eb;
+  font-weight: 650;
+  text-decoration: none;
 }
 
-.close-btn {
+.auth-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Existing .link button, restyled to match reference */
+.link {
+  background: transparent;
   border: none;
-  background: none;
-  font-size: 20px;
+  padding: 0;
+  color: #2563eb;
+  font-weight: 650;
   cursor: pointer;
 }
 
-.modal-body {
-  font-size: 14px;
+.link:hover {
+  text-decoration: underline;
 }
 
-.detail-row {
+.auth-forgot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+/* ====== Base page ====== */
+.auth-page {
+  min-height: 100vh;
+  background: #f5f6fb;
+  color: #111827;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+}
+
+.auth-container {
   display: flex;
-  margin-bottom: 4px;
+  justify-content: center;
+  padding: 22px 12px;
 }
 
-.detail-row .label {
-  width: 140px;
-  font-weight: 600;
+/* Compact layout for login (matches small reference card) */
+.auth-page--compact .auth-container {
+  padding-top: 18px;
 }
 
-.detail-block {
-  margin-top: 8px;
-}
-
-.detail-block .label {
-  font-weight: 600;
-}
-/* Modal responsive chung */
-.modal {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #0f1422;
-  border: 1px solid #223;
+/* ====== Card ====== */
+.auth-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border: 1px solid #e9edf5;
   border-radius: 16px;
-  width: min(960px, 92vw); /* rộng tối đa, co theo màn hình */
-  max-height: 92vh; /* cao tối đa theo viewport */
-  display: flex;
-  flex-direction: column;
-  overflow: hidden; /* ẩn tràn, body sẽ scroll */
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 10px 28px rgba(17, 24, 39, 0.08);
+  padding: 26px 26px 18px;
 }
 
-.modal-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #223;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #0f1422; /* giữ header luôn visible khi scroll nội dung */
+.auth-card--compact {
+  max-width: 360px;
+  padding: 22px 18px 16px;
+  border-radius: 14px;
 }
 
-.modal-body {
-  padding: 16px;
-  overflow: auto; /* phần nội dung cuộn thay vì phải zoom trình duyệt */
+@media (max-width: 380px) {
+  .auth-card--compact {
+    padding: 18px 14px 14px;
+    border-radius: 12px;
+  }
 }
 
-/* Bảng trong modal cuộn ngang nếu hẹp */
-.table-wrap {
-  width: 100%;
-  overflow: auto;
+/* ====== Header ====== */
+.auth-head {
+  text-align: center;
+  padding-bottom: 10px;
 }
 
-/* Khung iframe xem PDF co giãn theo viewport */
-.pdf-frame {
-  width: 100%;
-  height: 72vh; /* vừa khung modal, để lại chỗ cho header/footer */
-  border: none;
-}
-
-/* Vùng chứa Stripe PaymentElement cũng cuộn được nếu cao */
-.payment-container {
-  max-height: 65vh;
-  overflow: auto;
-  padding: 8px;
-  border: 1px dashed #244;
+.auth-logo {
+  width: 36px;
+  height: 36px;
+  margin: 0 auto 10px;
   border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2ff;
+  color: #2f6fed;
+  border: 1px solid #e3e9ff;
 }
 
-/* Backdrop chiếm full màn hình và scroll nếu nội dung vượt */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
+.auth-title {
+  margin: 0;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.auth-title--compact {
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.auth-muted {
+  margin: 6px 0 0;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 12.5px;
+}
+
+/* ====== Form fields ====== */
+.auth-field {
+  margin-top: 12px;
+}
+
+.auth-label {
+  display: inline-block;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.input {
+  width: 100%;
+  height: 36px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #dde3ee;
+  background: #ffffff;
+  outline: none;
+  font-size: 13px;
+  color: #0f172a;
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.input:focus {
+  border-color: #9fc5ff;
+  box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.14);
+}
+
+.input::placeholder {
+  color: #9aa4b2;
+}
+
+/* Password icon wrapper (visual only) */
+.auth-input-wrap {
+  position: relative;
+}
+
+.auth-input-hasIcon {
+  padding-right: 40px;
+}
+
+.auth-input-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* ====== Alert ====== */
+.alert {
+  margin: 10px 0 0;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  border: 1px solid transparent;
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
+.alert--error {
+  /* keep same visual; separate class for clarity */
+}
+
+/* ====== Info callout (lockout note) ====== */
+.auth-info {
+  margin-top: 12px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-info::before {
+  content: "i";
+  width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #2563eb;
+  background: #dbeafe;
+}
+
+/* ====== Button ====== */
+.btn {
+  width: 100%;
+  margin-top: 12px;
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  background: #2f6fed;
+  color: #ffffff;
+  font-weight: 750;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: transform 0.06s ease, filter 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(0.98);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.72;
+  cursor: not-allowed;
+}
+
+/* ====== Footer ====== */
+.auth-footer {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #eef2f7;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6vh 2vw; /* tạo đệm để modal không chạm mép */
-  overflow: auto; /* nếu modal cao hơn -> backdrop cuộn */
+  gap: 14px;
+  font-size: 12.5px;
 }
 
-/* Mobile tối ưu hơn */
-@media (max-width: 640px) {
-  .modal {
-    width: 94vw;
-    max-height: 94vh;
-    border-radius: 12px;
-  }
-  .pdf-frame {
-    height: 68vh;
-  }
+.auth-footer--split {
+  justify-content: space-between;
+}
+
+.auth-footer-link {
+  color: #2563eb;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-footer-link:hover {
+  text-decoration: underline;
+}
+
+.link {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: #2563eb;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.link:hover {
+  text-decoration: underline;
 }

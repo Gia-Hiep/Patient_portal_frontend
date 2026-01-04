@@ -8,16 +8,29 @@ import Dashboard from "./pages/Dashboard";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import VisitHistory from "./pages/VisitHistory";
+import Profile from "./pages/Profile";
+
 import Notifications from "./pages/Notifications";
 import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
+
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
-import Profile from "./pages/Profile";
 import ProcessStatus from "./pages/ProcessStatus";
-import AutoNotifications from "./pages/AutoNotifications";
 import ExaminationProgress from "./pages/ExaminationProgress";
+import AutoNotifications from "./pages/AutoNotifications";
 import LabResultNotify from "./pages/LabResultNotify";
+
+// ✅ US14.2 (đang có)
+import AdminUsersPage from "./pages/admin/AdminUsersPage";
+import UserCreatePage from "./pages/admin/UserCreatePage";
+
+import AdminBackupsPage from "./pages/admin/AdminBackupsPage";
+import AnnouncementsPage from "./pages/patient/AnnouncementsPage";
+import AdminAnnouncementsPage from "./pages/admin/AdminAnnouncementsPage";
+// ✅ US14.1 (bạn tạo file theo mình gửi)
+import Services from "./pages/Services";
+import AdminServicesPage from "./pages/admin/AdminServicesPage";
 
 /* ===== US14.2 - ADMIN DOCTORS ===== */
 import AdminDoctors from "./pages/admin/AdminDoctors";
@@ -29,11 +42,15 @@ import { getAutoNotificationSetting } from "./services/notificationSetting";
 /* ================== COMPONENTS ================== */
 import NotificationBell from "./components/NotificationBell";
 
-/* ================== TOAST ================== */
+/* ================== GUARDS ================== */
+
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-/* ================== GUARDS ================== */
+// ===============================
+// PROTECTED ROUTE
+// ===============================
+
 function Protected({ children }) {
   const token = useSelector((s) => s.auth.token);
   if (!token) return <Navigate to="/login" replace />;
@@ -50,8 +67,10 @@ function AdminOnly({ children }) {
 export default function AppRoutes() {
   const token = useSelector((s) => s.auth.token);
 
+
   const [unread, setUnread] = useState(0);
   const [autoNotifyEnabled, setAutoNotifyEnabled] = useState(true);
+
   const lastIdsRef = useRef([]);
 
   /* ===== LOAD SETTING ===== */
@@ -81,7 +100,7 @@ export default function AppRoutes() {
     };
   }, [token]);
 
-  /* ===== POLLING NOTIFICATIONS ===== */
+
   useEffect(() => {
     if (!token || !autoNotifyEnabled) return;
 
@@ -124,12 +143,11 @@ export default function AppRoutes() {
         {/* Redirect root */}
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-        {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<Register />} />
 
-        {/* User */}
+
         <Route
           path="/dashboard"
           element={
@@ -146,6 +164,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/profile"
           element={
@@ -170,6 +189,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/billing"
           element={
@@ -178,6 +198,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/chat"
           element={
@@ -186,6 +207,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/doctor-chat"
           element={
@@ -194,6 +216,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/process-status"
           element={
@@ -202,14 +225,16 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
-          path="/examination-progress"
+          path="doctor/examination-progress"
           element={
             <Protected>
               <ExaminationProgress />
             </Protected>
           }
         />
+
         <Route
           path="/autonotifications"
           element={
@@ -222,8 +247,9 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
-          path="/lab-result-notify"
+          path="/doctor/lab-notify"
           element={
             <Protected>
               <LabResultNotify />
@@ -239,12 +265,87 @@ export default function AppRoutes() {
               <AdminOnly>
                 <AdminDoctors />
               </AdminOnly>
+        {/* ✅ US14.1: Patient tra cứu dịch vụ */}
+        <Route
+          path="/services"
+          element={
+            <Protected>
+              <Services />
             </Protected>
           }
         />
 
-        {/* Fallback */}
+        {/* ✅ US14.1: Admin quản lý dịch vụ */}
+        <Route
+          path="/admin/services"
+          element={
+            <Protected>
+              <AdminServicesPage />``
+            </Protected>
+          }
+        />
+
+        {/* ✅ US14.2: Admin quản lý user */}
+        <Route
+          path="/admin/users"
+          element={
+            <Protected>
+              <AdminUsersPage />
+            </Protected>
+          }
+        />
+
+        <Route
+          path="/admin/users/create"
+          element={
+            <Protected>
+              <UserCreatePage />
+            </Protected>
+          }
+        />
+
+        {/* NOT FOUND */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        <Route
+          path="/admin/users"
+          element={
+            <Protected>
+              <AdminUsersPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/admin/users/create"
+          element={
+            <Protected>
+              <UserCreatePage />
+            </Protected>
+          }
+        />
+      
+      <Route
+        path="/admin/backup"
+        element={
+          <Protected>
+            <AdminBackupsPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/announcements"
+        element={
+          <Protected>
+            <AnnouncementsPage />
+          </Protected>}
+      />
+
+      <Route
+        path="/admin/announcements"
+        element={
+          <Protected>
+            <AdminAnnouncementsPage />
+          </Protected>}
+      />
       </Routes>
     </>
   );

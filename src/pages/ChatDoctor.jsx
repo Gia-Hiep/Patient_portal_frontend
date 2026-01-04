@@ -1,8 +1,40 @@
 import React, { useEffect, useRef, useState } from "react";
-import { listDoctorPatients, getDoctorThread, sendDoctorMessage } from "../services/chat";
-import "../assets/styles/auth.css";
+import { useNavigate } from "react-router-dom";
+import {
+  listDoctorPatients,
+  getDoctorThread,
+  sendDoctorMessage,
+} from "../services/chat";
+import "../assets/styles/chatDoctor.css";
+
+function getInitials(name) {
+  const s = (name || "").trim();
+  if (!s) return "BN";
+  const parts = s.split(/\s+/).filter(Boolean);
+  const a = parts[0]?.[0] || "B";
+  const b = parts.length > 1 ? parts[parts.length - 1]?.[0] : "N";
+  return (a + b).toUpperCase();
+}
+
+function MessageBubble({ mine, content, sentAt }) {
+  return (
+    <div className={`cd-msgRow ${mine ? "mine" : "theirs"}`}>
+      <div className={`cd-bubble ${mine ? "mine" : "theirs"}`}>
+        <div className="cd-bubbleMeta">
+          <span className="cd-bubbleSender">{mine ? "Bác sĩ" : "Bệnh nhân"}</span>
+          <span className="cd-bubbleTime">
+            {new Date(sentAt).toLocaleString("vi-VN")}
+          </span>
+        </div>
+        <div className="cd-bubbleText">{content}</div>
+      </div>
+    </div>
+  );
+}
 
 export default function ChatDoctor() {
+  const navigate = useNavigate();
+
   const [q, setQ] = useState("");
   const [patients, setPatients] = useState([]);
   const [patientId, setPatientId] = useState(null);
@@ -10,7 +42,8 @@ export default function ChatDoctor() {
   const [text, setText] = useState("");
 
   const bottomRef = useRef(null);
-  const scrollBottom = () => bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  const scrollBottom = () =>
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 
   const loadPatients = async () => {
     const data = await listDoctorPatients(q);
@@ -25,9 +58,15 @@ export default function ChatDoctor() {
     setTimeout(scrollBottom, 50);
   };
 
-  useEffect(() => { loadPatients(); }, []);
-  useEffect(() => { loadPatients(); }, [q]);
-  useEffect(() => { loadThread(patientId); }, [patientId]);
+  useEffect(() => {
+    loadPatients();
+  }, []);
+  useEffect(() => {
+    loadPatients();
+  }, [q]);
+  useEffect(() => {
+    loadThread(patientId);
+  }, [patientId]);
 
   // polling thread
   useEffect(() => {
@@ -44,86 +83,128 @@ export default function ChatDoctor() {
     await loadThread(patientId);
   };
 
-  return (
-    <div className="auth-card" style={{ maxWidth: 1100 }}>
-      <h2 style={{ marginTop: 0 }}>Bác sĩ – Tin nhắn bệnh nhân</h2>
+  const selectedPatient = patients.find((p) => p.id === patientId) || null;
 
-      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 14 }}>
+  return (
+    <div className="cd-page auth-card">
+      {/* Top header: title + Home button */}
+      <div className="cd-topbar">
+        <h2 className="cd-title">Bác sĩ – Tin nhắn bệnh nhân</h2>
+
+        <button
+          type="button"
+          className="cd-homeBtn"
+          onClick={() => navigate("/dashboard")}
+          title="Quay lại Trang chủ"
+        >
+          ⟵ Trang chủ
+        </button>
+      </div>
+
+      <div className="cd-layout">
         {/* LEFT */}
-        <div style={{ border: "1px solid #223", borderRadius: 14, padding: 12, background: "#0f1422" }}>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Tìm kiếm bệnh nhân…"
-            style={{ width: "100%", marginBottom: 10 }}
-          />
-          <div style={{ maxHeight: 430, overflowY: "auto" }}>
-            {patients.map(p => (
-              <div
-                key={p.id}
-                onClick={() => setPatientId(p.id)}
-                style={{
-                  padding: "10px 10px",
-                  borderRadius: 12,
-                  cursor: "pointer",
-                  background: p.id === patientId ? "#192033" : "transparent"
-                }}
-              >
-                {p.fullName}
-              </div>
-            ))}
-            {patients.length === 0 && <div className="muted">Chưa có cuộc trò chuyện.</div>}
+        <aside className="cd-left">
+          <div className="cd-searchWrap">
+            <span className="cd-searchIcon" aria-hidden="true">
+              🔎
+            </span>
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Tìm kiếm bệnh nhân…"
+              className="cd-searchInput"
+            />
           </div>
-        </div>
+
+          <div className="cd-list">
+            {patients.map((p) => {
+              const active = p.id === patientId;
+              return (
+                <button
+                  type="button"
+                  key={p.id}
+                  onClick={() => setPatientId(p.id)}
+                  className={`cd-item ${active ? "active" : ""}`}
+                >
+                  <div className="cd-avatar" aria-hidden="true">
+                    {getInitials(p.fullName)}
+                  </div>
+                  <div className="cd-itemMain">
+                    <div className="cd-itemName">{p.fullName}</div>
+                  </div>
+                </button>
+              );
+            })}
+
+            {patients.length === 0 && (
+              <div className="cd-emptyLeft muted">Chưa có cuộc trò chuyện.</div>
+            )}
+          </div>
+        </aside>
 
         {/* RIGHT */}
-        <div style={{ border: "1px solid #223", borderRadius: 14, padding: 12, background: "#0f1422" }}>
+        <section className="cd-right">
           {!patientId ? (
-            <div className="muted">Chọn 1 bệnh nhân để xem chat.</div>
+            <div className="cd-emptyRight">
+              <div className="cd-emptyIcon" aria-hidden="true">
+                💬
+              </div>
+              <div className="cd-emptyTitle">Chọn 1 bệnh nhân để xem chat.</div>
+            </div>
           ) : (
             <>
-              <div style={{ height: 380, overflowY: "auto", padding: 6 }}>
-                {msgs.map(m => {
-                  const mine = m.senderRole === "DOCTOR";
-                  return (
-                    <div key={m.id} style={{
-                      display: "flex",
-                      justifyContent: mine ? "flex-end" : "flex-start",
-                      marginBottom: 8
-                    }}>
-                      <div style={{
-                        maxWidth: "70%",
-                        padding: "10px 12px",
-                        borderRadius: 14,
-                        background: mine ? "#1f6feb" : "#192033"
-                      }}>
-                        <div style={{ fontSize: 13, opacity: .9 }}>
-                          {mine ? "Bác sĩ" : "Bệnh nhân"}
-                        </div>
-                        <div style={{ marginTop: 4 }}>{m.content}</div>
-                        <div style={{ fontSize: 11, opacity: .7, marginTop: 6 }}>
-                          {new Date(m.sentAt).toLocaleString("vi-VN")}
-                        </div>
-                      </div>
+              <div className="cd-rightHeader">
+                <div className="cd-rightUser">
+                  <div className="cd-avatar lg" aria-hidden="true">
+                    {getInitials(selectedPatient?.fullName)}
+                  </div>
+                  <div className="cd-rightUserText">
+                    <div className="cd-rightName">
+                      {selectedPatient?.fullName || ""}
                     </div>
-                  );
-                })}
-                <div ref={bottomRef} />
+                  </div>
+                </div>
               </div>
 
-              <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+              <div className="cd-thread" role="log" aria-live="polite">
+                <div className="cd-threadInner">
+                  {msgs.map((m) => {
+                    const mine = m.senderRole === "DOCTOR";
+                    return (
+                      <MessageBubble
+                        key={m.id}
+                        mine={mine}
+                        content={m.content}
+                        sentAt={m.sentAt}
+                      />
+                    );
+                  })}
+                  <div ref={bottomRef} />
+                </div>
+              </div>
+
+              <div className="cd-composer">
+                <div className="cd-composerLeft">
+                  <button type="button" className="cd-iconBtn" title="Đính kèm">
+                    📎
+                  </button>
+                </div>
+
                 <input
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Nhập tin nhắn…"
-                  style={{ flex: 1 }}
-                  onKeyDown={(e) => e.key === "Enter" ? send() : null}
+                  className="cd-input"
+                  onKeyDown={(e) => (e.key === "Enter" ? send() : null)}
                 />
-                <button className="chip-btn" onClick={send}>Gửi</button>
+
+                <button className="cd-sendBtn" onClick={send}>
+                  Gửi
+                </button>
               </div>
             </>
           )}
-        </div>
+        </section>
       </div>
     </div>
   );

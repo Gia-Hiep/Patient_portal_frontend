@@ -1,0 +1,302 @@
+/* ===== ChatPatient page UI (no logic changes) ===== */
+
+.chatp-card {
+  padding: 22px;
+}
+
+/* Header */
+.chatp-pageHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 14px;
+}
+
+.chatp-titleWrap {
+  min-width: 240px;
+}
+
+.chatp-title {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.chatp-doctorPick {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+
+.chatp-doctorLabel {
+  white-space: nowrap;
+}
+
+.chatp-selectWrap {
+  position: relative;
+  min-width: 280px;
+}
+
+.chatp-select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px 40px 10px 12px;
+  outline: none;
+  font-size: 14px;
+}
+
+.chatp-select:focus {
+  border-color: rgba(25, 118, 210, 0.45);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+}
+
+.chatp-selectChevron {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.65;
+  pointer-events: none;
+  font-size: 14px;
+}
+
+/* Loading / empty */
+.chatp-state {
+  padding: 10px 0;
+}
+
+.chatp-empty {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  border-radius: 16px;
+  padding: 48px 18px;
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  gap: 14px;
+}
+
+.chatp-emptyIcon {
+  width: 88px;
+  height: 88px;
+  border-radius: 999px;
+  background: rgba(25, 118, 210, 0.06);
+  display: grid;
+  place-items: center;
+}
+
+.chatp-emptyIconInner {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(25, 118, 210, 0.18);
+}
+
+.chatp-emptyText {
+  text-align: center;
+  max-width: 520px;
+}
+
+/* Chat shell */
+.chatp-shell {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.chatp-messages {
+  height: 520px;
+  overflow-y: auto;
+  padding: 22px 20px;
+  background: #fff;
+}
+
+/* Rows / avatars */
+.chatp-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.chatp-row.is-mine {
+  justify-content: flex-end;
+}
+
+.chatp-row.is-their {
+  justify-content: flex-start;
+}
+
+.chatp-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.06);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.chatp-avatar.mine {
+  background: rgba(25, 118, 210, 0.12);
+}
+
+.chatp-avatarInner {
+  font-size: 11px;
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+/* Bubbles */
+.chatp-bubble {
+  max-width: min(680px, 78%);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.chatp-bubble.mine {
+  background: #1f6feb;
+  color: #fff;
+  border-top-right-radius: 10px;
+}
+
+.chatp-bubble.their {
+  background: #eef2f7;
+  color: #0f172a;
+  border-top-left-radius: 10px;
+}
+
+.chatp-bubbleMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.chatp-sender {
+  font-weight: 700;
+}
+
+.chatp-time {
+  font-size: 11px;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.chatp-content {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Composer */
+.chatp-composer {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.chatp-input {
+  flex: 1;
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  padding: 10px 12px;
+  outline: none;
+  font-size: 14px;
+}
+
+.chatp-input:focus {
+  border-color: rgba(25, 118, 210, 0.45);
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.12);
+}
+
+.chatp-sendBtn {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .chatp-pageHead {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chatp-selectWrap {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .chatp-title {
+    font-size: 30px;
+  }
+
+  .chatp-messages {
+    height: 480px;
+    padding: 18px 14px;
+  }
+
+  .chatp-bubble {
+    max-width: 86%;
+  }
+}
+
+/* Center page */
+.chatp-page {
+  min-height: calc(100vh - 40px);
+  display: flex;
+  justify-content: center;
+  padding: 20px 12px;
+}
+
+/* override inline maxWidth: chuyển sang CSS để căn giữa chuẩn */
+.chatp-card {
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 22px;
+}
+
+/* Back button row */
+.chatp-topActions {
+  margin-bottom: 10px;
+}
+
+.chatp-backBtn {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #fff;
+  color: #0f172a;
+  border-radius: 10px;
+  height: 38px;
+  padding: 0 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.chatp-backBtn:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.chatp-backBtn:active {
+  transform: translateY(1px);
+}
