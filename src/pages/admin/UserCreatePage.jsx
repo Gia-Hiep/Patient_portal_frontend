@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminCreateUser } from "../../services/adminUsers";
 import "../../assets/styles/auth.css";
+import "../../assets/styles/adminCreateUser.css";
 
 export default function UserCreatePage() {
   const nav = useNavigate();
@@ -39,82 +40,105 @@ export default function UserCreatePage() {
   };
 
   return (
-    <div className="auth-card" style={{ maxWidth: 720 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <h2 style={{ margin: 0, flex: 1 }}>Tạo tài khoản mới</h2>
-        <button className="chip-btn" onClick={() => nav("/admin/users")}>
-          Quay lại
-        </button>
-      </div>
+    <div className="adminCreatePage">
+      <div className="adminCreateCard">
+        {/* Header */}
+        <div className="adminCreateHeader">
+          <h2 className="adminCreateTitle">Tạo tài khoản mới</h2>
 
-      {err && <div className="alert error">{err}</div>}
-      {msg && <div className="alert success">{msg}</div>}
-
-      <form onSubmit={submit} style={{ marginTop: 12 }}>
-        <label className="muted">Username*</label>
-        <input
-          required
-          value={form.username}
-          onChange={(e) => setForm({ ...form, username: e.target.value })}
-          placeholder="vd: hiepcc22"
-        />
-
-        <label className="muted">Email*</label>
-        <input
-          required
-          type="email"
-          value={form.email}
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-          placeholder="vd: hiep@gmail.com"
-        />
-
-        <label className="muted">Số điện thoại</label>
-        <input
-          value={form.phone}
-          onChange={(e) => setForm({ ...form, phone: e.target.value })}
-          placeholder="vd: 09xxxxxxxx"
-        />
-
-        <label className="muted">Mật khẩu*</label>
-        <input
-          required
-          type="password"
-          value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
-          placeholder="••••••••"
-        />
-
-        <label className="muted">Vai trò*</label>
-        <select
-          value={form.role}
-          onChange={(e) => setForm({ ...form, role: e.target.value })}
-        >
-          <option value="PATIENT">Bệnh nhân</option>
-          <option value="DOCTOR">Bác sĩ</option>
-          <option value="ADMIN">Quản trị viên</option>
-        </select>
-
-        <div style={{ display: "flex", gap: 10, marginTop: 12 }}>
-          <button type="submit" disabled={saving}>
-            {saving ? "Đang tạo..." : "Tạo tài khoản"}
-          </button>
           <button
             type="button"
-            className="chip-btn"
-            onClick={() =>
-              setForm({
-                username: "",
-                email: "",
-                phone: "",
-                password: "",
-                role: "PATIENT",
-              })
-            }
+            className="adminCreateBackBtn"
+            onClick={() => nav("/admin/users")}
           >
-            Reset
+            Quay lại
           </button>
         </div>
-      </form>
+
+        {/* Alerts (keep texts exactly as before) */}
+        {err && <div className="adminCreateAlert adminCreateAlertError">{err}</div>}
+        {msg && <div className="adminCreateAlert adminCreateAlertSuccess">{msg}</div>}
+
+        {/* Form */}
+        <form onSubmit={submit} className="adminCreateForm">
+          <div className="adminCreateGrid">
+            <div className="adminCreateField">
+              <label className="muted">Username*</label>
+              <input
+                required
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value })}
+                placeholder="vd: hiepcc22"
+              />
+            </div>
+
+            <div className="adminCreateField">
+              <label className="muted">Email*</label>
+              <input
+                required
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="vd: hiep@gmail.com"
+              />
+            </div>
+
+            <div className="adminCreateField">
+              <label className="muted">Số điện thoại</label>
+              <input
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                placeholder="vd: 09xxxxxxxx"
+              />
+            </div>
+
+            <div className="adminCreateField">
+              <label className="muted">Vai trò*</label>
+              <select
+                value={form.role}
+                onChange={(e) => setForm({ ...form, role: e.target.value })}
+              >
+                <option value="PATIENT">Bệnh nhân</option>
+                <option value="DOCTOR">Bác sĩ</option>
+                <option value="ADMIN">Quản trị viên</option>
+              </select>
+            </div>
+
+            <div className="adminCreateField adminCreateFieldFull">
+              <label className="muted">Mật khẩu*</label>
+              <input
+                required
+                type="password"
+                value={form.password}
+                onChange={(e) => setForm({ ...form, password: e.target.value })}
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+
+          <div className="adminCreateFooter">
+            <button
+              type="button"
+              className="adminCreateResetBtn"
+              onClick={() =>
+                setForm({
+                  username: "",
+                  email: "",
+                  phone: "",
+                  password: "",
+                  role: "PATIENT",
+                })
+              }
+            >
+              Reset
+            </button>
+
+            <button type="submit" className="adminCreateSubmitBtn" disabled={saving}>
+              {saving ? "Đang tạo..." : "Tạo tài khoản"}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

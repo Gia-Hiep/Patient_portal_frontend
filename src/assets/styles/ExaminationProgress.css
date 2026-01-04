@@ -1,82 +1,143 @@
-/* =========================
-   PAGE CENTER
-========================= */
+/* ===== Page shell ===== */
 .exam-page {
   min-height: 100vh;
+  background: #f6f8fb;
+  padding: 24px 16px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji";
+  color: #0f172a;
+}
+
+.exam-card.auth-card {
+  max-width: 1150px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e5eaf2;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+  padding: 18px;
+}
+
+/* ===== Header ===== */
+.exam-header {
   display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 4px 16px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.exam-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.exam-back {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at top, #020617, #000);
+  gap: 8px;
+  width: fit-content;
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #eef5ff;
 }
 
-/* =========================
-   CARD
-========================= */
-.exam-card {
-  width: 420px;
-  padding: 24px;
-  border-radius: 18px;
-  background: linear-gradient(145deg, #020617, #020617);
-  border: 1px solid #1f2937;
+.exam-back:hover {
+  background: #e5efff;
 }
 
-/* =========================
-   TITLES
-========================= */
 .exam-title {
-  text-align: center;
-  margin-bottom: 18px;
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
+/* existing class name kept */
 .section-title {
-  margin-bottom: 10px;
-  color: #e5e7eb;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
 }
 
 .empty-text {
-  color: #9ca3af;
+  margin: 14px 6px 0;
+  color: #64748b;
+  font-size: 14px;
 }
 
-/* =========================
-   PATIENT CARD
-========================= */
-.patient-card {
-  display: flex;
-  align-items: center;
-  padding: 14px;
-  margin-bottom: 12px;
+/* ===== Layout 2 columns ===== */
+.exam-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 18px;
+  padding-top: 16px;
+}
+
+/* ===== Left panel ===== */
+.exam-left {
+  border: 1px solid #eef2f7;
   border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.exam-left-head {
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid #eef2f7;
+  background: #fbfdff;
+}
+
+.exam-list {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  gap: 10px;
+  max-height: calc(100vh - 240px);
+  overflow: auto;
+}
+
+/* ===== Patient card (button) ===== */
+.patient-card {
+  appearance: none;
+  border: 1px solid #eef2f7;
+  background: #fff;
+  border-radius: 14px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 44px 1fr 18px;
+  gap: 12px;
+  text-align: left;
   cursor: pointer;
-  border: 1px solid #1f2937;
-  background: linear-gradient(145deg, #020617, #020617);
-  transition: all 0.25s ease;
+  transition: box-shadow 120ms ease, border-color 120ms ease, background 120ms ease;
 }
 
 .patient-card:hover {
-  background: #020617;
-  transform: translateY(-2px);
+  border-color: #dbe6ff;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.08);
 }
 
 .patient-card.active {
-  border: 2px solid #22c55e;
-  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.35);
-  background: linear-gradient(145deg, #052e16, #020617);
+  border-color: #60a5fa;
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.12);
+  background: linear-gradient(0deg, #f6faff, #ffffff);
 }
 
-/* =========================
-   AVATAR
-========================= */
 .patient-avatar {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: #374151;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 14px;
-  font-size: 24px;
+  background: #f1f5f9;
+  border: 1px solid #e5eaf2;
+  display: grid;
+  place-items: center;
   overflow: hidden;
 }
 
@@ -86,72 +147,179 @@
   object-fit: cover;
 }
 
-/* =========================
-   INFO
-========================= */
+.patient-avatar-fallback {
+  font-size: 18px;
+}
+
+.patient-info {
+  min-width: 0;
+}
+
 .patient-name {
-  font-weight: 600;
+  font-weight: 800;
+  font-size: 15px;
+  color: #0f172a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.patient-meta {
+  margin-top: 2px;
+  font-size: 13px;
+  color: #64748b;
 }
 
 .patient-code {
-  font-size: 13px;
-  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .patient-note {
+  margin-top: 6px;
   font-size: 13px;
-  color: #d1d5db;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* =========================
-   UPDATE BOX
-========================= */
+.patient-chevron {
+  align-self: center;
+  justify-self: end;
+  color: #94a3b8;
+  font-size: 22px;
+  line-height: 1;
+}
+
+/* ===== Right panel ===== */
+.exam-right {
+  border: 1px solid #eef2f7;
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  min-height: 420px;
+}
+
+.exam-placeholder {
+  height: 100%;
+  min-height: 420px;
+  background:
+    radial-gradient(circle at 55% 45%, rgba(37, 99, 235, 0.08), transparent 48%),
+    linear-gradient(180deg, #fbfdff, #ffffff);
+}
+
+/* ===== Update box ===== */
 .update-box {
-  margin-top: 18px;
+  padding: 16px;
 }
 
-/* =========================
-   FORM
-========================= */
+.update-head {
+  padding: 10px 10px 14px;
+  border-bottom: 1px solid #eef2f7;
+  background: #fbfdff;
+  border-radius: 12px;
+}
+
+.update-form {
+  padding: 14px 10px 10px;
+}
+
 .stage-select {
   width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  margin-bottom: 14px;
+  height: 46px;
+  border-radius: 12px;
+  border: 1px solid #e5eaf2;
+  background: #fff;
+  padding: 0 12px;
+  font-size: 14px;
+  outline: none;
 }
 
-/* =========================
-   BUTTONS
-========================= */
+.stage-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
 .btn-group {
+  margin-top: 14px;
   display: flex;
-  gap: 10px;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
 }
 
 .update-btn {
-  flex: 1;
-  padding: 10px;
-  background: #22c55e;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid #1d4ed8;
+  background: #2563eb;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
   cursor: pointer;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.18);
 }
 
 .update-btn:hover {
-  background: #16a34a;
+  background: #1d4ed8;
 }
 
 .back-btn {
-  flex: 1;
-  padding: 10px;
-  text-align: center;
-  background: #1f2937;
-  border-radius: 8px;
-  color: #e5e7eb;
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid #e5eaf2;
+  background: #fff;
+  color: #0f172a;
+  font-weight: 700;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .back-btn:hover {
-  background: #374151;
+  background: #f8fafc;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 980px) {
+  .exam-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .exam-list {
+    max-height: none;
+  }
+
+  .exam-right {
+    min-height: 320px;
+  }
+
+  .exam-placeholder {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 520px) {
+  .exam-title {
+    font-size: 22px;
+  }
+
+  .exam-card.auth-card {
+    padding: 14px;
+  }
+
+  .patient-card {
+    grid-template-columns: 40px 1fr 14px;
+    padding: 10px;
+  }
+
+  .patient-avatar {
+    width: 40px;
+    height: 40px;
+  }
 }

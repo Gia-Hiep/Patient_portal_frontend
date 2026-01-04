@@ -75,26 +75,7 @@ export default function AppRoutes() {
         if (Array.isArray(list)) {
           lastIdsRef.current = list.map((n) => n.id);
         }
-      />
 
-      <Route
-        path="/admin/users"
-        element={
-          <Protected>
-            <AdminUsersPage />
-          </Protected>
-        }
-      />
-      <Route
-        path="/admin/users/create"
-        element={
-          <Protected>
-            <UserCreatePage />
-          </Protected>
-        }
-      />
-
-    </Routes>
       } catch (err) {
         console.error("Load notification setting failed:", err);
       }
@@ -237,7 +218,7 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/examination-progress"
+          path="doctor/examination-progress"
           element={
             <Protected>
               <ExaminationProgress />
@@ -257,13 +238,30 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/lab-result-notifications"
+          path="/doctor/lab-notify"
           element={
             <Protected>
               <LabResultNotify />
             </Protected>
           }
         />
+        <Route
+          path="/admin/users"
+          element={
+            <Protected>
+              <AdminUsersPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/admin/users/create"
+          element={
+            <Protected>
+              <UserCreatePage />
+            </Protected>
+          }
+        />
+
       </Routes>
     </>
   );

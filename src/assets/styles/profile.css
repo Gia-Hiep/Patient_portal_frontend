@@ -1,0 +1,433 @@
+/* =========================
+   PROFILE (UI ONLY)
+========================= */
+.profile-page {
+  min-height: 100vh;
+  background: #f6f7fb;
+  color: #0f172a;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
+    "Segoe UI Emoji";
+}
+
+/* Topbar */
+.profile-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid #eef0f4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+}
+
+.profile-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+}
+
+/* Back icon button */
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.icon-btn:hover {
+  background: #f3f4f6;
+  border-color: #eef0f4;
+}
+
+.icon-btn .icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* Chip buttons */
+.chip-btn {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid #e6e8ee;
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chip-btn:hover {
+  background: #eef2f7;
+}
+
+.chip-btn--ghost {
+  background: transparent;
+  border-color: transparent;
+  color: #334155;
+}
+
+.chip-btn--ghost:hover {
+  background: #f3f4f6;
+  border-color: #eef0f4;
+}
+
+.chip-btn--primary {
+  background: #2f6fed;
+  border-color: #2f6fed;
+  color: #ffffff;
+  box-shadow: 0 10px 18px rgba(47, 111, 237, 0.18);
+}
+
+.chip-btn--primary:hover {
+  filter: brightness(0.98);
+}
+
+.chip-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Body container */
+.profile-body {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 22px 18px 40px;
+  display: grid;
+  gap: 18px;
+}
+
+/* Cards */
+.pf-card {
+  background: #ffffff;
+  border: 1px solid #eef0f4;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, 0.06);
+  padding: 16px;
+}
+
+.pf-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px 14px;
+  border-bottom: 1px solid #f1f3f7;
+  margin-bottom: 14px;
+}
+
+.pf-card-ico {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #2f6fed;
+  background: #eef2ff;
+  border: 1px solid #e3e9ff;
+  font-weight: 800;
+}
+
+.pf-card-ico--danger {
+  color: #dc2626;
+  background: #fef2f2;
+  border-color: #fee2e2;
+}
+
+/* Section title (existing text) */
+.section-title {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.section-title--inCard {
+  font-size: 16px;
+}
+
+/* Hero */
+.pf-hero {
+  padding: 18px;
+}
+
+.pf-hero-inner {
+  height: 140px;
+  border-radius: 14px;
+  background: #ffffff;
+  display: grid;
+  place-items: center;
+  position: relative;
+}
+
+.pf-avatar {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 999px;
+  background: #f3f4f6;
+  border: 1px solid #eef0f4;
+  display: grid;
+  place-items: center;
+  margin-top: -8px;
+}
+
+.avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f1f5ff, #eef2ff);
+}
+
+.pf-avatar-badge {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid #eef0f4;
+  background: #ffffff;
+  color: #475569;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(17, 24, 39, 0.08);
+  cursor: default;
+}
+
+.name-line {
+  margin-top: 10px;
+  font-size: 22px;
+  font-weight: 850;
+  letter-spacing: -0.01em;
+}
+
+/* Notifications row */
+.pf-notify-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 4px 4px 2px;
+}
+
+.pf-notify-text {
+  min-width: 0;
+}
+
+.pf-notify-label {
+  font-weight: 750;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.pf-notify-desc {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+/* Switch */
+.pf-switch {
+  position: relative;
+  width: 52px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pf-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.pf-switch-ui {
+  width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  border: 1px solid #dbe2ea;
+  transition: 0.15s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.pf-switch-ui::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 3px;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 6px 14px rgba(17, 24, 39, 0.12);
+  transition: 0.15s ease;
+}
+
+.pf-switch input:checked + .pf-switch-ui {
+  background: #2f6fed;
+  border-color: #2f6fed;
+}
+
+.pf-switch input:checked + .pf-switch-ui::after {
+  left: 25px;
+}
+
+.pf-switch.is-disabled {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Grids */
+.pf-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.pf-grid-1 {
+  margin-top: 14px;
+}
+
+@media (max-width: 860px) {
+  .pf-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Profile field */
+.pf-field {
+  margin: 0;
+}
+
+.pf-field > label {
+  display: inline-block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pf-input {
+  position: relative;
+}
+
+.pf-input-ico {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+}
+
+.pf-input-el.input {
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid #e3e8f2;
+  padding-left: 40px;
+  font-size: 14px;
+  background: #ffffff;
+}
+
+.pf-input-el.input:focus {
+  border-color: #9fc5ff;
+  box-shadow: 0 0 0 4px rgba(47, 111, 237, 0.14);
+}
+
+.pf-input.is-readonly .pf-input-ico {
+  color: #a1aab6;
+}
+
+.pf-input.is-readonly .pf-input-el {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+/* Alerts (keep same render location/logic; only style) */
+.pf-alert-error {
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+/* Success message styled like toast (still same msg render) */
+.pf-toast-success.success {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 50;
+  width: min(360px, calc(100vw - 48px));
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 16px 40px rgba(17, 24, 39, 0.14);
+  padding: 12px 14px 12px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.pf-toast-success.success::before {
+  content: "";
+  width: 4px;
+  align-self: stretch;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.pf-toast-success.success::after {
+  content: "✓";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #16a34a;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+}
+
+.pf-toast-success.success {
+  padding-left: 48px;
+}
+
+/* Ensure your existing .alert styles still work elsewhere */
