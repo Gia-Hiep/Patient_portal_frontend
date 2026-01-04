@@ -1,0 +1,471 @@
+/* Scoped styles for AdminDoctors page only */
+.adoc {
+  background: #f6f8fc;
+  min-height: 100vh;
+}
+
+/* center shell */
+.adoc-shell {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 22px 16px 40px;
+}
+
+/* main card */
+.adoc-card {
+  background: #ffffff;
+  border: 1px solid #e7ecf3;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+  overflow: hidden;
+}
+
+/* header */
+.adoc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.adoc-title {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.adoc-subtitle {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.adoc-head__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* toolbar */
+.adoc-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eef2f7;
+  flex-wrap: wrap;
+}
+
+.adoc-search {
+  position: relative;
+  flex: 1;
+  min-width: 260px;
+}
+
+.adoc-search__icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0.6;
+  font-size: 14px;
+}
+
+.adoc-search__input {
+  width: 100%;
+  height: 44px;
+  padding: 10px 12px 10px 38px;
+  border-radius: 12px;
+  border: 1px solid #e5eaf2;
+  background: #f8fafc;
+  outline: none;
+  color: #0f172a;
+}
+
+.adoc-search__input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  background: #ffffff;
+}
+
+.adoc-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  color: #0f172a;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.adoc-check input {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+
+.adoc-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* buttons */
+.adoc-btn {
+  height: 44px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.05s ease, box-shadow 0.2s ease, background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.adoc-btn:active {
+  transform: translateY(1px);
+}
+
+.adoc-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.adoc-btn--primary {
+  background: #1d4ed8;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(29, 78, 216, 0.18);
+}
+
+.adoc-btn--primary:hover {
+  background: #1e40af;
+}
+
+.adoc-btn--ghost {
+  background: #ffffff;
+  color: #0f172a;
+  border-color: #e5eaf2;
+}
+
+.adoc-btn--ghost:hover {
+  background: #f8fafc;
+}
+
+.adoc-btn--danger {
+  background: #ef4444;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(239, 68, 68, 0.16);
+}
+
+.adoc-btn--danger:hover {
+  background: #dc2626;
+}
+
+/* alerts */
+.adoc-alert {
+  margin: 14px 18px 0;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #991b1b;
+  font-weight: 600;
+}
+
+/* table */
+.adoc-table-wrap {
+  overflow-x: auto;
+}
+
+.adoc-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 920px;
+}
+
+.adoc-table thead th {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #64748b;
+  padding: 14px 18px;
+  background: #fbfcfe;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.adoc-th-actions {
+  text-align: center;
+  width: 150px;
+}
+
+.adoc-row td {
+  padding: 16px 18px;
+  border-bottom: 1px solid #eef2f7;
+  color: #0f172a;
+  vertical-align: middle;
+  background: #fff;
+}
+
+.adoc-row:hover td {
+  background: #f9fbff;
+}
+
+.adoc-td-muted {
+  color: #334155;
+}
+
+.adoc-td-actions {
+  text-align: center;
+}
+
+/* doctor cell */
+.adoc-doctor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.adoc-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #eaf2ff;
+  border: 1px solid #d9e6ff;
+  color: #1d4ed8;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.adoc-doctor__name {
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.adoc-doctor__sub {
+  margin-top: 3px;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* badges */
+.adoc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #e5eaf2;
+  background: #f8fafc;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.adoc-badge--active {
+  border-color: #bbf7d0;
+  background: #dcfce7;
+  color: #166534;
+}
+
+.adoc-badge--disabled {
+  border-color: #e5e7eb;
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+/* row actions icon buttons */
+.adoc-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+}
+
+.adoc-icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #e5eaf2;
+  background: #ffffff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: #1d4ed8;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
+}
+
+.adoc-icon-btn:active {
+  transform: translateY(1px);
+}
+
+.adoc-icon-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.adoc-icon-btn--edit:hover {
+  background: #eff6ff;
+  border-color: #dbeafe;
+}
+
+.adoc-icon-btn--danger {
+  color: #ef4444;
+}
+
+.adoc-icon-btn--danger:hover {
+  background: #fff1f2;
+  border-color: #fecdd3;
+}
+
+.adoc-icon-btn--ghost {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e5eaf2;
+  color: #334155;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* empty row */
+.adoc-empty {
+  padding: 16px 18px;
+  color: #64748b;
+  text-align: left;
+}
+
+/* modal */
+.adoc-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 9999;
+}
+
+.adoc-modal {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e7ecf3;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.24);
+  overflow: hidden;
+  max-height: calc(100vh - 36px);
+  display: flex;
+  flex-direction: column;
+}
+
+.adoc-modal__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #eef2f7;
+  background: #fbfcfe;
+}
+
+.adoc-modal__title {
+  flex: 1;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.adoc-modal__body {
+  padding: 16px;
+  overflow: auto;
+}
+
+/* modal form */
+.adoc-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.adoc-col-span {
+  grid-column: 1 / -1;
+}
+
+.adoc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.adoc-field__label {
+  font-size: 13px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.adoc-input {
+  height: 44px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #e5eaf2;
+  background: #ffffff;
+  color: #0f172a;
+  outline: none;
+}
+
+.adoc-input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+.adoc-textarea {
+  height: auto;
+  min-height: 92px;
+  resize: vertical;
+}
+
+.adoc-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #eef2f7;
+}
+
+/* delete modal note block (still keeps same text content from JSX) */
+.adoc-del__note {
+  color: #64748b;
+}
+
+/* responsive */
+@media (max-width: 720px) {
+  .adoc-title {
+    font-size: 22px;
+  }
+
+  .adoc-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .adoc-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

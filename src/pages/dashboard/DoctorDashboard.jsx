@@ -3,8 +3,12 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import DashCard from "../../components/DashCard";
 import DoctorAppointmentTable from "../../components/DoctorAppointmentTable";
-import { fetchDoctorSummary, fetchDoctorAppointments } from "../../services/dashboard";
-import { listDoctorPatients } from "../../services/chat"; 
+import {
+  fetchDoctorSummary,
+  fetchDoctorAppointments,
+} from "../../services/dashboard";
+import { listDoctorPatients } from "../../services/chat";
+import "../../assets/styles/doctorDashboard.css";
 
 export default function DoctorDashboard() {
   const user = useSelector((s) => s.auth.user);
@@ -44,7 +48,6 @@ export default function DoctorDashboard() {
     })();
   }, []);
 
-
   useEffect(() => {
     (async () => {
       setLoadingChats(true);
@@ -60,7 +63,6 @@ export default function DoctorDashboard() {
       }
     })();
   }, []);
-
 
   useEffect(() => {
     (async () => {
@@ -117,121 +119,100 @@ export default function DoctorDashboard() {
   }, [allAppointments]);
 
   return (
-    <div className="auth-card" style={{ maxWidth: 1080 }}>
-      <h2>Doctor Dashboard</h2>
-      <p className="muted">
-        Xin chào, {user?.username}. Tổng quan {sum.today || "Hôm nay"} — quản lý hàng đợi & trao đổi bệnh nhân.
-      </p>
-
-      {/* ===== DASH CARDS ===== */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 16,
-          marginTop: 16,
-        }}
-      >
-        <DashCard
-          title="Đang chờ"
-          value={loadingAll ? "…" : cardCounts.waiting}
-          sub="Danh sách chờ (US9)"
-          to="/doctor/queue?status=waiting"
-        />
-        <DashCard
-          title="Đang khám"
-          value={loadingAll ? "…" : cardCounts.inProgress}
-          sub="Tiếp tục khám"
-          to="/doctor/queue?status=in_progress"
-        />
-        <DashCard
-          title="Đã khám"
-          value={loadingAll ? "…" : cardCounts.done}
-          sub="Lịch sử trong ngày"
-          to="/doctor/queue?status=done"
-        />
-
-        <DashCard
-          title="Tin nhắn"
-          value={loadingChats ? "…" : chatCount}
-          sub="Bệnh nhân đang trò chuyện (US11)"
-          to="/doctor-chat"
-        />
-
-        <DashCard
-          title="KQ cần thông báo"
-          value={sum.labToNotify}
-          sub="Đẩy thông báo (US12)"
-          to="/doctor/lab-notify"
-        />
-      </div>
-
-      {/* ===== US9: APPOINTMENT TABLE ===== */}
-      <div
-        style={{
-          marginTop: 24,
-          background: "#0f1422",
-          border: "1px solid #223",
-          borderRadius: 16,
-          padding: 16,
-        }}
-      >
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ fontWeight: 600 }}>Danh sách bệnh nhân hôm nay (US9)</div>
+    <div className="dd-shell">
+      {/* ===== LEFT SIDEBAR (UI only) ===== */}
+      <aside className="dd-sidebar">
+        <div className="dd-doc">
+          <div className="dd-docAvatar" aria-hidden="true">
+            <div className="dd-docAvatarInner">👨‍⚕️</div>
+          </div>
+          <div className="dd-docInfo">
+            <div className="dd-docName">{user?.username || "Dr. Nguyen"}</div>
+            <div className="dd-docDept">Khoa Tim Mạch</div>
+          </div>
         </div>
 
-        <div style={{ marginTop: 12 }}>
-          {loadingAppt ? (
-            <p className="muted">Đang tải...</p>
-          ) : appointments.length === 0 ? (
-            <p className="muted">Không có lịch khám hôm nay</p>
-          ) : (
-            <DoctorAppointmentTable appointments={appointments} />
-          )}
-        </div>
-      </div>
+        <nav className="dd-nav">
+          <a className="dd-navItem active" href="#dashboard">
+            <span className="dd-navIcon" aria-hidden="true">
+              ⬛
+            </span>
+            Dashboard
+          </a>
 
-      {/* ===== US12: QUICK SECTION ===== */}
-      <div
-        style={{
-          marginTop: 24,
-          background: "#0f1422",
-          border: "1px solid #223",
-          borderRadius: 16,
-          padding: 16,
-        }}
-      >
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>Kết quả cần thông báo (US12)</div>
-        <div className="muted">
-          Xem danh sách bệnh nhân có kết quả xét nghiệm và gửi thông báo: “Kết quả xét nghiệm của bạn đã sẵn sàng.”
-        </div>
-        <div style={{ marginTop: 10 }}>
-          <Link to="/doctor/lab-notify" className="link">
-            Đi đến trang thông báo kết quả
+          <Link to="/doctor/lab-notify" className="dd-navItem">
+            <span className="dd-navIcon" aria-hidden="true">📁</span>
+            Thông báo kết quả
+            {sum.labToNotify > 0 && (
+              <span className="dd-badge">{sum.labToNotify}</span>
+            )}
           </Link>
-        </div>
-      </div>
 
-      {/* ===== US10: EXAMINATION PROGRESS ===== */}
-      <div
-        style={{
-          marginTop: 16,
-          background: "#0f1422",
-          border: "1px solid #223",
-          borderRadius: 16,
-          padding: 16,
-        }}
-      >
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>Cập nhật trạng thái quy trình (US10)</div>
-        <div className="muted">
-          Chọn bệnh nhân và cập nhật 🟢/🟡/🔵. Thay đổi hiển thị tức thì cho bệnh nhân.
-        </div>
-        <div style={{ marginTop: 10 }}>
-          <Link to="/doctor/examination-progress" className="link">
-            Đi đến trang cập nhật
+          <Link to="/doctor-chat" className="dd-navItem">
+            <span className="dd-navIcon" aria-hidden="true">💬</span>
+            Tin nhắn
+            {!loadingChats && chatCount > 0 && (
+              <span className="dd-badge">{chatCount}</span>
+            )}
           </Link>
+          <Link to="/doctor/examination-progress" className="dd-navItem">
+            <span className="dd-navIcon" aria-hidden="true">
+              ↔
+            </span>
+            Cập nhật trạng thái
+          </Link>
+
+
+          <div className="dd-navDivider" />
+
+          <a className="dd-navItem" href="#settings">
+            <span className="dd-navIcon" aria-hidden="true">
+              ⚙️
+            </span>
+            Cài đặt
+          </a>
+        </nav>
+      </aside>
+
+      {/* ===== MAIN ===== */}
+      <main className="dd-main">
+        <div className="dd-container">
+          <div className="dd-header">
+            <h2 className="dd-title">Doctor Dashboard</h2>
+            <p className="dd-sub muted">
+              Xin chào, {user?.username}. Tổng quan {sum.today || "Hôm nay"} — quản
+              lý hàng đợi & trao đổi bệnh nhân.
+            </p>
+          </div>
+
+
+          {/* ===== CONTENT GRID: table + right panels ===== */}
+          <div className="dd-contentGrid">
+            {/* LEFT: US9 table */}
+            <section className="dd-card dd-tableCard">
+              <div className="dd-sectionHead">
+                <div className="dd-sectionTitle">
+                  Danh sách bệnh nhân hôm nay (US9)
+                </div>
+                <a className="dd-sectionLink" href="#all">
+                  Xem tất cả
+                </a>
+              </div>
+
+              <div className="dd-tableBody">
+                {loadingAppt ? (
+                  <p className="muted">Đang tải...</p>
+                ) : appointments.length === 0 ? (
+                  <p className="muted">Không có lịch khám hôm nay</p>
+                ) : (
+                  <DoctorAppointmentTable appointments={appointments} />
+                )}
+              </div>
+            </section>
+
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

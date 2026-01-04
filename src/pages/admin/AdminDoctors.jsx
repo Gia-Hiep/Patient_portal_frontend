@@ -8,63 +8,70 @@ import {
   updateAdminDoctor,
   createAdminDoctor,
 } from "../../services/adminDoctors";
+import "../../assets/styles/adminDoctors.css";
 
 /* ================= UI COMPONENTS ================= */
 
 function Badge({ children }) {
+  const v = String(children || "").toUpperCase();
+  const cls =
+    v === "ACTIVE"
+      ? "adoc-badge adoc-badge--active"
+      : v === "DISABLED"
+      ? "adoc-badge adoc-badge--disabled"
+      : "adoc-badge";
+  return <span className={cls}>{children}</span>;
+}
+
+function IconPencil() {
   return (
-    <span
-      style={{
-        padding: "4px 10px",
-        borderRadius: 999,
-        border: "1px solid #2a3555",
-        fontSize: 12,
-        background: "#0f1422",
-      }}
-    >
-      {children}
-    </span>
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm2.92 2.83H5v-.92l9.06-9.06.92.92L5.92 20.08ZM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.29a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.83Z"
+      />
+    </svg>
+  );
+}
+
+function IconTrash() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M6 7h12v14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7Zm3-4h6l1 1h4v2H4V4h4l1-1Zm1 6h2v10h-2V9Zm4 0h2v10h-2V9Z"
+      />
+    </svg>
   );
 }
 
 function Modal({ title, onClose, children, width = 720 }) {
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.55)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-        padding: 16,
-      }}
+      className="adoc-modal-backdrop"
       onMouseDown={onClose}
+      role="dialog"
+      aria-modal="true"
     >
       <div
-        style={{
-          width: "100%",
-          maxWidth: width,
-          background: "#0b1020",
-          border: "1px solid #223",
-          borderRadius: 16,
-          padding: 16,
-        }}
+        className="adoc-modal"
+        style={{ maxWidth: width }}
         onMouseDown={(e) => e.stopPropagation()}
       >
-      <div
-  style={{
-    fontWeight: 700,
-    fontSize: 18,
-    textAlign: "center",
-    marginBottom: 8,
-  }}
->
-  {title}
-</div>
+        <div className="adoc-modal__head">
+          <div className="adoc-modal__title">{title}</div>
+          <button
+            className="adoc-icon-btn adoc-icon-btn--ghost"
+            onClick={onClose}
+            aria-label="Đóng"
+            title="Đóng"
+            type="button"
+          >
+            ×
+          </button>
+        </div>
 
-        <div style={{ marginTop: 12 }}>{children}</div>
+        <div className="adoc-modal__body">{children}</div>
       </div>
     </div>
   );
@@ -72,38 +79,37 @@ function Modal({ title, onClose, children, width = 720 }) {
 
 function TextField({ label, value, onChange, placeholder, multiline }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <div style={{ fontSize: 13, opacity: 0.9 }}>{label}</div>
+    <div className="adoc-field">
+      <div className="adoc-field__label">{label}</div>
       {multiline ? (
         <textarea
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           rows={3}
-          style={{
-            padding: 10,
-            borderRadius: 12,
-            border: "1px solid #223",
-            background: "#0f1422",
-            color: "#fff",
-          }}
+          className="adoc-input adoc-textarea"
         />
       ) : (
         <input
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          style={{
-            padding: 10,
-            borderRadius: 12,
-            border: "1px solid #223",
-            background: "#0f1422",
-            color: "#fff",
-          }}
+          className="adoc-input"
         />
       )}
     </div>
   );
+}
+
+function DoctorAvatar({ name }) {
+  const s = String(name || "").trim();
+  const parts = s.split(/\s+/).filter(Boolean);
+  const initials =
+    parts.length >= 2
+      ? `${parts[0][0] || ""}${parts[parts.length - 1][0] || ""}`.toUpperCase()
+      : (parts[0]?.slice(0, 2) || "BS").toUpperCase();
+
+  return <div className="adoc-avatar">{initials}</div>;
 }
 
 /* ================= MAIN PAGE ================= */
@@ -253,319 +259,268 @@ export default function AdminDoctors() {
   /* ================= RENDER ================= */
 
   return (
-    <div className="auth-container">
+    <div className="adoc">
       <AppHeader />
 
-      <div className="auth-card" style={{ maxWidth: 1120 }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            gap: 12,
-          }}
-        >
-          <div>
-            <h2 style={{ margin: 0 }}>Quản lý danh sách bác sĩ</h2>
-            <div className="muted" style={{ marginTop: 6 }}>
-              US14.2: Xem danh sách, cập nhật, thêm bác sĩ
+      <div className="adoc-shell">
+        <div className="adoc-card">
+          <div className="adoc-head">
+            <div className="adoc-head__left">
+              <h2 className="adoc-title">Quản lý danh sách bác sĩ</h2>
+              <div className="adoc-subtitle">
+                US14.2: Xem danh sách, cập nhật, thêm bác sĩ
+              </div>
+            </div>
+
+            <div className="adoc-head__right">
+              <button
+                className="adoc-btn adoc-btn--ghost"
+                onClick={() => navigate("/dashboard")}
+              >
+                ← Về Dashboard
+              </button>
             </div>
           </div>
-          <button className="btn" onClick={() => navigate("/dashboard")}>
-            ← Về Dashboard
-          </button>
-        </div>
 
-        <div
-          style={{
-            display: "flex",
-            gap: 12,
-            marginTop: 16,
-            flexWrap: "wrap",
-          }}
-        >
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Tìm theo tên/email/chuyên khoa..."
-            style={{
-              flex: 1,
-              minWidth: 240,
-              padding: 10,
-              borderRadius: 12,
-              border: "1px solid #223",
-              background: "#0f1422",
-              color: "#fff",
-            }}
-          />
+          <div className="adoc-toolbar">
+            <div className="adoc-search">
+              <span className="adoc-search__icon" aria-hidden="true">
+                🔍
+              </span>
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Tìm theo tên/email/chuyên khoa..."
+                className="adoc-search__input"
+              />
+            </div>
 
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              userSelect: "none",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={includeDisabled}
-              onChange={(e) => setIncludeDisabled(e.target.checked)}
-            />
-            Hiển thị cả DISABLED
-          </label>
+            <label className="adoc-check">
+              <input
+                type="checkbox"
+                checked={includeDisabled}
+                onChange={(e) => setIncludeDisabled(e.target.checked)}
+              />
+              <span>Hiển thị cả DISABLED</span>
+            </label>
 
-          <button className="btn" onClick={load} disabled={loading}>
-            {loading ? "Đang tải..." : "Tải lại"}
-          </button>
+            <div className="adoc-actions">
+              <button
+                className="adoc-btn adoc-btn--ghost"
+                onClick={load}
+                disabled={loading}
+              >
+                {loading ? "Đang tải..." : "Tải lại"}
+              </button>
 
-          {/* 🔥 THÊM BÁC SĨ */}
-          <button
-            className="btn"
-            style={{ background: "#22c55e" }}
-            onClick={() => setCreateOpen(true)}
-          >
-            + Thêm bác sĩ
-          </button>
-        </div>
-
-        {err && (
-          <div
-            style={{
-              marginTop: 12,
-              padding: 12,
-              border: "1px solid #522",
-              background: "#220f12",
-              borderRadius: 12,
-            }}
-          >
-            {err}
+              <button
+                className="adoc-btn adoc-btn--primary"
+                onClick={() => setCreateOpen(true)}
+              >
+                + Thêm bác sĩ
+              </button>
+            </div>
           </div>
-        )}
 
-        <div style={{ marginTop: 16, overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
-            <thead>
-              <tr style={{ textAlign: "left", borderBottom: "1px solid #223" }}>
-                <th style={{ padding: 10 }}>Bác sĩ</th>
-                <th style={{ padding: 10 }}>Email</th>
-                <th style={{ padding: 10 }}>Chuyên khoa</th>
-                <th style={{ padding: 10 }}>Khoa</th>
-                <th style={{ padding: 10 }}>Trạng thái</th>
-                <th style={{ padding: 10, width: 180 }}>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((d) => (
-                <tr key={d.id} style={{ borderBottom: "1px solid #182033" }}>
-                  <td style={{ padding: 10 }}>
-                    <div style={{ fontWeight: 650 }}>
-                      {d.fullName || "(Chưa có tên)"}
-                    </div>
-                    <div className="muted" style={{ fontSize: 13 }}>
-                      @{d.username} • ID {d.id}
-                    </div>
-                  </td>
-                  <td style={{ padding: 10 }}>{d.email}</td>
-                  <td style={{ padding: 10 }}>{d.specialty || "-"}</td>
-                  <td style={{ padding: 10 }}>{d.department || "-"}</td>
-                  <td style={{ padding: 10 }}>
-                    <Badge>{d.status || "-"}</Badge>
-                  </td>
-                  <td style={{ padding: 10 }}>
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <button
-                        className="btn"
-                        onClick={() => onOpenEdit(d)}
-                        disabled={loading}
-                      >
-                        Sửa
-                      </button>
-                      <button
-                        className="btn"
-                        onClick={() => onAskDelete(d)}
-                        disabled={loading || d.status === "DISABLED"}
-                      >
-                        Xóa
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+          {err && <div className="adoc-alert">{err}</div>}
 
-              {!loading && filtered.length === 0 && (
+          <div className="adoc-table-wrap">
+            <table className="adoc-table">
+              <thead>
                 <tr>
-                  <td colSpan={6} style={{ padding: 14 }} className="muted">
-                    Không có bác sĩ nào.
-                  </td>
+                  <th>Bác sĩ</th>
+                  <th>Email</th>
+                  <th>Chuyên khoa</th>
+                  <th>Khoa</th>
+                  <th>Trạng thái</th>
+                  <th className="adoc-th-actions">Thao tác</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {filtered.map((d) => (
+                  <tr key={d.id} className="adoc-row">
+                    <td>
+                      <div className="adoc-doctor">
+                        <DoctorAvatar name={d.fullName || d.username} />
+                        <div className="adoc-doctor__meta">
+                          <div className="adoc-doctor__name">
+                            {d.fullName || "(Chưa có tên)"}
+                          </div>
+                          <div className="adoc-doctor__sub">
+                            @{d.username} • ID {d.id}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="adoc-td-muted">{d.email}</td>
+                    <td>{d.specialty || "-"}</td>
+                    <td>{d.department || "-"}</td>
+                    <td>
+                      <Badge>{d.status || "-"}</Badge>
+                    </td>
+
+                    <td className="adoc-td-actions">
+                      <div className="adoc-row-actions">
+                        <button
+                          className="adoc-icon-btn adoc-icon-btn--edit"
+                          onClick={() => onOpenEdit(d)}
+                          disabled={loading}
+                          title="Sửa"
+                          aria-label="Sửa"
+                          type="button"
+                        >
+                          <IconPencil />
+                        </button>
+
+                        <button
+                          className="adoc-icon-btn adoc-icon-btn--danger"
+                          onClick={() => onAskDelete(d)}
+                          disabled={loading || d.status === "DISABLED"}
+                          title="Xóa"
+                          aria-label="Xóa"
+                          type="button"
+                        >
+                          <IconTrash />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+
+                {!loading && filtered.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="adoc-empty">
+                      Không có bác sĩ nào.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* ================= MODALS ================= */}
 
-     {editOpen && editModel && (
-  <Modal
-    title={`Chỉnh sửa bác sĩ (ID ${editModel.id})`}
-    onClose={() => setEditOpen(false)}
-  >
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-        gap: 12,
-      }}
-    >
-      <TextField
-        label="Họ tên"
-        value={editModel.fullName}
-        onChange={(v) =>
-          setEditModel((s) => ({ ...s, fullName: v }))
-        }
-        placeholder="VD: BS. Nguyễn Văn A"
-      />
+      {editOpen && editModel && (
+        <Modal
+          title={`Chỉnh sửa bác sĩ (ID ${editModel.id})`}
+          onClose={() => setEditOpen(false)}
+        >
+          <div className="adoc-modal-grid">
+            <TextField
+              label="Họ tên"
+              value={editModel.fullName}
+              onChange={(v) => setEditModel((s) => ({ ...s, fullName: v }))}
+              placeholder="VD: BS. Nguyễn Văn A"
+            />
 
-      <TextField
-        label="Số chứng chỉ (license)"
-        value={editModel.licenseNo}
-        onChange={(v) =>
-          setEditModel((s) => ({ ...s, licenseNo: v }))
-        }
-        placeholder="VD: 12345"
-      />
+            <TextField
+              label="Số chứng chỉ (license)"
+              value={editModel.licenseNo}
+              onChange={(v) => setEditModel((s) => ({ ...s, licenseNo: v }))}
+              placeholder="VD: 12345"
+            />
 
-      <TextField
-        label="Chuyên khoa"
-        value={editModel.specialty}
-        onChange={(v) =>
-          setEditModel((s) => ({ ...s, specialty: v }))
-        }
-        placeholder="VD: Nội tổng quát"
-      />
+            <TextField
+              label="Chuyên khoa"
+              value={editModel.specialty}
+              onChange={(v) => setEditModel((s) => ({ ...s, specialty: v }))}
+              placeholder="VD: Nội tổng quát"
+            />
 
-      <TextField
-        label="Khoa / Phòng"
-        value={editModel.department}
-        onChange={(v) =>
-          setEditModel((s) => ({ ...s, department: v }))
-        }
-        placeholder="VD: Khám tổng quát"
-      />
+            <TextField
+              label="Khoa / Phòng"
+              value={editModel.department}
+              onChange={(v) => setEditModel((s) => ({ ...s, department: v }))}
+              placeholder="VD: Khám tổng quát"
+            />
 
-      <div style={{ gridColumn: "1 / -1" }}>
-        <TextField
-          label="Lịch làm việc"
-          value={editModel.workingSchedule}
-          onChange={(v) =>
-            setEditModel((s) => ({ ...s, workingSchedule: v }))
-          }
-          placeholder='VD: "T2-T6 08:00-17:00; T7 08:00-11:00"'
-        />
-      </div>
+            <div className="adoc-col-span">
+              <TextField
+                label="Lịch làm việc"
+                value={editModel.workingSchedule}
+                onChange={(v) =>
+                  setEditModel((s) => ({ ...s, workingSchedule: v }))
+                }
+                placeholder='VD: "T2-T6 08:00-17:00; T7 08:00-11:00"'
+              />
+            </div>
 
-      <div style={{ gridColumn: "1 / -1" }}>
-        <TextField
-          label="Giới thiệu"
-          multiline
-          value={editModel.bio}
-          onChange={(v) =>
-            setEditModel((s) => ({ ...s, bio: v }))
-          }
-          placeholder="Mô tả ngắn về bác sĩ..."
-        />
-      </div>
-    </div>
+            <div className="adoc-col-span">
+              <TextField
+                label="Giới thiệu"
+                multiline
+                value={editModel.bio}
+                onChange={(v) => setEditModel((s) => ({ ...s, bio: v }))}
+                placeholder="Mô tả ngắn về bác sĩ..."
+              />
+            </div>
+          </div>
 
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        gap: 8,
-        marginTop: 12,
-      }}
-    >
-      <button
-        className="btn"
-        onClick={() => setEditOpen(false)}
-        disabled={loading}
-      >
-        Hủy
-      </button>
-      <button
-        className="btn"
-        onClick={onSaveEdit}
-        disabled={loading}
-      >
-        {loading ? "Đang lưu..." : "Lưu"}
-      </button>
-    </div>
-  </Modal>
-)}
+          <div className="adoc-modal-footer">
+            <button
+              className="adoc-btn adoc-btn--ghost"
+              onClick={() => setEditOpen(false)}
+              disabled={loading}
+            >
+              Hủy
+            </button>
+            <button
+              className="adoc-btn adoc-btn--primary"
+              onClick={onSaveEdit}
+              disabled={loading}
+            >
+              {loading ? "Đang lưu..." : "Lưu"}
+            </button>
+          </div>
+        </Modal>
+      )}
 
+      {deleteOpen && deleteTarget && (
+        <Modal title="Xác nhận xóa" onClose={() => setDeleteOpen(false)} width={520}>
+          <div className="adoc-del">
+            <div className="adoc-del__text" style={{ lineHeight: 1.6 }}>
+              Bạn chắc chắn muốn xóa bác sĩ:
+              <div style={{ marginTop: 8 }}>
+                <b>{deleteTarget.fullName || deleteTarget.username}</b> (
+                {deleteTarget.email})
+              </div>
+              <div className="adoc-del__note" style={{ marginTop: 8 }}>
+                Hành động này sẽ đặt tài khoản về trạng thái <b>DISABLED</b> (soft
+                delete) để tránh ảnh hưởng dữ liệu lịch sử.
+              </div>
+            </div>
+          </div>
 
-     {deleteOpen && deleteTarget && (
-  <Modal
-    title="Xác nhận xóa"
-    onClose={() => setDeleteOpen(false)}
-    width={520}
-  >
-    <div style={{ lineHeight: 1.6 }}>
-      Bạn chắc chắn muốn xóa bác sĩ:
-      <div style={{ marginTop: 8 }}>
-        <b>{deleteTarget.fullName || deleteTarget.username}</b>{" "}
-        ({deleteTarget.email})
-      </div>
-      <div className="muted" style={{ marginTop: 8 }}>
-        Hành động này sẽ đặt tài khoản về trạng thái <b>DISABLED</b> (soft
-        delete) để tránh ảnh hưởng dữ liệu lịch sử.
-      </div>
-    </div>
-
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "flex-end",
-        gap: 8,
-        marginTop: 16,
-      }}
-    >
-      <button
-        className="btn"
-        onClick={() => setDeleteOpen(false)}
-        disabled={loading}
-      >
-        Hủy
-      </button>
-      <button
-        className="btn"
-        onClick={onConfirmDelete}
-        disabled={loading}
-      >
-        {loading ? "Đang xử lý..." : "Xác nhận xóa"}
-      </button>
-    </div>
-  </Modal>
-)}
-
+          <div className="adoc-modal-footer">
+            <button
+              className="adoc-btn adoc-btn--ghost"
+              onClick={() => setDeleteOpen(false)}
+              disabled={loading}
+            >
+              Hủy
+            </button>
+            <button
+              className="adoc-btn adoc-btn--danger"
+              onClick={onConfirmDelete}
+              disabled={loading}
+            >
+              {loading ? "Đang xử lý..." : "Xác nhận xóa"}
+            </button>
+          </div>
+        </Modal>
+      )}
 
       {createOpen && (
         <Modal title="Thêm bác sĩ mới" onClose={() => setCreateOpen(false)}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, 1fr)",
-              gap: 12,
-            }}
-          >
+          <div className="adoc-modal-grid">
             <TextField
               label="Username"
               value={createModel.username}
-              onChange={(v) =>
-                setCreateModel((s) => ({ ...s, username: v }))
-              }
+              onChange={(v) => setCreateModel((s) => ({ ...s, username: v }))}
             />
             <TextField
               label="Email"
@@ -575,39 +530,29 @@ export default function AdminDoctors() {
             <TextField
               label="Mật khẩu (mặc định: 123456)"
               value={createModel.password}
-              onChange={(v) =>
-                setCreateModel((s) => ({ ...s, password: v }))
-              }
+              onChange={(v) => setCreateModel((s) => ({ ...s, password: v }))}
             />
             <TextField
               label="Họ tên"
               value={createModel.fullName}
-              onChange={(v) =>
-                setCreateModel((s) => ({ ...s, fullName: v }))
-              }
+              onChange={(v) => setCreateModel((s) => ({ ...s, fullName: v }))}
             />
             <TextField
               label="Chuyên khoa"
               value={createModel.specialty}
-              onChange={(v) =>
-                setCreateModel((s) => ({ ...s, specialty: v }))
-              }
+              onChange={(v) => setCreateModel((s) => ({ ...s, specialty: v }))}
             />
             <TextField
               label="Khoa"
               value={createModel.department}
-              onChange={(v) =>
-                setCreateModel((s) => ({ ...s, department: v }))
-              }
+              onChange={(v) => setCreateModel((s) => ({ ...s, department: v }))}
             />
             <TextField
               label="Số chứng chỉ"
               value={createModel.licenseNo}
-              onChange={(v) =>
-                setCreateModel((s) => ({ ...s, licenseNo: v }))
-              }
+              onChange={(v) => setCreateModel((s) => ({ ...s, licenseNo: v }))}
             />
-            <div style={{ gridColumn: "1 / -1" }}>
+            <div className="adoc-col-span">
               <TextField
                 label="Lịch làm việc"
                 value={createModel.workingSchedule}
@@ -618,18 +563,14 @@ export default function AdminDoctors() {
             </div>
           </div>
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: 8,
-              marginTop: 12,
-            }}
-          >
-            <button className="btn" onClick={() => setCreateOpen(false)}>
+          <div className="adoc-modal-footer">
+            <button
+              className="adoc-btn adoc-btn--ghost"
+              onClick={() => setCreateOpen(false)}
+            >
               Hủy
             </button>
-            <button className="btn" onClick={onCreateDoctor}>
+            <button className="adoc-btn adoc-btn--primary" onClick={onCreateDoctor}>
               Lưu
             </button>
           </div>

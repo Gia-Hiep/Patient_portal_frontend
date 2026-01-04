@@ -265,6 +265,9 @@ export default function AppRoutes() {
               <AdminOnly>
                 <AdminDoctors />
               </AdminOnly>
+            </Protected>
+          }
+        />
         {/* ✅ US14.1: Patient tra cứu dịch vụ */}
         <Route
           path="/services"

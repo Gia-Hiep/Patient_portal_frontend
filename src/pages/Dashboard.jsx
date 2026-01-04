@@ -42,6 +42,7 @@ export default function Dashboard({ unread }) {
 
       {/* phần nội dung dashboard */}
       {dashboardComponent}
+      
     </div>
   );
 }
