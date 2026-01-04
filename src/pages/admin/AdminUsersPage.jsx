@@ -5,7 +5,7 @@ import {
   adminLockUser,
   adminUnlockUser,
 } from "../../services/adminUsers";
-import "../../assets/styles/auth.css";
+import "../../assets/styles/adminUsers.css";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminUsersPage() {
@@ -92,130 +92,180 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="auth-card" style={{ maxWidth: 980 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <h2 style={{ margin: 0, flex: 1 }}>Quản lý người dùng</h2>
+    <div className="au-page auth-card">
+      {/* Header */}
+      <div className="au-header">
+        <div className="au-headerLeft">
+          <button
+            className="au-btn au-btnGhost au-backBtn"
+            onClick={() => nav("/dashboard")}
+            type="button"
+          >
+            ← Quay lại Dashboard
+          </button>
 
-        <button
-          className="chip-btn"
-          onClick={() => nav("/admin/users/create")}
-        >
-          + Tạo tài khoản
-        </button>
+          <h2 className="au-title">Quản lý người dùng</h2>
+        </div>
 
-        <button className="chip-btn" onClick={loadUsers}>
-          Refresh
-        </button>
+        <div className="au-headerActions">
+          <button className="au-btn au-btnGhost" onClick={loadUsers}>
+            Refresh
+          </button>
+
+          <button
+            className="au-btn au-btnPrimary"
+            onClick={() => nav("/admin/users/create")}
+          >
+            + Tạo tài khoản
+          </button>
+        </div>
       </div>
-
 
 
       {error && <div className="alert error">{error}</div>}
       {msg && <div className="alert success">{msg}</div>}
 
-      {/* Filter bar */}
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-          flexWrap: "wrap",
-          alignItems: "center",
-          margin: "14px 0 18px",
-        }}
-      >
-        <input
-          placeholder="Tìm theo username / email / phone / id..."
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          style={{ flex: 1, minWidth: 240 }}
-        />
+      {/* Filters */}
+      <section className="au-filtersCard">
+        <div className="au-filtersGrid">
+          {/* Search */}
+          <div className="au-field au-fieldSearch">
+            <div className="au-label">TÌM KIẾM</div>
+            <div className="au-inputWrap">
+              <span className="au-inputIcon" aria-hidden="true">
+                🔎
+              </span>
+              <input
+                className="au-input"
+                placeholder="Tìm theo username / email / phone / id..."
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+              />
+            </div>
+          </div>
 
-        <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
-          <option value="ALL">Tất cả vai trò</option>
-          <option value="PATIENT">Bệnh nhân</option>
-          <option value="DOCTOR">Bác sĩ</option>
-          <option value="ADMIN">Quản trị viên</option>
-        </select>
+          {/* Role */}
+          <div className="au-field">
+            <div className="au-label">VAI TRÒ</div>
+            <select
+              className="au-select"
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+            >
+              <option value="ALL">Tất cả vai trò</option>
+              <option value="PATIENT">Bệnh nhân</option>
+              <option value="DOCTOR">Bác sĩ</option>
+              <option value="ADMIN">Quản trị viên</option>
+            </select>
+          </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-        >
-          <option value="ALL">Tất cả trạng thái</option>
-          <option value="ACTIVE">ACTIVE</option>
-          <option value="LOCKED">LOCKED</option>
-          <option value="DISABLED">DISABLED</option>
-        </select>
+          {/* Status */}
+          <div className="au-field">
+            <div className="au-label">TRẠNG THÁI</div>
+            <select
+              className="au-select"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="ALL">Tất cả trạng thái</option>
+              <option value="ACTIVE">ACTIVE</option>
+              <option value="LOCKED">LOCKED</option>
+              <option value="DISABLED">DISABLED</option>
+            </select>
+          </div>
 
-        <button
-          className="chip-btn"
-          onClick={() => {
-            setQ("");
-            setRoleFilter("ALL");
-            setStatusFilter("ALL");
-          }}
-        >
-          Reset
-        </button>
-      </div>
+          {/* Reset (same handler, same text) */}
+          <div className="au-field au-fieldReset">
+            <button
+              className="au-reset"
+              onClick={() => {
+                setQ("");
+                setRoleFilter("ALL");
+                setStatusFilter("ALL");
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      </section>
 
       {/* Table */}
-      {loading ? (
-        <p>Đang tải...</p>
-      ) : filtered.length === 0 ? (
-        <p>Không có người dùng phù hợp.</p>
-      ) : (
-        <table className="visit-table">
-          <thead>
-            <tr>
-              <th style={{ width: 70 }}>ID</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th style={{ width: 140 }}>Vai trò</th>
-              <th style={{ width: 120 }}>Trạng thái</th>
-              <th style={{ width: 140 }}>Thao tác</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((u) => (
-              <tr key={u.id}>
-                <td>{u.id}</td>
-                <td>{u.username}</td>
-                <td>{u.email}</td>
+      <section className="au-tableCard">
+        {loading ? (
+          <p className="au-loading">Đang tải...</p>
+        ) : filtered.length === 0 ? (
+          <p className="au-empty">Không có người dùng phù hợp.</p>
+        ) : (
+          <div className="au-tableWrap">
+            <table className="au-table">
+              <thead>
+                <tr>
+                  <th className="au-th au-thId">ID</th>
+                  <th className="au-th">USERNAME</th>
+                  <th className="au-th">EMAIL</th>
+                  <th className="au-th au-thRole">VAI TRÒ</th>
+                  <th className="au-th au-thStatus">TRẠNG THÁI</th>
+                  <th className="au-th au-thActions">THAO TÁC</th>
+                </tr>
+              </thead>
 
-                <td>
-                  <select
-                    value={u.role}
-                    onChange={(e) => changeRole(u.id, e.target.value)}
-                    disabled={u.role === "ADMIN"} // tránh tự phá quyền admin
-                  >
-                    <option value="PATIENT">Bệnh nhân</option>
-                    <option value="DOCTOR">Bác sĩ</option>
-                    <option value="ADMIN">Admin</option>
-                  </select>
-                </td>
+              <tbody>
+                {filtered.map((u) => (
+                  <tr key={u.id} className="au-tr">
+                    <td className="au-td au-tdId">#{u.id}</td>
 
-                <td>
-                  <span className={badgeClass(u.status)}>{u.status}</span>
-                </td>
+                    <td className="au-td">
+                      <div className="au-userCell">
+                        <div className="au-avatar" aria-hidden="true" />
+                        <div className="au-userText">
+                          <div className="au-username">{u.username}</div>
+                        </div>
+                      </div>
+                    </td>
 
-                <td>
-                  <button className="chip-btn" onClick={() => toggleLock(u)}>
-                    {u.status === "LOCKED" ? "Mở khóa" : "Khóa"}
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+                    <td className="au-td au-email">{u.email}</td>
 
-      {/* small count */}
-      {!loading && (
-        <div className="muted" style={{ marginTop: 10 }}>
-          Tổng: {filtered.length} / {users.length}
-        </div>
-      )}
+                    <td className="au-td">
+                      <select
+                        className="au-select au-selectInline"
+                        value={u.role}
+                        onChange={(e) => changeRole(u.id, e.target.value)}
+                        disabled={u.role === "ADMIN"}
+                      >
+                        <option value="PATIENT">Bệnh nhân</option>
+                        <option value="DOCTOR">Bác sĩ</option>
+                        <option value="ADMIN">Admin</option>
+                      </select>
+                    </td>
+
+                    <td className="au-td au-tdStatus">
+                      <span className={badgeClass(u.status)}>{u.status}</span>
+                    </td>
+
+                    <td className="au-td au-tdActions">
+                      <button
+                        className={`au-lockBtn ${u.status === "LOCKED" ? "unlock" : "lock"
+                          }`}
+                        onClick={() => toggleLock(u)}
+                        type="button"
+                      >
+                        {u.status === "LOCKED" ? "Mở khóa" : "Khóa"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="au-footer">
+              <div className="au-count muted">
+                Tổng: {filtered.length} / {users.length}
+              </div>
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

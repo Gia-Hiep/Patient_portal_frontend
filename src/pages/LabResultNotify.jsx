@@ -78,84 +78,168 @@ export default function LabResultNotify() {
     }
   };
 
+  // ✅ required unauthorized text
   if (!hasPermission) {
-    return <p>⛔ Bạn không có quyền truy cập</p>;
+    return (
+      <div className="lrn-page">
+        <div className="lrn-unauth">Bạn không có quyền gửi thông báo.</div>
+      </div>
+    );
   }
 
   const filtered = search.trim()
     ? patients.filter(
         (p) =>
-          p.fullName?.toLowerCase().trim() ===
-          search.toLowerCase().trim()
+          p.fullName?.toLowerCase().trim() === search.toLowerCase().trim()
       )
     : patients;
 
   return (
-    <div className="auth-card" style={{ maxWidth: 1100 }}>
-      <h2>Đẩy thông báo kết quả xét nghiệm (US12)</h2>
+    <div className="lrn-page">
+      <div className="lrn-shell">
+        <header className="lrn-header">
+          <h2 className="lrn-title">Đẩy thông báo kết quả xét nghiệm (US12)</h2>
+          <p className="lrn-subtitle">
+            Gửi kết quả và thông báo cho bệnh nhân qua ứng dụng.
+          </p>
+        </header>
 
-      <div className="lab-notify-container">
-        {/* LEFT */}
-        <div className="patient-list">
-          <input
-            placeholder="Tìm kiếm bệnh nhân"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="lrn-card">
+          <div className="lrn-layout">
+            {/* LEFT */}
+            <aside className="lrn-left">
+              <div className="lrn-search">
+                <span className="lrn-searchIcon" aria-hidden="true">
+                  🔎
+                </span>
+                <input
+                  className="lrn-searchInput"
+                  placeholder="Tìm kiếm bệnh nhân"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </div>
 
-          {loading ? (
-            <p>Đang tải…</p>
-          ) : (
-            <ul>
-              {filtered.map((p) => (
-                <li
-                  key={p.patientId}
-                  onClick={() => selectPatient(p)}
-                  className={
-                    selected?.patientId === p.patientId ? "active" : ""
-                  }
-                >
-                  <b>{p.fullName}</b>
-                  <span className="done">Hoàn tất</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+              <div className="lrn-list">
+                {loading ? (
+                  <p className="lrn-muted">Đang tải…</p>
+                ) : filtered.length === 0 ? (
+                  <p className="lrn-muted">Không có dữ liệu.</p>
+                ) : (
+                  <ul className="lrn-ul">
+                    {filtered.map((p) => (
+                      <li
+                        key={p.patientId}
+                        onClick={() => selectPatient(p)}
+                        className={`lrn-item ${
+                          selected?.patientId === p.patientId ? "active" : ""
+                        }`}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ")
+                            selectPatient(p);
+                        }}
+                      >
+                        <div className="lrn-itemMain">
+                          <div className="lrn-itemTop">
+                            <div className="lrn-itemName">{p.fullName}</div>
+                            {/* giữ nguyên text hiện có (không đổi logic trạng thái) */}
+                            <span className="lrn-badge lrn-badgeDone">
+                              Hoàn tất
+                            </span>
+                          </div>
 
-        {/* RIGHT */}
-        <div className="patient-detail">
-          {loadingDetail && <p>Đang tải kết quả…</p>}
+                          <div className="lrn-itemMeta">
+                            <span className="lrn-metaLabel">ID:</span>{" "}
+                            <span className="lrn-metaValue">
+                              {p.patientId}
+                            </span>
+                          </div>
+                        </div>
 
-          {!loadingDetail && detail && (
-            <>
-              <h3>{detail.fullName}</h3>
+                        <span className="lrn-chevron" aria-hidden="true">
+                          ›
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </aside>
 
-              <p>
-                <b>Kết quả:</b> {detail.summary}
-              </p>
+            {/* RIGHT */}
+            <main className="lrn-right">
+              {loadingDetail && <p className="lrn-muted">Đang tải kết quả…</p>}
 
-              <p>
-                <b>Ngày hoàn tất:</b>{" "}
-                {new Date(detail.completedDate).toLocaleString("vi-VN")}
-              </p>
+              {!loadingDetail && !detail && (
+                <div className="lrn-placeholder">
+                  <p className="lrn-muted">Chọn bệnh nhân để xem chi tiết</p>
+                </div>
+              )}
 
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
+              {!loadingDetail && detail && (
+                <div className="lrn-detail">
+                  <div className="lrn-detailHeader">
+                    <div className="lrn-avatar" aria-hidden="true">
+                      <span>👤</span>
+                    </div>
+                    <div className="lrn-detailInfo">
+                      <h3 className="lrn-detailName">{detail.fullName}</h3>
+                      <div className="lrn-detailSub">
+                        <span className="lrn-metaLabel">Mã bệnh nhân:</span>{" "}
+                        <span className="lrn-metaValue">
+                          {selected?.patientId}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-              <button onClick={send} disabled={sending}>
-                {sending ? "Đang gửi…" : "Gửi thông báo"}
-              </button>
+                  <div className="lrn-panel">
+                    <div className="lrn-row2">
+                      <div className="lrn-field">
+                        <div className="lrn-fieldLabel">Kết quả:</div>
+                        <div className="lrn-fieldValue">{detail.summary}</div>
+                      </div>
 
-              {success && <p className="success">{success}</p>}
-            </>
-          )}
+                      <div className="lrn-field">
+                        <div className="lrn-fieldLabel">Ngày hoàn tất:</div>
+                        <div className="lrn-fieldValue">
+                          {new Date(detail.completedDate).toLocaleString(
+                            "vi-VN"
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-          {!loadingDetail && !detail && (
-            <p>Chọn bệnh nhân để xem chi tiết</p>
-          )}
+                  <div className="lrn-compose">
+                    <div className="lrn-composeLabel">Nội dung tin nhắn</div>
+
+                    <textarea
+                      className="lrn-textarea"
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                    />
+
+                    <div className="lrn-actions">
+                      <div className="lrn-successWrap">
+                        {success && <div className="lrn-success">{success}</div>}
+                      </div>
+
+                      <button
+                        className="lrn-sendBtn"
+                        onClick={send}
+                        disabled={sending}
+                      >
+                        {sending ? "Đang gửi…" : "Gửi thông báo"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </main>
+          </div>
         </div>
       </div>
     </div>

@@ -184,7 +184,7 @@ export default function PatientDashboard({ unread = 0 }) {
           </Link>
         </div>
         <div style={{ marginTop: 10 }}>
-          <Link to="/process-tracking" className="link">
+          <Link to="/process-status" className="link">
             Xem trạng thái quy trình khám
           </Link>
         </div>
