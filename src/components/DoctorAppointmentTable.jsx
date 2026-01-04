@@ -261,6 +261,8 @@ function mapStatus(status) {
     case "CANCELLED":
     case "NO_SHOW":
       return "Đã huỷ";
+    case "LAB_PENDING":
+      return "Đang xét nghiệm";
     default:
       return status || "";
   }
