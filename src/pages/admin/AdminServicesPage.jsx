@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
-import "../../assets/styles/auth.css";
+import "../../assets/styles/adminServices.css";
 import {
   adminListServices,
   adminCreateService,
   adminUpdateService,
   adminDeleteService,
 } from "../../services/medicalServices";
+import { useNavigate } from "react-router-dom";
+
+
 
 const vnd = (n) => Number(n || 0).toLocaleString("vi-VN") + " ₫";
 
@@ -14,95 +17,29 @@ function Modal({ open, title, children, onClose, footer }) {
 
   return (
     <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.55)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-        padding: 16,
-      }}
+      className="as-modalOverlay"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose?.();
       }}
     >
-      <div
-        style={{
-          width: "min(720px, 100%)",
-          background: "#0f1422",
-          border: "1px solid #223",
-          borderRadius: 16,
-          boxShadow: "0 20px 50px rgba(0,0,0,0.4)",
-          overflow: "hidden",
-        }}
-      >
-        {/* ✅ Header kiểu WinForm */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "12px 14px",
-            borderBottom: "1px solid #223",
-            background: "rgba(255,255,255,0.02)",
-          }}
-        >
-          <div
-            style={{
-              fontWeight: 800,
-              fontSize: 18,
-              lineHeight: 1.25,
-              flex: 1,
-              minWidth: 0,
-              wordBreak: "break-word",
-            }}
-          >
-            {title}
-          </div>
+      <div className="as-modal">
+        <div className="as-modalHeader">
+          <div className="as-modalTitle">{title}</div>
 
-          {/* Nút đóng nhỏ góc phải */}
           <button
             onClick={onClose}
             aria-label="Đóng"
             title="Đóng"
-            style={{
-              width: 34,
-              height: 34,
-              borderRadius: 10,
-              border: "1px solid #2a3550",
-              background: "rgba(255,255,255,0.04)",
-              color: "#eaf0ff",
-              cursor: "pointer",
-              display: "grid",
-              placeItems: "center",
-              fontSize: 18,
-              lineHeight: 1,
-              flex: "0 0 auto",
-            }}
+            className="as-modalClose"
+            type="button"
           >
             ×
           </button>
         </div>
 
-        {/* Body */}
-        <div style={{ padding: 16 }}>{children}</div>
+        <div className="as-modalBody">{children}</div>
 
-        {/* ✅ Footer giữ như cũ (Hủy/Lưu ngang) */}
-        {footer && (
-          <div
-            style={{
-              padding: 16,
-              paddingTop: 0,
-              display: "flex",
-              gap: 10,
-              justifyContent: "flex-end",
-            }}
-          >
-            {footer}
-          </div>
-        )}
+        {footer && <div className="as-modalFooter">{footer}</div>}
       </div>
     </div>
   );
@@ -113,7 +50,7 @@ export default function AdminServicesPage() {
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [error, setError] = useState("");
-
+  const nav = useNavigate();
   // ✅ Filter trạng thái: ACTIVE | INACTIVE | ALL
   const [statusFilter, setStatusFilter] = useState("ACTIVE");
 
@@ -249,54 +186,55 @@ export default function AdminServicesPage() {
   };
 
   return (
-    // ✅ WRAPPER căn giữa trang
-    <div
-      style={{
-        minHeight: "calc(100vh - 80px)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        padding: "40px 16px",
-      }}
-    >
-      {/* ✅ CARD nằm giữa */}
-      <div
-        className="auth-card"
-        style={{
-          width: "100%",
-          maxWidth: 1100,
-          margin: "0 auto",
-        }}
-      >
-        <div style={{ textAlign: "center" }}>
-          <h2 style={{ margin: 0 }}>Quản lý dịch vụ (US14.1)</h2>
+    <div className="as-page">
+      <div className="as-card">
+        {/* Header */}
+        <div className="as-header">
+          <div className="as-headerLeft">
+            <h2 className="as-title">Quản lý dịch vụ (US14.1)</h2>
+            <div className="as-subtitle">
+              Quản lý danh mục, giá cả và trạng thái dịch vụ.
+            </div>
+          </div>
 
-          <div style={{ marginTop: 14, display: "flex", justifyContent: "center" }}>
-            <button className="btn" onClick={openCreate} style={{ minWidth: 220 }}>
+          <div className="as-headerActions">
+            <button
+              className="as-btn as-btnGhost as-backBtn"
+              onClick={() => nav("/dashboard")}
+              type="button"
+            >
+              ← Quay lại
+            </button>
+
+            <button className="as-btn as-btnPrimary" onClick={openCreate}>
               + Thêm dịch vụ
             </button>
           </div>
         </div>
 
-        <p className="muted" style={{ marginTop: 6 }}>
+
+        <p className="muted as-help">
           Bảng hiển thị: Tên dịch vụ, Mô tả, Giá, Chức năng (Edit/Delete).
         </p>
 
-        <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
-          <input
-            className="input"
-            placeholder="Tìm theo tên / mô tả / code / id..."
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            style={{ flex: 1, minWidth: 240 }}
-          />
+        {/* Filters */}
+        <div className="as-filters">
+          <div className="as-searchWrap">
+            <span className="as-searchIcon" aria-hidden="true">
+              🔍
+            </span>
+            <input
+              className="as-input as-searchInput"
+              placeholder="Tìm theo tên / mô tả / code / id..."
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+            />
+          </div>
 
-          {/* ✅ Filter Active/Inactive/All */}
           <select
-            className="input"
+            className="as-input as-select"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            style={{ width: 220, minWidth: 180, cursor: "pointer" }}
             title="Lọc theo trạng thái"
           >
             <option value="ACTIVE">Active</option>
@@ -304,51 +242,55 @@ export default function AdminServicesPage() {
             <option value="ALL">Tất cả</option>
           </select>
 
-          <button className="btn" onClick={load} disabled={loading}>
+          <button className="as-btn as-btnSecondary" onClick={load} disabled={loading}>
             Tải lại
           </button>
         </div>
 
-        {error && <p style={{ color: "#ff6b6b", marginTop: 12 }}>{error}</p>}
-        {loading && (
-          <p className="muted" style={{ marginTop: 12 }}>
-            Đang tải...
-          </p>
-        )}
+        {/* States */}
+        {error && <div className="as-errorText">{error}</div>}
+        {loading && <div className="muted as-loadingText">Đang tải...</div>}
 
+        {/* Table */}
         {!loading && (
-          <div style={{ marginTop: 14, overflowX: "auto" }}>
-            <table className="table" style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div className="as-tableWrap">
+            <table className="as-table">
               <thead>
                 <tr>
-                  <th style={{ textAlign: "left", padding: 10 }}>Tên dịch vụ</th>
-                  <th style={{ textAlign: "left", padding: 10 }}>Mô tả</th>
-                  <th style={{ textAlign: "right", padding: 10 }}>Giá</th>
-                  <th style={{ textAlign: "center", padding: 10, width: 180 }}>Chức năng</th>
+                  <th className="as-th">Tên dịch vụ</th>
+                  <th className="as-th">Mô tả</th>
+                  <th className="as-th as-thRight">Giá</th>
+                  <th className="as-th as-thCenter as-thActions">Chức năng</th>
                 </tr>
               </thead>
+
               <tbody>
                 {(filtered || []).map((s) => (
                   <tr
                     key={s.id}
-                    style={{ borderTop: "1px solid #223", opacity: s.active ? 1 : 0.55 }}
+                    className={`as-tr ${s.active ? "" : "as-trInactive"}`}
                   >
-                    <td style={{ padding: 10 }}>
-                      <div style={{ fontWeight: 700 }}>{s.name}</div>
-                      <div className="muted" style={{ fontSize: 12 }}>
-                        Code: {s.code} {s.active ? "" : "• (Inactive)"}
+                    <td className="as-td">
+                      <div className="as-nameRow">
+                        <div className="as-name">{s.name}</div>
+                        {!s.active && <span className="as-pillInactive">Inactive</span>}
+                      </div>
+
+                      <div className="as-meta muted">
+                        Code: {s.code} {!s.active ? "• (Inactive)" : ""}
                       </div>
                     </td>
-                    <td style={{ padding: 10 }} className="muted">
-                      {s.description || "—"}
-                    </td>
-                    <td style={{ padding: 10, textAlign: "right" }}>{vnd(s.price)}</td>
-                    <td style={{ padding: 10, textAlign: "center" }}>
-                      <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                        <button className="btn" onClick={() => openEdit(s)}>
+
+                    <td className="as-td as-desc muted">{s.description || "—"}</td>
+
+                    <td className="as-td as-price">{vnd(s.price)}</td>
+
+                    <td className="as-td as-actionsCell">
+                      <div className="as-rowActions">
+                        <button className="as-btn as-btnGhost" onClick={() => openEdit(s)}>
                           Sửa
                         </button>
-                        <button className="btn" onClick={() => askDelete(s)}>
+                        <button className="as-btn as-btnDangerGhost" onClick={() => askDelete(s)}>
                           Xóa
                         </button>
                       </div>
@@ -358,7 +300,7 @@ export default function AdminServicesPage() {
 
                 {(!filtered || filtered.length === 0) && (
                   <tr>
-                    <td colSpan={4} style={{ padding: 12 }} className="muted">
+                    <td colSpan={4} className="as-empty muted">
                       Không có dịch vụ nào.
                     </td>
                   </tr>
@@ -368,91 +310,101 @@ export default function AdminServicesPage() {
           </div>
         )}
 
+        {/* Form modal */}
         <Modal
           open={openForm}
           title={editing ? "Sửa dịch vụ" : "Thêm dịch vụ"}
           onClose={() => setOpenForm(false)}
           footer={
             <>
-              <button className="btn" onClick={() => setOpenForm(false)}>
+              <button className="as-btn as-btnSecondary" onClick={() => setOpenForm(false)}>
                 Hủy
               </button>
-              <button className="btn" onClick={submit}>
+              <button className="as-btn as-btnPrimary" onClick={submit}>
                 {editing ? "Lưu" : "Tạo mới"}
               </button>
             </>
           }
         >
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-            <div style={{ gridColumn: "1 / -1" }}>
-              <label className="muted" style={{ display: "block", marginBottom: 6 }}>
-                Tên dịch vụ
-              </label>
+          <div className="as-formGrid">
+            <div className="as-field as-fieldFull">
+              <label className="as-label">Tên dịch vụ</label>
               <input
-                className="input"
+                className={`as-input ${formErr === "Tên dịch vụ là bắt buộc." ? "as-inputError" : ""}`}
                 value={form.name}
                 onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                 placeholder="VD: Khám tư vấn"
               />
+              {formErr === "Tên dịch vụ là bắt buộc." && (
+                <div className="as-fieldError">Tên dịch vụ là bắt buộc.</div>
+              )}
             </div>
 
-            <div style={{ gridColumn: "1 / -1" }}>
-              <label className="muted" style={{ display: "block", marginBottom: 6 }}>
-                Mô tả
-              </label>
+            <div className="as-field as-fieldFull">
+              <label className="as-label">Mô tả</label>
               <textarea
-                className="input"
+                className="as-input as-textarea"
                 rows={4}
                 value={form.description}
                 onChange={(e) => setForm((p) => ({ ...p, description: e.target.value }))}
                 placeholder="Mô tả ngắn..."
-                style={{ resize: "vertical" }}
               />
             </div>
 
-            <div>
-              <label className="muted" style={{ display: "block", marginBottom: 6 }}>
-                Giá (VNĐ)
-              </label>
-              <input
-                className="input"
-                value={form.price}
-                onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))}
-                placeholder="VD: 150000"
-                inputMode="numeric"
-              />
-            </div>
+            <div className="as-field">
+              <label className="as-label">Giá (VNĐ)</label>
 
-            <div style={{ display: "flex", alignItems: "end" }}>
-              <div className="muted" style={{ fontSize: 12 }}>
-                Giá phải là số dương.
+              <div className="as-money">
+                <input
+                  className={`as-input as-moneyInput ${formErr === "Giá không hợp lệ." ? "as-inputError" : ""
+                    }`}
+                  value={form.price}
+                  onChange={(e) => setForm((p) => ({ ...p, price: e.target.value }))}
+                  placeholder="VD: 150000"
+                  inputMode="numeric"
+                />
+                <div className="as-moneySuffix">VND</div>
               </div>
-            </div>
-          </div>
 
-          {formErr && <div style={{ marginTop: 10, color: "#ff6b6b" }}>{formErr}</div>}
+              <div className="as-hint muted">Giá phải là số dương.</div>
+
+              {formErr === "Giá không hợp lệ." && (
+                <div className="as-fieldError">Giá không hợp lệ.</div>
+              )}
+            </div>
+
+            {/* giữ formErr tổng quát (nếu có) như cũ */}
+            {formErr &&
+              formErr !== "Tên dịch vụ là bắt buộc." &&
+              formErr !== "Giá không hợp lệ." && (
+                <div className="as-formErrGlobal">{formErr}</div>
+              )}
+          </div>
         </Modal>
 
+        {/* Delete modal */}
         <Modal
           open={openDel}
           title="Xác nhận xóa dịch vụ"
           onClose={() => setOpenDel(false)}
           footer={
             <>
-              <button className="btn" onClick={() => setOpenDel(false)}>
+              <button className="as-btn as-btnSecondary" onClick={() => setOpenDel(false)}>
                 Hủy
               </button>
-              <button className="btn" onClick={doDelete}>
+              <button className="as-btn as-btnPrimary" onClick={doDelete}>
                 Xóa
               </button>
             </>
           }
         >
-          <div className="muted">
-            Bạn có chắc muốn xóa dịch vụ <b>{delItem?.name}</b> không?
-          </div>
-          <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
-            (Lưu ý: “Xóa” sẽ chuyển dịch vụ sang trạng thái Inactive.)
+          <div className="as-delBody">
+            <div className="muted">
+              Bạn có chắc muốn xóa dịch vụ <b>{delItem?.name}</b> không?
+            </div>
+            <div className="muted as-delNote">
+              (Lưu ý: “Xóa” sẽ chuyển dịch vụ sang trạng thái Inactive.)
+            </div>
           </div>
         </Modal>
       </div>

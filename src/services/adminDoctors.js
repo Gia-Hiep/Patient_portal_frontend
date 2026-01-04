@@ -1,4 +1,4 @@
-import { getJson, putJson, deleteJson, postJson } from "./api";
+import { getJson, putJson, delJson, postJson } from "./api";
 
 /**
  * US14.2 - Admin quản lý bác sĩ
@@ -16,7 +16,7 @@ export const updateAdminDoctor = (id, payload) =>
 
 // Vô hiệu hóa (soft delete) bác sĩ
 export const deleteAdminDoctor = (id) =>
-  deleteJson(`/api/admin/doctors/${id}`);
+  delJson(`/api/admin/doctors/${id}`);
 
 // 🔥 THÊM MỚI: Tạo bác sĩ
 export const createAdminDoctor = (payload) =>

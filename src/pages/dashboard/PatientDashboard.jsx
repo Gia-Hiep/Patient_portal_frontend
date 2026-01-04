@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import DashCard from "../../components/DashCard";
 import { getMyVisits, getVisitDetail } from "../../services/api";
 import { listInvoices } from "../../services/billing";
+import "../../assets/styles/patientDashboard.css";
 
 const vnd = (n) => Number(n || 0).toLocaleString("vi-VN") + " ₫";
 
@@ -129,9 +130,9 @@ export default function PatientDashboard({ unread = 0 }) {
           setError(`Không tải được: ${errs.join(", ")}.`);
         }
       } catch (e) {
-          setError(e?.message || "Không tải được tổng quan bệnh nhân.");
+        setError(e?.message || "Không tải được tổng quan bệnh nhân.");
         console.error(e);
-      } 
+      }
     })();
 
     return () => {
@@ -140,121 +141,160 @@ export default function PatientDashboard({ unread = 0 }) {
   }, []);
 
   return (
-    <div className="auth-card" style={{ maxWidth: 1024 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <h2 style={{ margin: 0, flex: 1 }}>Patient Dashboard</h2>
-
-        <Link to="/profile" className="chip-btn">
-          Hồ sơ cá nhân
-        </Link>
-      </div>
-
-      <p className="muted">Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.</p>
-
-      {error && (
-        <div className="alert error" style={{ marginTop: 8 }}>
-          {error}
-        </div>
-      )}
-
-      {/* ===== Cards ===== */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 16,
-          marginTop: 16,
-        }}
-      >
-        <DashCard
-          title="Lịch sử khám bệnh"
-          value={sum.visits}
-          sub="Xem lịch sử khám & chi tiết"
-          to="/visits"
-        />
-
-        {/* ✅ Card Hóa đơn (mới) */}
-        <DashCard
-          title="Hóa đơn viện phí"
-          value={sum.invoicesTotal}
-          sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(sum.unpaidAmount)}`}
-          to="/billing"
-        />
-
-        <DashCard
-          title="Thông báo chưa đọc"
-          value={sum.unreadNoti}
-          sub="Thông báo tự động (US5)"
-          to="/user-notifications"
-        />
-
-      </div>
-
-      {/* ===== Next appointment ===== */}
-      <div
-        style={{
-          marginTop: 24,
-          background: "#0f1422",
-          border: "1px solid #223",
-          borderRadius: 16,
-          padding: 16,
-        }}
-      >
-        {/* ===== Quick links ===== */}
-        <div style={{ marginTop: 18 }}>
-          <Link to="/chat" className="link">
-            Nhắn tin với bác sĩ (US8)
-          </Link>
-        </div>
-        <div style={{ marginTop: 10 }}>
-          <Link to="/process-status" className="link">
-            Xem trạng thái quy trình khám
-          </Link>
-        </div>
-        <div style={{ marginTop: 18 }}>
-          <Link to="/user-notifications" className="link">
-            Thông báo tự động (US5)
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="muted">Đang tải…</div>
-        ) : sum.nextAppointment ? (
+    <div className="pd-shell">
+      <div className="pd-wrap">
+        {/* 1) Header row */}
+        <div className="pd-head">
           <div>
-            <div>
-              <b>Thời gian:</b> {sum.nextAppointment.time}
-            </div>
-            <div>
-              <b>Phòng:</b> {sum.nextAppointment.clinic}
-            </div>
-            <div>
-              <b>Trạng thái:</b> {sum.nextAppointment.status}
-            </div>
-            <div style={{ marginTop: 10 }}>
-              <Link to="/process-tracking" className="link">
-                Xem trạng thái quy trình khám
-              </Link>
-            </div>
+            <h2 className="pd-title">Patient Dashboard</h2>
+            <p className="pd-sub muted">
+              Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.
+            </p>
           </div>
-        ) : (
-          <div className="muted">Chưa có lịch khám.</div>
-        )}
-      </div>
 
-      <div style={{ marginTop: 18 }}>
-        <Link to="/chat" className="link">
-          Nhắn tin với bác sĩ (US8)
-        </Link>
-      </div>
-      <div style={{ marginTop: 18 }}>
-        <Link to="/notifications" className="link">
-          Thông báo chung từ bệnh viện (US7)
-        </Link>
-      </div>
-      <div style={{ marginTop: 18 }}>
-        <Link to="/user-notifications" className="link">
-          Thông báo tự động (US5)
-        </Link>
+          <Link to="/profile" className="pd-profileBtn">
+            Hồ sơ cá nhân
+          </Link>
+        </div>
+
+        {/* 3) Error / Loading */}
+        {error && <div className="pd-alertError">{error}</div>}
+        {loading && <div className="pd-loading muted">Đang tải…</div>}
+
+        {/* 4) KPI cards grid */}
+        <div className="pd-kpis">
+          <DashCard
+            title="Lịch sử khám bệnh"
+            value={sum.visits}
+            sub="Xem lịch sử khám & chi tiết"
+            to="/visits"
+          />
+
+          <DashCard
+            title="Hóa đơn viện phí"
+            value={sum.invoicesTotal}
+            sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(sum.unpaidAmount)}`}
+            to="/billing"
+          />
+
+          <DashCard
+            title="Thông báo chưa đọc"
+            value={sum.unreadNoti}
+            sub="Thông báo tự động (US5)"
+            to="/user-notifications"
+          />
+        </div>
+
+        {/* 5) Next appointment panel */}
+        <div className="pd-nextPanel">
+          <div className="pd-nextLabel">
+            <span className="pd-dot" aria-hidden="true" />
+            LỊCH KHÁM SẮP TỚI
+          </div>
+
+          {loading ? (
+            <div className="muted">Đang tải…</div>
+          ) : sum.nextAppointment ? (
+            <div className="pd-nextBody">
+              <div className="pd-nextTitle">Tái khám Nội Tổng Quát</div>
+
+              <div className="pd-nextInfo">
+                <div className="pd-infoRow">
+                  <span className="pd-infoIcon" aria-hidden="true">
+                    🕒
+                  </span>
+                  <div>
+                    <b>Thời gian:</b> {sum.nextAppointment.time}
+                  </div>
+                </div>
+
+                <div className="pd-infoRow">
+                  <span className="pd-infoIcon" aria-hidden="true">
+                    📍
+                  </span>
+                  <div>
+                    <b>Phòng:</b> {sum.nextAppointment.clinic}
+                  </div>
+                </div>
+
+                <div className="pd-infoRow">
+                  <span className="pd-infoIcon" aria-hidden="true">
+                    👤
+                  </span>
+                  <div>
+                    <b>Trạng thái:</b> {sum.nextAppointment.status}
+                  </div>
+                </div>
+              </div>
+
+              <div className="pd-nextActions">
+                <Link to="/process-tracking" className="pd-primaryBtn">
+                  Xem trạng thái quy trình khám
+                  <span className="pd-arrow" aria-hidden="true">
+                    →
+                  </span>
+                </Link>
+
+                {/* chip nhỏ góc phải như reference (chỉ UI) */}
+                <div className="pd-statusChip">
+                  <div className="pd-chipTop">Đang chờ</div>
+                  <div className="pd-chipMain">Bạn chưa check-in</div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="muted">Chưa có lịch khám.</div>
+          )}
+        </div>
+
+        {/* 6) Quick actions panel */}
+        <div className="pd-quick">
+          <div className="pd-quickTitle">Truy cập nhanh</div>
+
+          <div className="pd-quickGrid">
+            <Link to="/chat" className="pd-quickItem">
+              <div className="pd-quickIcon" aria-hidden="true">
+                💬
+              </div>
+              <div className="pd-quickText">
+                <div className="pd-quickMain">Nhắn tin với bác sĩ</div>
+                <div className="pd-quickSub muted">Tư vấn trực tuyến (US8)</div>
+              </div>
+            </Link>
+
+            <Link to="/process-status" className="pd-quickItem">
+              <div className="pd-quickIcon" aria-hidden="true">
+                🔄
+              </div>
+              <div className="pd-quickText">
+                <div className="pd-quickMain">Quy trình khám</div>
+                <div className="pd-quickSub muted">Xem trạng thái quy trình khám</div>
+              </div>
+            </Link>
+
+            <Link to="/notifications" className="pd-quickItem">
+              <div className="pd-quickIcon" aria-hidden="true">
+                📣
+              </div>
+              <div className="pd-quickText">
+                <div className="pd-quickMain">Tin tức bệnh viện</div>
+                <div className="pd-quickSub muted">
+                  Thông báo chung từ bệnh viện (US7)
+                </div>
+              </div>
+            </Link>
+
+            <Link to="/user-notifications" className="pd-quickItem">
+              <div className="pd-quickIcon" aria-hidden="true">
+                🤖
+              </div>
+              <div className="pd-quickText">
+                <div className="pd-quickMain">Thông báo tự động</div>
+                <div className="pd-quickSub muted">Thông báo tự động (US5)</div>
+              </div>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
