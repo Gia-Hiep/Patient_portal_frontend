@@ -1,12 +1,12 @@
 const BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
-/** Lấy header Authorization từ localStorage  */
+
 function authHeaders() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-/** Xử lý response JSON/Text chung **/
+/** Xử lý response JSON/Text chung */
 async function handleJsonResponse(res) {
   let data = null;
   let text = "";
@@ -35,6 +35,8 @@ async function handleJsonResponse(res) {
   }
   return data ?? {};
 }
+
+/* ================== HTTP HELPERS ================== */
 
 export async function postJson(path, body, options = {}) {
   const res = await fetch(`${BASE}${path}`, {

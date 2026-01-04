@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DashCard from "../../components/DashCard";
+import { fetchAdminSummary } from "../../services/dashboard";
+import { getAdminDoctors } from "../../services/adminDoctors"; // ✅ thêm dòng này
 import { getJson } from "../../services/api";
 
 function fmtTime(v) {
@@ -27,7 +29,40 @@ export default function AdminDashboard() {
     let mounted = true;
 
     (async () => {
+     
+      let next = {
+        users: 0,
+        doctors: 0,
+        services: 0,
+        news: 0,
+        backups: 0,
+        lastBackup: null,
+      };
+
+      // 1) Try lấy summary từ API cũ
       try {
+        const res = await fetchAdminSummary();
+        if (res && typeof res === "object") {
+          next = {
+            users: Number(res.users ?? next.users),
+            doctors: Number(res.doctors ?? next.doctors),
+            services: Number(res.services ?? next.services),
+            news: Number(res.news ?? next.news),
+            backups: Number(res.backups ?? next.backups),
+            lastBackup: res.lastBackup ?? next.lastBackup,
+          };
+        }
+      } catch {
+        // bỏ trống: để fallback 0, không set hard-code
+      }
+
+      // 2) ✅ Luôn sync lại số bác sĩ theo danh sách thật
+      // (để Dashboard chắc chắn KHỚP trang /admin/doctors)
+      try {
+        const list = await getAdminDoctors({ includeDisabled: true });
+        next.doctors = Array.isArray(list) ? list.length : 0;
+      } catch {
+        // nếu lỗi thì giữ value hiện có (thường là 0 hoặc từ summary)
         setErr("");
         setLoading(true);
 
@@ -83,6 +118,8 @@ export default function AdminDashboard() {
       } finally {
         if (mounted) setLoading(false);
       }
+
+      setSum(next);
     })();
 
     return () => {
@@ -119,8 +156,14 @@ export default function AdminDashboard() {
         <DashCard
           title="Người dùng"
           value={sum.users}
-          sub="Tài khoản & phân quyền"
+          sub="Tài khoản & phân quyền (US13)"
           to="/admin/users"
+        />
+        <DashCard
+          title="Bác sĩ"
+          value={sum.doctors}
+          sub="Danh sách bác sĩ (US14)"
+          to="/admin/doctors"
         />
 
         <DashCard
@@ -129,13 +172,13 @@ export default function AdminDashboard() {
           sub="Tạo/Sửa/Xóa thông báo"
           to="/admin/announcements"
         />
-        
         <DashCard
           title="Dịch vụ"
           value={sum.services}
           sub="Danh mục dịch vụ (US14)"
           to="/admin/services"
         />
+
 
         <DashCard
           title="Số bản backup"
