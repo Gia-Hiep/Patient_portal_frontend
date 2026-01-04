@@ -7,7 +7,7 @@ import { listInvoices } from "../../services/billing";
 
 const vnd = (n) => Number(n || 0).toLocaleString("vi-VN") + " ₫";
 
-export default function PatientDashboard() {
+export default function PatientDashboard({ unread = 0 }) {
   const user = useSelector((s) => s.auth.user);
 
   const [sum, setSum] = useState({
@@ -17,6 +17,10 @@ export default function PatientDashboard() {
     unreadNoti: 0,
 
     // billing (mới)
+
+    unreadNoti: unread, // lấy từ props
+
+    // billing
     invoicesTotal: 0,
     invoicesUnpaid: 0,
     unpaidAmount: 0,
@@ -27,8 +31,15 @@ export default function PatientDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // ===== Update unread từ props =====
   useEffect(() => {
     let mounted = true;
+    setSum((prev) => ({ ...prev, unreadNoti: unread || 0 }));
+  }, [unread]);
+
+  // ===== Load dashboard data (real) =====
+  useEffect(() => {
+    let cancelled = false;
 
     (async () => {
       try {
@@ -57,7 +68,7 @@ export default function PatientDashboard() {
           imaging = 0;
         details.forEach((d) => {
           (d?.documents || []).forEach((doc) => {
-            const t = (doc?.type || doc?.docType || "").toUpperCase();
+            const t = String(doc?.type || doc?.docType || "").toUpperCase();
             if (t === "LAB") lab += 1;
             if (t === "IMAGING") imaging += 1;
           });
@@ -98,6 +109,7 @@ export default function PatientDashboard() {
         });
 
         if (!mounted) return;
+        if (cancelled) return;
 
         setSum((prev) => ({
           ...prev,
@@ -122,11 +134,15 @@ export default function PatientDashboard() {
         if (mounted) setError(e?.message || "Không tải được tổng quan bệnh nhân.");
       } finally {
         if (mounted) setLoading(false);
+        if (!cancelled) setError(e?.message || "Không tải được tổng quan bệnh nhân.");
+      } finally {
+        if (!cancelled) setLoading(false);
       }
     })();
 
     return () => {
       mounted = false;
+      cancelled = true;
     };
   }, []);
 
@@ -134,14 +150,13 @@ export default function PatientDashboard() {
     <div className="auth-card" style={{ maxWidth: 1024 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <h2 style={{ margin: 0, flex: 1 }}>Patient Dashboard</h2>
+
         <Link to="/profile" className="chip-btn">
           Hồ sơ cá nhân
         </Link>
       </div>
 
-      <p className="muted">
-        Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.
-      </p>
+      <p className="muted">Xin chào, {user?.username}. Đây là tổng quan sức khỏe của bạn.</p>
 
       {error && (
         <div className="alert error" style={{ marginTop: 8 }}>
@@ -149,6 +164,7 @@ export default function PatientDashboard() {
         </div>
       )}
 
+      {/* ===== Cards ===== */}
       <div
         style={{
           display: "grid",
@@ -158,7 +174,7 @@ export default function PatientDashboard() {
         }}
       >
         <DashCard
-          title="Lịch sử khám bệnh + Xem/Tải PDF"
+          title="Lịch sử khám bệnh"
           value={sum.visits}
           sub="Xem lịch sử khám & chi tiết"
           to="/visits"
@@ -170,16 +186,16 @@ export default function PatientDashboard() {
           value={sum.invoicesTotal}
           sub={`${sum.invoicesUnpaid} chưa thanh toán • ${vnd(sum.unpaidAmount)}`}
           to="/billing"
-        />
-
         <DashCard
           title="Thông báo chưa đọc"
           value={sum.unreadNoti}
-          sub="Thông báo tự động (US5/US7)"
-          to="/notifications"
+          sub="Thông báo tự động (US5)"
+          to="/user-notifications"
         />
+
       </div>
 
+      {/* ===== Next appointment ===== */}
       <div
         style={{
           marginTop: 24,
@@ -189,8 +205,21 @@ export default function PatientDashboard() {
           padding: 16,
         }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>
-          Lịch khám sắp tới (US1 / US4)
+        {/* ===== Quick links ===== */}
+        <div style={{ marginTop: 18 }}>
+          <Link to="/chat" className="link">
+            Nhắn tin với bác sĩ (US8)
+          </Link>
+        </div>
+        <div style={{ marginTop: 10 }}>
+          <Link to="/process-status" className="link">
+            Xem trạng thái quy trình khám
+          </Link>
+        </div>
+        <div style={{ marginTop: 18 }}>
+          <Link to="/user-notifications" className="link">
+            Thông báo tự động (US5)
+          </Link>
         </div>
 
         {loading ? (
