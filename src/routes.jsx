@@ -273,7 +273,7 @@ export default function AppRoutes() {
           path="/admin/services"
           element={
             <Protected>
-              <AdminServicesPage />
+              <AdminServicesPage />``
             </Protected>
           }
         />
