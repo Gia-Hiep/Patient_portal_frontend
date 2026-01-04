@@ -1,35 +1,41 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import ExaminationProgress from "./pages/ExaminationProgress";
 
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import VisitHistory from "./pages/VisitHistory";
+import Profile from "./pages/Profile";
+
 import Notifications from "./pages/Notifications";
 import UserNotifications from "./pages/UserNotifications";
 import Billing from "./pages/Billing";
+
 import ChatPatient from "./pages/ChatPatient";
 import ChatDoctor from "./pages/ChatDoctor";
 
+import ProcessStatus from "./pages/ProcessStatus";
+import ExaminationProgress from "./pages/ExaminationProgress";
+import AutoNotifications from "./pages/AutoNotifications";
+import LabResultNotify from "./pages/LabResultNotify";
+
+// ✅ US14.2 (đang có)
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import UserCreatePage from "./pages/admin/UserCreatePage";
 
-import Profile from "./pages/Profile";
-
-import ProcessStatus from "./pages/ProcessStatus";
-import AutoNotifications from "./pages/AutoNotifications";
+// ✅ US14.1 (bạn tạo file theo mình gửi)
+import Services from "./pages/Services";
+import AdminServicesPage from "./pages/admin/AdminServicesPage";
 
 import { getNotifications } from "./services/notification";
 import { getAutoNotificationSetting } from "./services/notificationSetting";
 import NotificationBell from "./components/NotificationBell";
 
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LabResultNotify from "./pages/LabResultNotify";
+
 // ===============================
 // PROTECTED ROUTE
 // ===============================
@@ -45,13 +51,13 @@ function Protected({ children }) {
 export default function AppRoutes() {
   const token = useSelector((s) => s.auth.token);
 
-  // 🔔 Số thông báo chưa đọc (chỉ AutoNotifications được update)
+  // 🔔 Số thông báo chưa đọc (được set từ AutoNotifications page)
   const [unread, setUnread] = useState(0);
 
   // 🔕 Setting bật / tắt auto notification
   const [autoNotifyEnabled, setAutoNotifyEnabled] = useState(true);
 
-  // Lưu ID để phát hiện thông báo mới
+  // Lưu ID để phát hiện thông báo mới (toast)
   const lastIdsRef = useRef([]);
 
   // ===============================
@@ -75,7 +81,6 @@ export default function AppRoutes() {
         if (Array.isArray(list)) {
           lastIdsRef.current = list.map((n) => n.id);
         }
-
       } catch (err) {
         console.error("Load notification setting failed:", err);
       }
@@ -87,7 +92,7 @@ export default function AppRoutes() {
   }, [token]);
 
   // ===============================
-  // POLLING NHẬN THÔNG BÁO MỚI
+  // POLLING NHẬN THÔNG BÁO MỚI (toast)
   // (CHỈ KHI BẬT)
   // ===============================
   useEffect(() => {
@@ -102,9 +107,7 @@ export default function AppRoutes() {
         const currentIds = list.map((n) => n.id);
         const lastIds = lastIdsRef.current;
 
-        const newIds = currentIds.filter(
-          (id) => !lastIds.includes(id)
-        );
+        const newIds = currentIds.filter((id) => !lastIds.includes(id));
 
         newIds.forEach((id) => {
           const ntf = list.find((n) => n.id === id);
@@ -121,7 +124,6 @@ export default function AppRoutes() {
 
     poll();
     const timer = setInterval(poll, 5000);
-
     return () => clearInterval(timer);
   }, [token, autoNotifyEnabled]);
 
@@ -138,10 +140,12 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
+        {/* PUBLIC */}
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<Register />} />
 
+        {/* PROTECTED */}
         <Route
           path="/dashboard"
           element={
@@ -150,7 +154,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
-        <Route path="/register" element={<Register />} />
+
         <Route
           path="/visits"
           element={
@@ -159,6 +163,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/profile"
           element={
@@ -185,6 +190,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/billing"
           element={
@@ -193,6 +199,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/chat"
           element={
@@ -201,6 +208,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/doctor-chat"
           element={
@@ -209,6 +217,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/process-status"
           element={
@@ -217,6 +226,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="doctor/examination-progress"
           element={
@@ -225,6 +235,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/autonotifications"
           element={
@@ -237,6 +248,7 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
         <Route
           path="/doctor/lab-notify"
           element={
@@ -245,6 +257,48 @@ export default function AppRoutes() {
             </Protected>
           }
         />
+
+        {/* ✅ US14.1: Patient tra cứu dịch vụ */}
+        <Route
+          path="/services"
+          element={
+            <Protected>
+              <Services />
+            </Protected>
+          }
+        />
+
+        {/* ✅ US14.1: Admin quản lý dịch vụ */}
+        <Route
+          path="/admin/services"
+          element={
+            <Protected>
+              <AdminServicesPage />
+            </Protected>
+          }
+        />
+
+        {/* ✅ US14.2: Admin quản lý user */}
+        <Route
+          path="/admin/users"
+          element={
+            <Protected>
+              <AdminUsersPage />
+            </Protected>
+          }
+        />
+
+        <Route
+          path="/admin/users/create"
+          element={
+            <Protected>
+              <UserCreatePage />
+            </Protected>
+          }
+        />
+
+        {/* NOT FOUND */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
         <Route
           path="/admin/users"
           element={
