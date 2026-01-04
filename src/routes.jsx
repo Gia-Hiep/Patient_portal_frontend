@@ -25,6 +25,11 @@ import LabResultNotify from "./pages/LabResultNotify";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import UserCreatePage from "./pages/admin/UserCreatePage";
 
+import AdminBackupsPage from "./pages/admin/AdminBackupsPage";
+import AnnouncementsPage from "./pages/patient/AnnouncementsPage";
+import AdminAnnouncementsPage from "./pages/admin/AdminAnnouncementsPage";
+=======
+
 // ✅ US14.1 (bạn tạo file theo mình gửi)
 import Services from "./pages/Services";
 import AdminServicesPage from "./pages/admin/AdminServicesPage";
@@ -32,6 +37,7 @@ import AdminServicesPage from "./pages/admin/AdminServicesPage";
 import { getNotifications } from "./services/notification";
 import { getAutoNotificationSetting } from "./services/notificationSetting";
 import NotificationBell from "./components/NotificationBell";
+
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -81,6 +87,30 @@ export default function AppRoutes() {
         if (Array.isArray(list)) {
           lastIdsRef.current = list.map((n) => n.id);
         }
+      />
+      <Route
+        path="/admin/backup"
+        element={
+          <Protected>
+            <AdminBackupsPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/announcements"
+        element={
+          <Protected>
+            <AnnouncementsPage />
+          </Protected>}
+      />
+
+      <Route
+        path="/admin/announcements"
+        element={
+          <Protected>
+            <AdminAnnouncementsPage />
+          </Protected>}
+      />
       } catch (err) {
         console.error("Load notification setting failed:", err);
       }
@@ -315,7 +345,6 @@ export default function AppRoutes() {
             </Protected>
           }
         />
-
       </Routes>
     </>
   );

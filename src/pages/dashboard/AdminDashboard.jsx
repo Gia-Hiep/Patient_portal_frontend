@@ -1,51 +1,112 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import DashCard from "../../components/DashCard";
-import { fetchAdminSummary } from "../../services/dashboard";
 import { getJson } from "../../services/api";
+
+function fmtTime(v) {
+  if (!v) return "-";
+  const d = new Date(v);
+  if (!isNaN(d.getTime())) return d.toLocaleString("vi-VN");
+  return String(v);
+}
 
 export default function AdminDashboard() {
   const user = useSelector((s) => s.auth.user);
+
   const [sum, setSum] = useState({
     users: 0,
-    doctors: 0,
-    services: 0,
-    news: 0,
     backups: 0,
     lastBackup: null,
+    announcements: 0, // ✅ thêm
   });
 
-  const [usersCount, setUsersCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
 
   useEffect(() => {
+    let mounted = true;
+
     (async () => {
       try {
-        const users = await getJson("/api/admin/users");
+        setErr("");
+        setLoading(true);
 
-        setUsersCount(Array.isArray(users) ? users.length : 0);
+        const [usersRes, historyRes, annRes] = await Promise.allSettled([
+          getJson("/api/admin/users"),
+          getJson("/api/admin/backups/history"),
+          // dùng public list để đếm (không cần role)
+          getJson("/api/public/announcements"),
+        ]);
+
+        // users
+        const users =
+          usersRes.status === "fulfilled" && Array.isArray(usersRes.value)
+            ? usersRes.value
+            : [];
+        const usersCount = users.length;
+
+        // backups history
+        const history =
+          historyRes.status === "fulfilled" && Array.isArray(historyRes.value)
+            ? historyRes.value
+            : [];
+        const backups = history.length;
+
+        const first = history[0] || null;
+        const lastBackup =
+          first?.backupTime || first?.backup_time || first?.time || null;
+
+        // announcements
+        const anns =
+          annRes.status === "fulfilled" && Array.isArray(annRes.value)
+            ? annRes.value
+            : [];
+        const announcements = anns.length;
+
+        if (!mounted) return;
+
+        setSum({
+          users: usersCount,
+          backups,
+          lastBackup,
+          announcements,
+        });
+
+        const errs = [];
+        if (usersRes.status === "rejected") errs.push("users");
+        if (historyRes.status === "rejected") errs.push("backup history");
+        if (annRes.status === "rejected") errs.push("announcements");
+        if (errs.length) setErr(`Không tải được: ${errs.join(", ")}.`);
       } catch (e) {
-        console.error("Load users failed", e);
-        setUsersCount(0);
+        console.error(e);
+        if (mounted) setErr(e?.message || "Không tải được dashboard admin.");
+      } finally {
+        if (mounted) setLoading(false);
       }
     })();
-  }, []);
 
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetchAdminSummary();
-        setSum(res);
-      } catch {
-        setSum({ users: 120, doctors: 18, services: 42, news: 5, backups: 12, lastBackup: "Hôm qua 22:10" });
-      }
-    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   return (
     <div className="auth-card" style={{ maxWidth: 1120 }}>
       <h2>Admin Dashboard</h2>
-      <p className="muted">Xin chào, {user?.username}. Quản trị người dùng, dịch vụ & hệ thống.</p>
+      <p className="muted">
+        Xin chào, {user?.username}. Quản trị người dùng & hệ thống.
+      </p>
+
+      {err && (
+        <div className="alert error" style={{ marginTop: 8 }}>
+          {err}
+        </div>
+      )}
+      {loading && (
+        <div className="muted" style={{ marginTop: 6 }}>
+          Đang tải…
+        </div>
+      )}
 
       <div
         style={{
@@ -57,24 +118,46 @@ export default function AdminDashboard() {
       >
         <DashCard
           title="Người dùng"
-          value={usersCount}
-          sub="Tài khoản & phân quyền (US13)"
+          value={sum.users}
+          sub="Tài khoản & phân quyền"
           to="/admin/users"
         />
 
-        <DashCard title="Bác sĩ" value={sum.doctors} sub="Danh sách bác sĩ (US14)" to="/admin/doctors" />
-        <DashCard title="Dịch vụ" value={sum.services} sub="Danh mục dịch vụ (US14)" to="/admin/services" />
-        <DashCard title="Thông báo / Tin tức" value={sum.news} sub="CRUD thông báo (US15)" to="/admin/news" />
-        <DashCard title="Số bản backup" value={sum.backups} sub={`Gần nhất: ${sum.lastBackup || "-"}`} to="/admin/backups" />
+        <DashCard
+          title="Thông báo / Tin tức"
+          value={sum.announcements}
+          sub="Tạo/Sửa/Xóa thông báo"
+          to="/admin/announcements"
+        />
+
+        <DashCard
+          title="Số bản backup"
+          value={sum.backups}
+          sub={`Gần nhất: ${fmtTime(sum.lastBackup)}`}
+          to="/admin/backup"
+        />
       </div>
 
-      <div style={{ marginTop: 24, background: "#0f1422", border: "1px solid #223", borderRadius: 16, padding: 16 }}>
-        <div style={{ fontWeight: 600, marginBottom: 8 }}>Backup dữ liệu (US16)</div>
+      <div
+        style={{
+          marginTop: 24,
+          background: "#0f1422",
+          border: "1px solid #223",
+          borderRadius: 16,
+          padding: 16,
+        }}
+      >
+        <div style={{ fontWeight: 600, marginBottom: 8 }}>
+          Backup dữ liệu (US16)
+        </div>
         <div className="muted">
           Tạo file backup <i>file_backup_dd_mm_yyyy</i>, lưu lịch sử backup.
         </div>
+
         <div style={{ marginTop: 10 }}>
-          <a href="/admin/backups" className="btn">Backup dữ liệu ngay</a>
+          <a href="/admin/backup" className="btn">
+            Backup dữ liệu ngay
+          </a>
         </div>
       </div>
     </div>
