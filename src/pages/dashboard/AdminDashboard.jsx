@@ -129,6 +129,13 @@ export default function AdminDashboard() {
           sub="Tạo/Sửa/Xóa thông báo"
           to="/admin/announcements"
         />
+        
+        <DashCard
+          title="Dịch vụ"
+          value={sum.services}
+          sub="Danh mục dịch vụ (US14)"
+          to="/admin/services"
+        />
 
         <DashCard
           title="Số bản backup"
