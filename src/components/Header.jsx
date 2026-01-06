@@ -1,4 +1,3 @@
-// src/components/Header.jsx  (AppHeader)
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../store/authSlice";
@@ -26,7 +25,6 @@ export default function AppHeader() {
   return (
     <header
       style={{
-        // 🔥 Thu nhỏ header thành 1 “pill” cố định góc trên bên phải
         position: "fixed",
         top: 20,
         right: 24,

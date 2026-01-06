@@ -1,0 +1,269 @@
+/* =========================
+   User Notifications (UI ONLY)
+========================= */
+
+.un-page {
+  min-height: 100vh;
+  background: #f6f7fb;
+  color: #0f172a;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+/* center shell like reference */
+.un-shell {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 26px 18px 42px;
+}
+
+/* top back link */
+.un-top {
+  margin-bottom: 10px;
+}
+
+.un-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  text-decoration: none;
+  font-weight: 700;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+
+.un-back:hover {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+/* header */
+.un-header {
+  margin-top: 6px;
+  margin-bottom: 18px;
+}
+
+.un-titleRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.un-title {
+  margin: 0;
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.un-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+  min-width: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* empty state */
+.un-emptyCard {
+  margin-top: 16px;
+  background: #ffffff;
+  border: 1px solid #e8edf6;
+  border-radius: 18px;
+  padding: 72px 18px;
+  text-align: center;
+  box-shadow: 0 10px 26px rgba(17, 24, 39, 0.06);
+}
+
+.un-emptyIcon {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 16px;
+  border-radius: 999px;
+  background: #f8fafc;
+  border: 1px solid #eef2f7;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.un-emptyText {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* list */
+.un-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 14px;
+}
+
+/* item card like reference */
+.un-item {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  background: #ffffff;
+  border: 1px solid #e8edf6;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.05);
+  transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+}
+
+.un-item:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(17, 24, 39, 0.08);
+  border-color: #dbe7ff;
+}
+
+.un-accent {
+  width: 5px;
+  background: #1d77ff;
+  flex: 0 0 auto;
+}
+
+/* main content inside */
+.un-itemMain {
+  flex: 1;
+  padding: 16px 16px 14px;
+}
+
+.un-itemTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.un-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+
+.un-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: #eef6ff;
+  border: 1px solid #d7eaff;
+  color: #1d77ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+
+.un-text {
+  min-width: 0;
+}
+
+.un-titleLine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.un-itemTitle {
+  font-weight: 900;
+  font-size: 18px;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 520px;
+}
+
+.un-newPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #eaf2ff;
+  color: #1d77ff;
+  font-weight: 900;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.un-itemBody {
+  margin-top: 6px;
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 640px;
+}
+
+.un-time {
+  color: #94a3b8;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  margin-top: 4px;
+}
+
+/* unread emphasis */
+.un-item.is-unread {
+  border-color: #cfe2ff;
+}
+
+.un-item.is-unread .un-itemTitle {
+  color: #0b1220;
+}
+
+.un-item.is-read {
+  opacity: 0.96;
+}
+
+/* responsive */
+@media (max-width: 720px) {
+  .un-shell {
+    padding: 18px 12px 28px;
+  }
+
+  .un-title {
+    font-size: 30px;
+  }
+
+  .un-itemMain {
+    padding: 14px 12px;
+  }
+
+  .un-itemTop {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .un-time {
+    margin-left: 58px; /* align under text block */
+  }
+
+  .un-itemTitle {
+    max-width: 100%;
+  }
+}

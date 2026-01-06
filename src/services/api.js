@@ -1,12 +1,12 @@
 const BASE = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080";
 
-/** Lấy header Authorization từ localStorage  */
+
 function authHeaders() {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-/** Xử lý response JSON/Text chung **/
+/** Xử lý response JSON/Text chung */
 async function handleJsonResponse(res) {
   let data = null;
   let text = "";
@@ -35,6 +35,8 @@ async function handleJsonResponse(res) {
   }
   return data ?? {};
 }
+
+/* ================== HTTP HELPERS ================== */
 
 export async function postJson(path, body, options = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -78,7 +80,43 @@ export async function putJson(path, body, options = {}) {
   return handleJsonResponse(res);
 }
 
+/** ✅ THÊM: DELETE JSON (dùng cho Admin xóa dịch vụ) */
+export async function delJson(path, options = {}) {
+  const res = await fetch(`${BASE}${path}`, {
+    method: "DELETE",
+    headers: { ...authHeaders(), ...(options.headers || {}) },
+    ...options,
+  });
+  return handleJsonResponse(res);
+}
+
+// ============================
+// Existing exports (giữ nguyên)
+// ============================
 export const getMyProfile = () => getJson("/api/profile/me");
 export const updateMyProfile = (payload) => putJson("/api/profile/me", payload);
-export const getMyVisits = () => getJson("/api/visits");          // list
+
+export const getMyVisits = () => getJson("/api/visits"); // list
 export const getVisitDetail = (id) => getJson(`/api/visits/${id}`); // detail
+
+// ============================
+// ✅ US14.1: Medical Services API
+// ============================
+
+/** Patient/Doctor: xem danh sách dịch vụ active */
+export const getServices = () => getJson("/api/services");
+
+/** Admin: list tất cả dịch vụ */
+export const adminGetServices = () => getJson("/api/admin/services");
+
+/** Admin: thêm dịch vụ */
+export const adminCreateService = (payload) =>
+  postJson("/api/admin/services", payload);
+
+/** Admin: sửa dịch vụ */
+export const adminUpdateService = (id, payload) =>
+  putJson(`/api/admin/services/${id}`, payload);
+
+/** Admin: xóa dịch vụ (soft delete) */
+export const adminDeleteService = (id) =>
+  delJson(`/api/admin/services/${id}`);
